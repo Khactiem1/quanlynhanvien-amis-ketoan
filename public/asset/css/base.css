@@ -1,0 +1,44 @@
+:root{
+    --primary__color: #2ca01c;
+    --primary__color-hover: #35bf22;
+    --primary__color-active: #248b15;
+    --while__color: #ffffff;
+    --background__color: #ECEEF1;
+    --menu__color: #393A3D;
+    --menu__color-active: #58595D;
+    --text__while-color: #ffffff;
+    --black__color: #000000;
+    --border-icon__color: #babec5;
+    --border-icon__color-hover:#6B6C72;
+    --text__color: #111111;
+    --height__header: 48px;
+    --primary__button-height: 34px;
+    --input__height: 32px;
+    --border__input: #babec5;
+}
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    font-family: "notosans-regular";  
+}
+a{
+    text-decoration: none;
+}
+.wrapper{
+    display: flex;
+}
+.text-center{
+    text-align: center;
+}
+.none{
+    display: none;
+}
+.block{
+    display: block;
+}
+.flex-center{
+    display: flex;
+}

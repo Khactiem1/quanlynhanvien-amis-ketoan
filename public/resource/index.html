@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/button.css">
+    <link rel="stylesheet" href="./css/input.css">
+    <link rel="stylesheet" href="./css/table.css">
+    <link rel="stylesheet" href="./css/combobox.css">
+    <link rel="stylesheet" href="./css/modal.css">
+    <link rel="stylesheet" href="./css/base.css">
+</head>
+<body>
+    <div id="app">
+        <div class="wrapper">
+            <div class="sidebar">
+                <div class="logo-sidebar">
+                    <a href="#" class="logo-sidebar_home"></a>
+                    <a href="#" class="logo-sidebar_menu">
+                        <img src="./asset/logo/logo_event_trungthu.090d014b.svg" alt="">
+                    </a>
+                    <!-- <div class="logo-sidebar_active"></div> -->
+                </div>
+                <div class="menu-sidebar">
+                    <a href="#" class="menu-sidebar_item">
+                        <div style=" background-position: -30px -1628px;" class="menu-sidebar_icon">
+                        </div>
+                        <div class="menu-sidebar_text">
+                            Tổng quan
+                        </div>
+                    </a>
+                    <a href="#" class="menu-sidebar_item active">
+                        <div style="background-position: -73px -1628px;" class="menu-sidebar_icon"></div>
+                        <div class="menu-sidebar_text">
+                            Tiền mặt
+                        </div>
+                    </a>
+                    <a href="#" class="menu-sidebar_item">
+                        <div style=" background-position: -117px -1628px;" class="menu-sidebar_icon"></div>
+                        <div class="menu-sidebar_text">
+                            Tiền gửi
+                        </div>
+                    </a>
+                    <a href="#" class="menu-sidebar_item">
+                        <div style=" background-position: -161px -1628px;" class="menu-sidebar_icon"></div>
+                        <div class="menu-sidebar_text">
+                            Mua hàng
+                        </div>
+                    </a>
+                    <a href="#" class="menu-sidebar_item">
+                        <div style="background-position: -204px -1628px;" class="menu-sidebar_icon"></div>
+                        <div class="menu-sidebar_text">
+                            Bán hàng
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="content">
+                <div class="header">
+                    <div class="content-header_info">
+                        <div class="header-icon_left">
+                        </div>
+                        <div class="header-text">
+                            Công ty sản xuất - thương mại - dịch vụ qui phúc
+                        </div>
+                        <div class="header-icon_right">
+                        </div>
+                    </div>
+                    <div class="content-header_info">
+                        <div class="header-bell_notification">
+                        </div>
+                        <button class="header-user">
+                            <div class="header-user_avatar"></div>
+                            <div class="header-user_name">Nguyễn Khắc Tiềm</div>
+                            <div class="header-user_icon"></div>
+                        </button>
+                    </div>
+                </div>
+                <div class="container-table">
+                    <div class="container-table_header">
+                        <div class="name-table">
+                            <h1>Nhân viên</h1>
+                        </div>
+                        <div class="action-table">
+                            <button class="btn btn-success btn-add">
+                                Thêm một nhân viên
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-content">
+                        <div class="table-function">
+                            <div class="table-function_search">
+                                <div class="search-table">
+                                    <input class="input input-table_search" type="text" placeholder="Tìm theo mã, tên nhân viên">
+                                    <div class="icon-search"></div>
+                                </div>
+                                <div class="reload-table">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <!-- Table -->
+                            <table class="table">
+                                <thead class="thead-light">
+                                  <tr>
+                                    <th>
+                                        <div class="check">
+                                            <label class="label-checkbox active">
+                                            </label>
+                                            <input class="checkbox" type="checkbox">
+                                        </div>
+                                    </th>
+                                    <th>Mã nhân viên</th>
+                                    <th>Tên nhân viên</th>
+                                    <th>Giới tính</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Só CMND</th>
+                                    <th class="text-center">Ngày cấp</th>
+                                    <th style="width: 120px;" class="text-center">Chức năng</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <th>
+                                        <label class="label-checkbox">
+                                        </label>
+                                        <input class="checkbox" type="checkbox">
+                                    </th>
+                                    <td>NV00001</td>
+                                    <td>Otto</td>
+                                    <td>@mdo</td>
+                                    <td>@mdo</td>
+                                    <td>@mdo</td>
+                                    <td class="text-center">@mdo</td>
+                                    <td style="width: 120px;" class="text-center">
+                                        <div class="action-colum_table">
+                                            <button class="action-table action-table_left">
+                                                <div class="action-default">
+                                                    Sửa
+                                                </div>
+                                            </button>
+                                            <button class="action-table action-table_right">
+                                                <div class="border-icon_table">
+                                                    <div class="action-icon">
+                                                    </div>
+                                                </div>
+                                            </button>
+                                            <div class="table-list_action">
+                                                <div class="list_action-item">
+                                                    Nhân bản
+                                                </div>
+                                                <div class="list_action-item">
+                                                    Xoá
+                                                </div>
+                                                <div class="list_action-item">
+                                                    Ngừng sử dụng
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th>
+                                        <label class="label-checkbox">
+                                        </label>
+                                        <input class="checkbox" type="checkbox">
+                                    </th>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td>@fat</td>
+                                    <td>@fat</td>
+                                    <td>@fat</td>
+                                    <td class="text-center">@fat</td>
+                                    <td style="width: 120px;" class="text-center">
+                                        <div class="action-colum_table">
+                                            <button class="action-table action-table_left">
+                                                <div class="action-default">
+                                                    Sửa
+                                                </div>
+                                            </button>
+                                            <button class="action-table action-table_right">
+                                                <div class="border-icon_table">
+                                                    <div class="action-icon">
+                                                    </div>
+                                                </div>
+                                            </button>
+                                            <div class="table-list_action">
+                                                <div class="list_action-item">
+                                                    Nhân bản
+                                                </div>
+                                                <div class="list_action-item">
+                                                    Xoá
+                                                </div>
+                                                <div class="list_action-item">
+                                                    Ngừng sử dụng
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <th>
+                                        <label class="label-checkbox">
+                                        </label>
+                                        <input class="checkbox" type="checkbox">
+                                    </th>
+                                    <td>Larry</td>
+                                    <td>the Bird</td>
+                                    <td>@twitter</td>
+                                    <td>@twitter</td>
+                                    <td>@twitter</td>
+                                    <td class="text-center">@twitter</td>
+                                    <td style="width: 120px;" class="text-center">
+                                        <div class="action-colum_table">
+                                            <button class="action-table action-table_left">
+                                                <div class="action-default">
+                                                    Sửa
+                                                </div>
+                                            </button>
+                                            <button class="action-table action-table_right">
+                                                <div class="border-icon_table">
+                                                    <div class="action-icon">
+                                                    </div>
+                                                </div>
+                                            </button>
+                                            <div class="table-list_action">
+                                                <div class="list_action-item">
+                                                    Nhân bản
+                                                </div>
+                                                <div class="list_action-item">
+                                                    Xoá
+                                                </div>
+                                                <div class="list_action-item">
+                                                    Ngừng sử dụng
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            <!-- End Table -->
+                        </div>
+                        <div class="paging-container">
+                            <div class="total-record">
+                                Tổng số: <strong>1</strong> bản ghi
+                            </div>
+                            <div class="paging">
+                                <!-- Thêm 'active' là sẽ chạy -->
+                                <div class="combobox-select">
+                                    <input class="input disabled-input" disabled value="20 bản ghi trên 1 trang"  type="text">
+                                    <div class="combobox-select_icon">
+                                        <div class="select_icon-combobox"></div>
+                                    </div>
+                                    <div class="combobox-combobox_select"> 
+                                        <div class="combobox-combobox_item">
+                                            20 bản ghi trên 1 trang
+                                        </div>
+                                        <div class="combobox-combobox_item active">
+                                            30 bản ghi trên 1 trang
+                                        </div>
+                                        <div class="combobox-combobox_item">
+                                            40 bản ghi trên 1 trang
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="show-paging">
+                                    <div class="show-paging_item disabled">Trước</div>
+                                    <div class="show-paging_item show-paging_text active">1</div>
+                                    <div class="show-paging_item show-paging_text">2</div>
+                                    <div class="show-paging_item show-paging_text">...</div>
+                                    <div class="show-paging_item show-paging_text">52</div>
+                                    <div class="show-paging_item">Sau</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal">
+            <div class="modal-overlay"></div>
+            <div class="modal-body">
+                <div class="form">
+                    <div class="form-header">
+                        <div class="modal-title">
+                            <h2>Thông tin nhân viên</h2>
+                            <div class="form-header_checkbox">
+                                <div class="check form-checkbox_item">
+                                    <label class="label-checkbox active">
+                                    </label>
+                                    <input class="checkbox" type="checkbox">
+                                    <div class="info-checkbox">
+                                        Là khách hàng
+                                    </div>
+                                </div>
+                                <div class="check form-checkbox_item">
+                                    <label class="label-checkbox">
+                                    </label>
+                                    <input class="checkbox" type="checkbox">
+                                    <div class="info-checkbox">
+                                        Là nhà cung cấp
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-close">
+                            <div class="modal-icon modal-icon_help"></div>
+                            <div class="modal-icon modal-icon_close"></div>
+                        </div>
+                    </div>
+                    <div class="form-container">
+                        <div class="form-detail flex-center">
+                            <div class="form-item">
+                                <div class="form-item_input">
+                                    <!-- Thêm is-valid để validate -->
+                                    <div class="form-group ms-small">
+                                        <label class="required">Mã</label>
+                                        <input class="input" type="text">
+                                        <span class="message-valid">Không được bỏ trống</span>
+                                    </div>
+                                    <div class="form-group ms-big">
+                                        <label class="required">Tên</label>
+                                        <input class="input" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="required">Đơn vị</label>
+                                    <!-- Thêm 'active' là sẽ chạy -->
+                                    <div class="combobox-select">
+                                        <input class="input" value="Đơn vị đà nẵng"  type="text">
+                                        <div class="combobox-select_icon">
+                                            <div class="select_icon-combobox"></div>
+                                        </div>
+                                        <div class="combobox-combobox_select"> 
+                                            <div class="combobox-combobox_item">
+                                                20 bản ghi trên 1 trang
+                                            </div>
+                                            <div class="combobox-combobox_item active">
+                                                30 bản ghi trên 1 trang
+                                            </div>
+                                            <div class="combobox-combobox_item">
+                                                40 bản ghi trên 1 trang
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Chức danh</label>
+                                    <input class="input" type="text">
+                                </div>
+                            </div>
+                            <div class="form-item">
+                                <div class="form-item_input">
+                                    <div class="form-group ms-small">
+                                        <label>Ngày sinh</label>
+                                        <input class="input" type="text">
+                                    </div>
+                                    <div style="padding-left: 16px;" class="form-group ms-big">
+                                        <label>Giới tính</label>
+                                        <div class="input-radio_item">
+                                            <label class="input-radio_check">
+                                                <input type="radio">
+                                                <span>Nam</span>
+                                            </label>
+                                            <label class="input-radio_check active">
+                                                <input type="radio">
+                                                <span>Nữ</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-item_input">
+                                    <div class="form-group ms-big">
+                                        <label>Số CMND</label>
+                                        <input class="input" type="text">
+                                    </div>
+                                    <div class="form-group ms-small">
+                                        <label>Ngày cấp</label>
+                                        <input class="input" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nơi cấp</label>
+                                    <input class="input" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-detail">
+                            <div class="form-group">
+                                <label>Địa chỉ</label>
+                                <input class="input" type="text">
+                            </div>
+                            <div class="form-item flex-center">
+                                <div class="form-group">
+                                    <label>ĐT di động</label>
+                                    <input class="input" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>ĐT cố định</label>
+                                    <input class="input" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input class="input" type="text">
+                                </div>
+                            </div>
+                            <div class="form-item flex-center">
+                                <div class="form-group">
+                                    <label>Tài khoản ngân hàng</label>
+                                    <input class="input" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>Tên ngân hàng</label>
+                                    <input class="input" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <label>Chi nhánh</label>
+                                    <input class="input" type="text">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-action">
+                        <div class="form-action_container">
+                            <div class="form-action_item">
+                                <button class="btn">
+                                    Huỷ
+                                </button>
+                            </div>
+                            <div class="form-action_item">
+                                <button style="margin-right: 5px;" class="btn modal-icon btn-form_cat">
+                                    Cất
+                                </button>
+                                <button class="btn btn-success modal-icon btn-form_cat-them">
+                                    Cất và thêm
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal modal-notification">
+            <div class="modal-overlay"></div>
+            <div class="modal-body modal-notification_container">
+                <div class="modal-notification_content">
+                    <div class="modal-notification_body">
+                        <div class="modal-notification_icon icon-wanning"></div>
+                        <div class="modal-notification_mess">
+                            Tên không được bỏ trống
+                        </div>
+                    </div>
+                    <div class="mess-line_notification"></div>
+                    <div class="modal-notification_action">
+                        <div class="modal-notification_action-item">
+                            <button class="btn">Huỷ</button>
+                        </div>
+                        <div class="modal-notification_action-item">
+                            <button class="btn">Không</button>
+                            <button class="btn btn-success">Có</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const elm = document.querySelectorAll('.label-checkbox');
+        elm.forEach((item) =>{
+            item.onclick = function(){
+                item.classList.toggle('active');
+            }
+        })
+        const elm2 = document.querySelector('.action-table_right');
+        const elm3 = document.querySelector('.table-list_action');
+        elm2.onclick = function(){
+            elm3.classList.toggle('active');
+        }
+        const elm4 = document.querySelector('.combobox-select_icon');
+        const elm5 = document.querySelector('.combobox-select');
+        elm4.onclick = function(){
+            elm5.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
