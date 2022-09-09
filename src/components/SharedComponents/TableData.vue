@@ -4,12 +4,16 @@
       <tr>
         <th>
           <input-checkbox
-            @custom-handle-click-ckeckbox="handleClickCheckbox(true)"
+            @custom-handle-click-checkbox="handleClickCheckbox(true)"
             :checkbox="checkAllRecord"
           ></input-checkbox>
         </th>
         <!-- :style="{'width': item.width}" -->
-        <th v-for="(item, index) in columns" :key="index">
+        <th
+          v-for="(item, index) in columns"
+          :style="{ 'text-align': item.textAlign, width: item.width }"
+          :key="index"
+        >
           {{ item.header }}
         </th>
         <th style="width: 120px" class="text-center">Chức năng</th>
@@ -17,27 +21,50 @@
     </thead>
     <tbody>
       <!-- Vòng lặp các user -->
-      <tr v-for="(row, index) in userList" :key="index">
+      <tr
+        v-for="(row, index) in tableList"
+        :class="{ active: row['Check'] }"
+        :key="index"
+      >
         <td>
           <input-checkbox
-            @custom-handle-click-ckeckbox="handleClickCheckbox(index)"
+            @custom-handle-click-checkbox="handleClickCheckbox(index)"
             :checkbox="row.Check"
           ></input-checkbox>
         </td>
         <!-- Vòng lặp các columns sao cho đúng với các vị trí của header -->
-        <td v-for="(col, index) in columns" :key="index">
-          {{ row[col.field] }}
+        <td
+          v-for="(col, index) in columns"
+          :style="{ 'text-align': col.textAlign }"
+          :key="index"
+        >
+          <!-- khi render các trường kiểm tra xem có yêu cầu cần thêm dấu phẩy thì sẽ thêm  -->
+          {{
+            col.fractionSize === true ? Comma(row[col.field]) : row[col.field]
+          }}
         </td>
         <td class="text-center">
           <div class="action-colum_table">
             <button class="action-table action-table_left">
-              <div class="action-default">{{ actionDefault }}</div>
+              <div class="action-default">{{ actionTable.actionDefault }}</div>
             </button>
-            <button @click="showAction" class="action-table action-table_right">
+            <button
+              @click="handleShowAction"
+              class="action-table action-table_right"
+            >
               <div class="border-icon_table">
                 <div class="action-icon"></div>
               </div>
             </button>
+            <div class="table-list_action">
+              <div
+                v-for="(actionItem, index) in actionTable.actionList"
+                :key="index"
+                class="list_action-item"
+              >
+                {{ actionItem }}
+              </div>
+            </div>
           </div>
         </td>
       </tr>
@@ -47,13 +74,12 @@
 
 <script>
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
-import { useStore } from "vuex";
 export default {
   components: {
     InputCheckbox,
   },
   props: {
-    userList: {
+    tableList: {
       type: Array,
     },
     columns: {
@@ -62,30 +88,55 @@ export default {
     checkAllRecord: {
       type: Boolean,
     },
-    actionDefault: {
-      type: String,
+    actionTable: {
+      type: Object,
     },
     handleClickCheckbox: {
       type: Function,
     },
   },
   setup() {
-    const store = useStore();
-    function showAction(event) {
+    // Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
+    function Comma(number) {
+      number = "" + number;
+      if (number.length > 3) {
+        var mod = number.length % 3;
+        var output = mod > 0 ? number.substring(0, mod) : "";
+        for (let i = 0; i < Math.floor(number.length / 3); i++) {
+          if (mod == 0 && i == 0)
+            output += number.substring(mod + 3 * i, mod + 3 * i + 3);
+          else output += "," + number.substring(mod + 3 * i, mod + 3 * i + 3);
+        }
+        return output;
+      } else return number;
+    }
+    // Hàm xử lý ẩn hiện các action
+    let elmClose = null;
+    function handleShowAction(event) {
       event.path.forEach((item) => {
-        if (item.className === "action-colum_table") {
-          store.dispatch("config/setPositionActionTableAction", {
-            top: item.getBoundingClientRect().top,
-            right: item.getBoundingClientRect().right,
-            heightElement: item.clientHeight,
-          });
+        try {
+          if (item.className.includes("action-colum_table")) {
+            if (item.className.includes("action-colum_table active")) {
+              item.classList.remove("active");
+              elmClose = null;
+            } else {
+              if (elmClose) {
+                elmClose.classList.remove("active");
+              }
+              item.classList.add("active");
+              elmClose = item;
+            }
+            return;
+          }
+        } catch {
           return;
         }
       });
     }
 
     return {
-      showAction,
+      Comma,
+      handleShowAction,
     };
   },
 };
@@ -106,13 +157,17 @@ table {
   background-color: #e5e8ec;
   text-transform: uppercase;
   vertical-align: middle;
-  white-space: nowrap;
+  font-size: 12px;
+  /* white-space: nowrap; */
 }
 .table .thead-light th:last-child {
   border-right: none;
 }
 tbody tr:hover {
   background-color: #f2f9ff;
+}
+tbody tr.active {
+  background-color: #e5f3ff;
 }
 .table tbody th,
 .table tbody td {
@@ -121,7 +176,7 @@ tbody tr:hover {
   height: 44px;
   border-right: 1px dotted #c7c7c7;
   border-bottom: 1px solid #c7c7c7;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 .table tbody td:last-child {
   border-right: none;
@@ -184,5 +239,37 @@ tbody tr:hover {
 .action-table:active .border-icon_table,
 .action-table:active .action-default {
   border: solid 1px #0075c0;
+}
+/* Phần action ẩn */
+.table-list_action {
+  position: absolute;
+  border: solid 1px var(--border__input);
+  background-color: var(--while__color);
+  border-radius: 2px;
+  padding: 5px 0;
+  top: 0;
+  right: 5px;
+  top: 110%;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 5;
+  transition: all ease 0.15s;
+}
+.action-colum_table.active .table-list_action {
+  opacity: 1;
+  visibility: visible;
+  top: 90%;
+}
+.list_action-item {
+  white-space: nowrap;
+  text-align: left;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all ease 0.15s;
+  color: inherit;
+}
+.list_action-item:hover {
+  background-color: #f5f5f5;
+  color: var(--primary__color);
 }
 </style>

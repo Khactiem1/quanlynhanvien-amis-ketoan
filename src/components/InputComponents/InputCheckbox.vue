@@ -15,13 +15,13 @@ export default {
   },
   setup(props,context){
     function handleClickCheckbox(){
-      context.emit('custom-handle-click-ckeckbox');
+      context.emit('custom-handle-click-checkbox');
     }
     return {
       handleClickCheckbox,
     }
   },
-  emits: ['custom-handle-click-ckeckbox'],
+  emits: ['custom-handle-click-checkbox'],
 };
 </script>
 

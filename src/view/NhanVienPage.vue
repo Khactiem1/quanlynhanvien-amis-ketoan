@@ -5,7 +5,9 @@
         <h1>Nhân viên</h1>
       </div>
       <div class="action-table">
-        <button class="btn btn-success btn-add">Thêm một nhân viên</button>
+        <button @click="handleOpenModal('add')" class="btn btn-success btn-add">
+          Thêm một nhân viên
+        </button>
       </div>
     </div>
     <div class="table-content">
@@ -25,17 +27,13 @@
       <div class="table-container">
         <!-- Table -->
         <table-data
-          :userList="userList"
+          :tableList="userList"
           :checkAllRecord="checkAllRecord"
           :columns="columns"
           :handleClickCheckbox="handleClickCheckbox"
-          :actionDefault="actionDefault"
+          :actionTable="actionTable"
         >
         </table-data>
-        <!-- các action table ở đây đưa ra thẻ có id là app-->
-        <teleport to="#app">
-          <action-table :actionList="actionList"></action-table>
-        </teleport>
         <!-- End Table -->
       </div>
       <div class="paging-container">
@@ -71,26 +69,34 @@
         </div>
       </div>
     </div>
+    <teleport to="#app">
+      <modal-form
+        v-if="isShowModal"
+        @handle-click-close-modal="handleCloseModal"
+        :class="{ active: isShowModalAnimation }"
+      ></modal-form>
+    </teleport>
   </div>
 </template>
 
 <script>
 import TableData from "../components/SharedComponents/TableData.vue";
-import ActionTable from "../components/SharedComponents/ActionTable.vue";
-import { computed } from "vue";
+import ModalForm from "../components/NhanVienComponents/ModalForm.vue";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 export default {
   components: {
     TableData,
-    ActionTable,
+    ModalForm,
   },
   setup() {
     const store = useStore();
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
     const columns = computed(() => store.state.user.columns); //Lấy danh sách columns hiển thị
-    const actionDefault = computed(() => store.state.user.actionTable.actionDefault); //Lấy chức năng table hiển thị mặc định
-    const actionList = computed(() => store.state.user.actionTable.actionList); //Lấy danh sách chức năng table hiển thị ẩn
-    const checkAllRecord = computed(() => store.state.user.CheckAll); //Lấy danh sách ng dùng
+    const checkAllRecord = computed(() => store.state.user.CheckAll); //Lấy ra biến check all những ng dùng đc click
+    const actionTable = computed(() => store.state.user.actionTable); //Lấy danh sách các chức năng
+    let isShowModal = ref(false);
+    let isShowModalAnimation = ref(false);
     //Hàm xử lý checkbox value true thì là check ô tất cả check, value là 0,1,2 là xử lý các phần tử được check
     function handleClickCheckbox(value) {
       if (value === true) {
@@ -99,13 +105,30 @@ export default {
         store.dispatch("user/setCheckboxUserAction", value);
       }
     }
+    //Hàm xử lý mở modal với state là trạng thái thêm hay sửa
+    function handleOpenModal(state) {
+      console.log(state);
+      isShowModal.value = !isShowModal.value;
+      // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
+      setTimeout(() => {
+        isShowModalAnimation.value = !isShowModalAnimation.value;
+      }, 0);
+    }
+    //Hàm xử lý đóng modal
+    function handleCloseModal(){
+      isShowModalAnimation.value = !isShowModalAnimation.value;
+      isShowModal.value = !isShowModal.value;
+    }
     return {
       userList,
       columns,
       checkAllRecord,
-      actionDefault,
-      actionList,
+      actionTable,
+      isShowModal,
+      isShowModalAnimation,
+      handleOpenModal,
       handleClickCheckbox,
+      handleCloseModal,
     };
   },
 };
@@ -129,8 +152,6 @@ export default {
   background-color: var(--while__color);
   padding: 0 16px;
   margin-bottom: 16px;
-  overflow-y: hidden;
-  overflow-x: auto;
 }
 .table-function {
   display: flex;
