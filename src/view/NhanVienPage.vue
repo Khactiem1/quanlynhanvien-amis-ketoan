@@ -29,8 +29,8 @@
         <table-data
           :tableList="userList"
           :checkAllRecord="checkAllRecord"
-          :columns="columns"
           :handleClickCheckbox="handleClickCheckbox"
+          :columns="columns"
           :actionTable="actionTable"
         >
         </table-data>
@@ -115,7 +115,7 @@ export default {
       }, 0);
     }
     //Hàm xử lý đóng modal
-    function handleCloseModal(){
+    function handleCloseModal() {
       isShowModalAnimation.value = !isShowModalAnimation.value;
       isShowModal.value = !isShowModal.value;
     }

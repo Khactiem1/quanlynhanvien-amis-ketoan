@@ -1,28 +1,60 @@
 <template>
-  <div @click="handleClickCheckbox" class="check">
+  <!-- @click="handleClickCheckbox" -->
+  <label class="check">
     <!-- Thêm active vào đây -->
-    <label  class="label-checkbox" :class="{ active: checkbox }"> </label>
-    <input class="checkbox" type="checkbox" />
-  </div>
+    <!-- :class="{ active: checkbox }" -->
+    <input
+      class="checkbox"
+      type="checkbox"
+      :id="id"
+      v-model="computedValue"
+      :name="name"
+      :disabled="disabled"
+      :indeterminate="indeterminate"
+      :true-value="trueValue"
+      :false-value="falseValue"
+      :value="value"
+      :checked="checked"
+    />
+    <div class="label-checkbox"></div>
+  </label>
 </template>
 
 <script>
-export default {
-  props: {
-    checkbox: {
-      type: Boolean,
-    },
+import { defineComponent, computed } from "vue";
+export default defineComponent({
+  name: "InputCheckbox",
+  props: [
+    "modelValue", //v-model
+    "value", //Giá trị của ô checkbox
+    "trueValue", //Dữ liệu khi được check
+    "falseValue", //Dữu liệu khi không được check
+    "checked", //Có được check hay không khi k sử dụng đến v-model
+    "id",
+    "name",
+    "round",
+    "disabled",
+    "indeterminate",
+  ],
+  emits: [
+    "update:modelValue",
+    "custom-handle-click-checkbox",
+    "custom-handle-click-checkbox-with-value",
+  ],
+  setup: (props, { emit }) => {
+    const computedValue = computed({
+      get() {
+        return props.modelValue;
+      },
+      set(value) {
+        emit("update:modelValue", value);
+        emit("custom-handle-click-checkbox"); //custom sự kiện check không có value
+        emit("custom-handle-click-checkbox-with-value", value); //custom sự kiện check có value truyền vào
+      },
+    });
+    return { computedValue };
   },
-  setup(props,context){
-    function handleClickCheckbox(){
-      context.emit('custom-handle-click-checkbox');
-    }
-    return {
-      handleClickCheckbox,
-    }
-  },
-  emits: ['custom-handle-click-checkbox'],
-};
+});
 </script>
 
 <style scoped>
@@ -53,9 +85,16 @@ export default {
   left: 0;
   top: 0;
 }
-.label-checkbox.active {
+input:checked ~ .label-checkbox::before {
+  opacity: 1;
+  visibility: visible;
+}
+input:checked ~ .label-checkbox {
   border-color: var(--primary__color);
   transform: rotate(0deg);
+}
+input {
+  z-index: 10;
 }
 .label-checkbox::before {
   content: "";
@@ -65,10 +104,7 @@ export default {
   opacity: 0;
   visibility: hidden;
   position: absolute;
-}
-.label-checkbox.active::before {
-  opacity: 1;
-  visibility: visible;
+  display: block;
 }
 .input.disabled-input {
   box-shadow: none;

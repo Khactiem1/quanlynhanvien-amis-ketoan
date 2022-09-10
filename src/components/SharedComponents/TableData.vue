@@ -3,12 +3,12 @@
     <thead class="thead-light">
       <tr>
         <th>
+          <!-- :checkbox="checkAllRecord" -->
           <input-checkbox
+            :checked="checkAllRecord"
             @custom-handle-click-checkbox="handleClickCheckbox(true)"
-            :checkbox="checkAllRecord"
           ></input-checkbox>
         </th>
-        <!-- :style="{'width': item.width}" -->
         <th
           v-for="(item, index) in columns"
           :style="{ 'text-align': item.textAlign, width: item.width }"
@@ -27,9 +27,10 @@
         :key="index"
       >
         <td>
+          <!-- :checkbox="row.Check" -->
           <input-checkbox
+            :checked="row.Check"
             @custom-handle-click-checkbox="handleClickCheckbox(index)"
-            :checkbox="row.Check"
           ></input-checkbox>
         </td>
         <!-- Vòng lặp các columns sao cho đúng với các vị trí của header -->
