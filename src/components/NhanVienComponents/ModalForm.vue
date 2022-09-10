@@ -1,5 +1,5 @@
 <template>
-  <div @keyup.space="handleCloseModal" class="modal">
+  <div class="modal">
     <div class="modal-overlay"></div>
     <div class="modal-body">
       <div class="form">
@@ -8,12 +8,14 @@
             <h2>Thông tin nhân viên</h2>
             <div class="form-header_checkbox">
               <div class="check form-checkbox_item">
-                <input-checkbox></input-checkbox>
-                <div class="info-checkbox">Là khách hàng</div>
+                <input-checkbox>
+                  <div class="info-checkbox">Là khách hàng</div>
+                </input-checkbox>
               </div>
               <div class="check form-checkbox_item">
-                <input-checkbox></input-checkbox>
-                <div class="info-checkbox">Là nhà cung cấp</div>
+                <input-checkbox>
+                  <div class="info-checkbox">Là nhà cung cấp</div>
+                </input-checkbox>
               </div>
             </div>
           </div>
@@ -70,7 +72,7 @@
               <div class="form-item_input">
                 <div class="form-group ms-small">
                   <label>Ngày sinh</label>
-                  <input class="input" type="text" />
+                  <input class="input" type="date" />
                 </div>
                 <div style="padding-left: 16px" class="form-group ms-big">
                   <label>Giới tính</label>
@@ -93,7 +95,7 @@
                 </div>
                 <div class="form-group ms-small">
                   <label>Ngày cấp</label>
-                  <input class="input" type="text" />
+                  <input class="input" type="date" />
                 </div>
               </div>
               <div class="form-group">
@@ -375,9 +377,6 @@ export default {
   margin-top: 2px;
   display: flex;
   align-items: center;
-}
-.info-checkbox {
-  margin-left: 8px;
 }
 .form-container {
   padding: 0 32px;

@@ -69,7 +69,8 @@
         </div>
       </div>
     </div>
-    <teleport to="#app">
+    <!-- Đưa modal ra nằm trong thẻ #app -->
+    <teleport to="#app"> 
       <modal-form
         v-if="isShowModal"
         @handle-click-close-modal="handleCloseModal"

@@ -17,6 +17,7 @@
       :checked="checked"
     />
     <div class="label-checkbox"></div>
+    <slot></slot>
   </label>
 </template>
 
@@ -108,8 +109,5 @@ input {
 }
 .input.disabled-input {
   box-shadow: none;
-}
-.info-checkbox {
-  padding-left: 10px;
 }
 </style>

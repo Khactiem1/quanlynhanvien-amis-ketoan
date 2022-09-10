@@ -42,3 +42,8 @@ a{
 .flex-center{
     display: flex;
 }
+/* Thuộc tính css thẻ input checkbox cần public */
+.info-checkbox {
+    padding-left: 8px;
+    cursor: pointer;
+}

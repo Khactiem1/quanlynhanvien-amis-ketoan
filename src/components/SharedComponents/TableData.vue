@@ -41,7 +41,11 @@
         >
           <!-- khi render các trường kiểm tra xem có yêu cầu cần thêm dấu phẩy thì sẽ thêm  -->
           {{
-            col.fractionSize === true ? Comma(row[col.field]) : row[col.field]
+            col.fractionSize === true
+              ? Comma(row[col.field])
+              : col.formatDate === true
+              ? formatDate(row[col.field])
+              : row[col.field]
           }}
         </td>
         <td class="text-center">
@@ -111,6 +115,10 @@ export default {
         return output;
       } else return number;
     }
+    function formatDate(date) {
+      const d = new Date(date);
+      return [d.getDate(), d.getMonth() + 1, d.getFullYear()].join("/");
+    }
     // Hàm xử lý ẩn hiện các action
     let elmClose = null;
     function handleShowAction(event) {
@@ -134,8 +142,8 @@ export default {
         }
       });
     }
-
     return {
+      formatDate,
       Comma,
       handleShowAction,
     };
