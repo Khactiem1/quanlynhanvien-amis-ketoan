@@ -63,6 +63,7 @@
         </div>
       </div>
     </div>
+    {{userList[0]}}
     <!-- Đưa modal ra nằm trong thẻ #app -->
     <teleport to="#app">
       <modal-form
@@ -88,6 +89,7 @@ export default {
   },
   setup() {
     const store = useStore();
+    store.dispatch("user/getUserListAction");
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
     const columns = computed(() => store.state.user.columns); //Lấy danh sách columns hiển thị
     const checkAllRecord = computed(() => store.state.user.CheckAll); //Lấy ra biến check all những ng dùng đc click

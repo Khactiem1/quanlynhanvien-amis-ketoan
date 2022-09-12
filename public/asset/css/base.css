@@ -15,7 +15,7 @@
     --primary__button-height: 34px;
     --input__height: 32px;
     --border__input: #babec5;
-    --url__icon: url('http://localhost:3000/img/Sprites.64af8f61.2ff7618a.svg');
+    --url__icon: url('../logo/Sprites.64af8f61.svg');
 }
 *{
     box-sizing: border-box;
