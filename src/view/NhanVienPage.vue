@@ -40,24 +40,18 @@
         <div class="total-record">Tổng số: <strong>1</strong> bản ghi</div>
         <div class="paging">
           <!-- Thêm 'active' là sẽ chạy -->
-          <div class="combobox-select">
-            <input
-              class="input disabled-input"
-              disabled
-              value="20 bản ghi trên 1 trang"
-              type="text"
-            />
-            <div class="combobox-select_icon">
-              <div class="select_icon-combobox"></div>
-            </div>
-            <div class="combobox-combobox_select">
-              <div class="combobox-combobox_item">20 bản ghi trên 1 trang</div>
-              <div class="combobox-combobox_item active">
-                30 bản ghi trên 1 trang
-              </div>
-              <div class="combobox-combobox_item">40 bản ghi trên 1 trang</div>
-            </div>
-          </div>
+          <input-combobox
+            :options="[
+              { value: 10, header: '10 bản ghi trên 1 trang' },
+              { value: 20, header: '20 bản ghi trên 1 trang' },
+              { value: 30, header: '30 bản ghi trên 1 trang' },
+              { value: 50, header: '50 bản ghi trên 1 trang' },
+              { value: 100, header: '100 bản ghi trên 1 trang' },
+            ]"
+            :value="'value'"
+            :header="'header'"
+            v-model="recordPage"
+          ></input-combobox>
           <div class="show-paging">
             <div class="show-paging_item disabled">Trước</div>
             <div class="show-paging_item show-paging_text active">1</div>
@@ -70,7 +64,7 @@
       </div>
     </div>
     <!-- Đưa modal ra nằm trong thẻ #app -->
-    <teleport to="#app"> 
+    <teleport to="#app">
       <modal-form
         v-if="isShowModal"
         @handle-click-close-modal="handleCloseModal"
@@ -83,12 +77,14 @@
 <script>
 import TableData from "../components/SharedComponents/TableData.vue";
 import ModalForm from "../components/NhanVienComponents/ModalForm.vue";
-import { computed, ref } from "vue";
+import InputCombobox from "../components/InputComponents/InputCombobox.vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 export default {
   components: {
     TableData,
     ModalForm,
+    InputCombobox,
   },
   setup() {
     const store = useStore();
@@ -96,8 +92,12 @@ export default {
     const columns = computed(() => store.state.user.columns); //Lấy danh sách columns hiển thị
     const checkAllRecord = computed(() => store.state.user.CheckAll); //Lấy ra biến check all những ng dùng đc click
     const actionTable = computed(() => store.state.user.actionTable); //Lấy danh sách các chức năng
-    let isShowModal = ref(false);
-    let isShowModalAnimation = ref(false);
+    const isShowModal = ref(false);
+    const isShowModalAnimation = ref(false);
+    const recordPage = ref(20);
+    watch(recordPage,(newValue)=>{
+      console.log('Loading: '+ newValue);
+    })
     //Hàm xử lý checkbox value true thì là check ô tất cả check, value là 0,1,2 là xử lý các phần tử được check
     function handleClickCheckbox(value) {
       if (value === true) {
@@ -127,6 +127,7 @@ export default {
       actionTable,
       isShowModal,
       isShowModalAnimation,
+      recordPage,
       handleOpenModal,
       handleClickCheckbox,
       handleCloseModal,
@@ -165,7 +166,7 @@ export default {
   position: relative;
 }
 .icon-search {
-  background: url("../../public/asset/logo/Sprites.64af8f61.svg") no-repeat;
+  background: var(--url__icon) no-repeat;
   background-position: -992px -360px;
   width: 16px;
   height: 16px;
@@ -176,7 +177,7 @@ export default {
   cursor: pointer;
 }
 .reload-table {
-  background: url("../../public/asset/logo/Sprites.64af8f61.svg") no-repeat;
+  background: var(--url__icon) no-repeat;
   background-position: -423px -201px;
   width: 24px;
   height: 24px;

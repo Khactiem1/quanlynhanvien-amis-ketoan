@@ -240,7 +240,7 @@ tbody tr.active {
   align-items: center;
 }
 .action-icon {
-  background: url("../../../public/asset/logo/Sprites.64af8f61.svg") no-repeat -900px -365px;
+  background: var(--url__icon) no-repeat -900px -365px;
   width: 8px;
   height: 5px;
   margin: 0 auto;

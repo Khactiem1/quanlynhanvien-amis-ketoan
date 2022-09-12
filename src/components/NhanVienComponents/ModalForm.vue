@@ -33,39 +33,43 @@
               <div class="form-item_input">
                 <!-- Thêm is-valid để validate -->
                 <div class="form-group ms-small">
-                  <label class="required">Mã</label>
-                  <input class="input" type="text" />
-                  <span class="message-valid">Không được bỏ trống</span>
+                  <input-default
+                    :focus="true"
+                    :required="true"
+                    :type="'text'"
+                    :messageValid="'Mã không được để trống.'"
+                    :label="'Mã'"
+                  ></input-default>
                 </div>
                 <div class="form-group ms-big">
-                  <label class="required">Tên</label>
-                  <input class="input" type="text" />
+                  <input-default
+                    :required="true"
+                    :type="'text'"
+                    :messageValid="'Tên không được để trống.'"
+                    :label="'Tên'"
+                  ></input-default>
                 </div>
               </div>
               <div class="form-group">
-                <label class="required">Đơn vị</label>
-                <!-- Thêm 'active' là sẽ chạy -->
-                <div class="combobox-select">
-                  <input class="input" value="Đơn vị đà nẵng" type="text" />
-                  <div class="combobox-select_icon">
-                    <div class="select_icon-combobox"></div>
-                  </div>
-                  <div class="combobox-combobox_select">
-                    <div class="combobox-combobox_item">
-                      20 bản ghi trên 1 trang
-                    </div>
-                    <div class="combobox-combobox_item active">
-                      30 bản ghi trên 1 trang
-                    </div>
-                    <div class="combobox-combobox_item">
-                      40 bản ghi trên 1 trang
-                    </div>
-                  </div>
-                </div>
+                <input-combobox
+                  :options="[
+                    { value: 10, header: '10 bản ghi trên 1 trang' },
+                    { value: 20, header: '20 bản ghi trên 1 trang' },
+                    { value: 30, header: '30 bản ghi trên 1 trang' },
+                    { value: 50, header: '50 bản ghi trên 1 trang' },
+                    { value: 100, header: '100 bản ghi trên 1 trang' },
+                  ]"
+                  :value="'value'"
+                  :header="'header'"
+                  :label="'Đơn vị'"
+                  :required="true"
+                ></input-combobox>
               </div>
               <div class="form-group">
-                <label>Chức danh</label>
-                <input class="input" type="text" />
+                <input-default
+                  :type="'text'"
+                  :label="'Chức danh'"
+                ></input-default>
               </div>
             </div>
             <div class="form-item">
@@ -85,13 +89,19 @@
                       <input type="radio" />
                       <span>Nữ</span>
                     </label>
+                    <label class="input-radio_check">
+                      <input type="radio" />
+                      <span>Khác</span>
+                    </label>
                   </div>
                 </div>
               </div>
               <div class="form-item_input">
                 <div class="form-group ms-big">
-                  <label>Số CMND</label>
-                  <input class="input" type="text" />
+                  <input-default
+                    :type="'text'"
+                    :label="'Số CMND'"
+                  ></input-default>
                 </div>
                 <div class="form-group ms-small">
                   <label>Ngày cấp</label>
@@ -99,42 +109,52 @@
                 </div>
               </div>
               <div class="form-group">
-                <label>Nơi cấp</label>
-                <input class="input" type="text" />
+                <input-default
+                  :type="'text'"
+                  :label="'Nơi cấp'"
+                ></input-default>
               </div>
             </div>
           </div>
           <div class="form-detail">
             <div class="form-group">
-              <label>Địa chỉ</label>
-              <input class="input" type="text" />
+              <input-default :type="'text'" :label="'Địa chỉ'"></input-default>
             </div>
             <div class="form-item flex-center">
               <div class="form-group">
-                <label>ĐT di động</label>
-                <input class="input" type="text" />
+                <input-default
+                  :type="'text'"
+                  :label="'ĐT di động'"
+                ></input-default>
               </div>
               <div class="form-group">
-                <label>ĐT cố định</label>
-                <input class="input" type="text" />
+                <input-default
+                  :type="'text'"
+                  :label="'ĐT cố định'"
+                ></input-default>
               </div>
               <div class="form-group">
-                <label>Email</label>
-                <input class="input" type="text" />
+                <input-default :type="'text'" :label="'Email'"></input-default>
               </div>
             </div>
             <div class="form-item flex-center">
               <div class="form-group">
-                <label>Tài khoản ngân hàng</label>
-                <input class="input" type="text" />
+                <input-default
+                  :type="'text'"
+                  :label="'Tài khoản ngân hàng'"
+                ></input-default>
               </div>
               <div class="form-group">
-                <label>Tên ngân hàng</label>
-                <input class="input" type="text" />
+                <input-default
+                  :type="'text'"
+                  :label="'Tên ngân hàng'"
+                ></input-default>
               </div>
               <div class="form-group">
-                <label>Chi nhánh</label>
-                <input class="input" type="text" />
+                <input-default
+                  :type="'text'"
+                  :label="'Chi nhánh'"
+                ></input-default>
               </div>
             </div>
           </div>
@@ -169,15 +189,17 @@
 <script>
 import { onMounted, onUnmounted } from "vue";
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
+import InputDefault from "../InputComponents/InputDefault.vue";
+import InputCombobox from "../InputComponents/InputCombobox.vue";
+import eNum from "../../utils/eNum.js";
 export default {
   components: {
     InputCheckbox,
+    InputDefault,
+    InputCombobox,
   },
   setup(props, context) {
-    const ESC = 27;
-    const CTRL = 17;
-    const SHIFT = 16;
-    const S = 83;
+    const { ESC, CTRL, SHIFT, S } = eNum;
     const eventCtrlShiftS = [];
     //Hàm xử lý các event nút bấm tắt
     const handleEvent = function (event) {
@@ -283,6 +305,7 @@ export default {
   transform: translateY(-50%);
   box-shadow: 0 5px 20px 0 rgb(0, 0, 0, 10%);
   min-height: 100px;
+  transition: all ease 0.15s;
 }
 .form-header {
   display: flex;
@@ -302,7 +325,7 @@ export default {
   padding: 12px;
 }
 .modal-icon_help {
-  background: url(../../../public/asset/logo/Sprites.64af8f61.svg) no-repeat;
+  background: var(--url__icon) no-repeat;
   background-position: -89px -144px;
   width: 24px;
   height: 24px;
@@ -311,7 +334,7 @@ export default {
   position: relative;
 }
 .modal-icon_close {
-  background: url(../../../public/asset/logo/Sprites.64af8f61.svg) no-repeat;
+  background: var(--url__icon) no-repeat;
   background-position: -144px -144px;
   width: 24px;
   height: 24px;
@@ -456,7 +479,7 @@ label.required::after {
   margin-bottom: 30px;
 }
 .modal-notification_icon {
-  background: url(../../../public/asset/logo/Sprites.64af8f61.svg) no-repeat;
+  background: var(--url__icon) no-repeat;
   width: 48px;
   height: 48px;
 }

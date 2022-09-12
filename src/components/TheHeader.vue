@@ -55,7 +55,7 @@ export default {
 .header-icon_left {
   width: 16px;
   height: 14px;
-  background: url("../../public/asset/logo/Sprites.64af8f61.svg") no-repeat -847px -35px;
+  background: var(--url__icon) no-repeat -847px -35px;
   cursor: pointer;
   margin-right: 23px;
 }
@@ -64,7 +64,7 @@ export default {
   font-size: 14px;
 }
 .header-icon_right {
-  background: url("../../public/asset/logo/Sprites.64af8f61.svg") no-repeat -84px -361px;
+  background: var(--url__icon) no-repeat -84px -361px;
   width: 8px;
   height: 14px;
   transform: rotate(90deg);
@@ -74,7 +74,7 @@ export default {
 /* Phần header người dùng */
 /* Phần header thông báo */
 .header-bell_notification {
-  background: url("../../public/asset/logo/Sprites.64af8f61.svg") no-repeat -788px -30px;
+  background: var(--url__icon) no-repeat -788px -30px;
   width: 22px;
   height: 21px;
   margin-right: 20px;
@@ -82,7 +82,7 @@ export default {
 }
 /* header thao tác người dùng */
 .header-user_avatar {
-  background: url("../../public/asset/logo/Sprites.64af8f61.svg") no-repeat -352px -894px;
+  background: var(--url__icon) no-repeat -352px -894px;
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -100,7 +100,7 @@ export default {
   font-family: "notosans-semibold";
 }
 .header-user_icon {
-  background: url("../../public/asset/logo/Sprites.64af8f61.svg") no-repeat -1078px -38px;
+  background: var(--url__icon) no-repeat -1078px -38px;
   width: 9px;
   height: 6px;
   cursor: pointer;

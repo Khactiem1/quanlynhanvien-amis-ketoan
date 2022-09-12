@@ -10,6 +10,9 @@
     height: var(--primary__button-height);
     background-color: var(--while__color);
 }
+.btn:focus{
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
 .btn:hover{
     background-color: #d2d3d6;
 }

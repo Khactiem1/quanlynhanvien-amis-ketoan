@@ -102,7 +102,7 @@ export default {
   height: 24px;
   margin-right: 10px;
   margin-left: 6px;
-  background: url(../../public/asset/logo/Sprites.64af8f61.svg) no-repeat -424px -86px;
+  background: var(--url__icon) no-repeat -424px -86px;
 }
 .logo-sidebar_menu {
   margin-right: 6px;
@@ -113,7 +113,7 @@ export default {
   transform: scale(1.15);
 }
 .logo-sidebar_active {
-  background: url(../../public/asset/logo/Sprites.64af8f61.svg) no-repeat;
+  background: var(--url__icon) no-repeat;
   background-position: -316px -37px;
   width: 16px;
   height: 14px;
@@ -149,7 +149,7 @@ export default {
   background-color: var(--primary__color);
 }
 .menu-sidebar_icon {
-  background: url(../../public/asset/logo/Sprites.64af8f61.svg) no-repeat;
+  background: var(--url__icon) no-repeat;
   width: 24px;
   height: 24px;
   margin-left: 14px;

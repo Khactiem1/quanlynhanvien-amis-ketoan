@@ -45,7 +45,6 @@ export default {
 }
 @import "../public/asset/css/base.css";
 @import "../public/asset/css/button.css";
-@import "../public/asset/css/combobox.css";
 @import "../public/asset/css/input.css";
 #app {
   max-width: 100%;

@@ -99,7 +99,7 @@ input {
 }
 .label-checkbox::before {
   content: "";
-  background: url("../../../public/asset/logo/Sprites.64af8f61.svg") no-repeat -1225px -363px;
+  background: var(--url__icon) no-repeat -1225px -363px;
   width: 14px;
   height: 11px;
   opacity: 0;
