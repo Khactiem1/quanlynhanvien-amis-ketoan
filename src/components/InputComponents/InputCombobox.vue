@@ -10,6 +10,7 @@
         :value="headerValue"
         @input="handleInput"
         type="text"
+        :tabindex="tab"
       />
       <div class="combobox-select_icon" @click="handleClickOpenCombobox">
         <div class="select_icon-combobox"></div>
@@ -53,6 +54,7 @@ export default {
       default: () => [],
     },
     required: {},
+    tab:{},
   },
   setup(props, context) {
     const { options, header, modelValue, defaultValue, value } = toRefs(props);

@@ -67,8 +67,8 @@ const users = {
     },
   },
   actions: {
-    async getUserListAction(context, payload) {
-      const data = await getUserList(payload);
+    async getUserListAction(context) {
+      const data = await getUserList();
       context.commit("setUserListMutation", data);
     },
     setCheckboxUserAction(context, payload) {

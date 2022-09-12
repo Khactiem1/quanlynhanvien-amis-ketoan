@@ -7,6 +7,7 @@
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
+      :tabindex="tab"
       @input="$emit('update:modelValue', $event.target.value)"
     />
     <span class="message-valid">{{ messageValid }}</span>
@@ -24,6 +25,7 @@ export default {
     "messageValid",
     "label",
     "focus",
+    "tab",
   ],
   emits: ["update:modelValue"],
   setup(props) {

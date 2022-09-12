@@ -48,49 +48,7 @@
     border-color: var(--primary__color);
     box-shadow: none;
 }
-/* Input radio */
-.input-radio_item{
-    display: flex;
-    padding-top: 5px;
-}
-.input-radio_check{
-    align-items: center;
-    cursor: pointer;
-    position: relative;
-    display: inline-block;
-}
-.input-radio_check + .input-radio_check{
-    margin-left: 20px;
-}
-.input-radio_check::before{
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    left: 0;
-    top: 0;
-    width: 16px;
-    height: 16px;
-    border: solid 1px var(--border__input);
-}
-.input-radio_check input{
-    display: none;
-}
-.input-radio_check span{
-    padding-left: 28px;
-}
-.input-radio_check.active::before{
-    border-color: var(--primary__color);
-}
-.input-radio_check.active::after{
-    content: '';
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    top: 4px;
-    left: 4px;
-    border-radius: 50%;
-    background: var(--primary__color);
-}
+
 /* validate */
 .is-valid .input{
     border-color: red;

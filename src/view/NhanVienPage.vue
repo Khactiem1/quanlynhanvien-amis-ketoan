@@ -63,7 +63,6 @@
         </div>
       </div>
     </div>
-    {{userList[0]}}
     <!-- Đưa modal ra nằm trong thẻ #app -->
     <teleport to="#app">
       <modal-form

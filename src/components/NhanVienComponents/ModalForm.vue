@@ -39,6 +39,7 @@
                     :type="'text'"
                     :messageValid="'Mã không được để trống.'"
                     :label="'Mã'"
+                    :tab="1"
                   ></input-default>
                 </div>
                 <div class="form-group ms-big">
@@ -47,6 +48,7 @@
                     :type="'text'"
                     :messageValid="'Tên không được để trống.'"
                     :label="'Tên'"
+                    :tab="2"
                   ></input-default>
                 </div>
               </div>
@@ -63,12 +65,14 @@
                   :header="'header'"
                   :label="'Đơn vị'"
                   :required="true"
+                  :tab="3"
                 ></input-combobox>
               </div>
               <div class="form-group">
                 <input-default
                   :type="'text'"
                   :label="'Chức danh'"
+                  :tab="4"
                 ></input-default>
               </div>
             </div>
@@ -76,23 +80,29 @@
               <div class="form-item_input">
                 <div class="form-group ms-small">
                   <label>Ngày sinh</label>
-                  <input class="input" type="date" />
+                  <input :tabindex="5" class="input" type="date" />
                 </div>
                 <div style="padding-left: 16px" class="form-group ms-big">
                   <label>Giới tính</label>
                   <div class="input-radio_item">
-                    <label class="input-radio_check">
-                      <input type="radio" />
-                      <span>Nam</span>
-                    </label>
-                    <label class="input-radio_check active">
-                      <input type="radio" />
-                      <span>Nữ</span>
-                    </label>
-                    <label class="input-radio_check">
-                      <input type="radio" />
-                      <span>Khác</span>
-                    </label>
+                    <input-radio
+                      label="Nam"
+                      value="0"
+                      v-model="radio"
+                      :tab="6"
+                    ></input-radio>
+                    <input-radio
+                      label="Nữ"
+                      value="1"
+                      v-model="radio"
+                      :tab="7"
+                    ></input-radio>
+                    <input-radio
+                      label="Khác"
+                      value="2"
+                      v-model="radio"
+                      :tab="8"
+                    ></input-radio>
                   </div>
                 </div>
               </div>
@@ -101,40 +111,52 @@
                   <input-default
                     :type="'text'"
                     :label="'Số CMND'"
+                    :tab="9"
                   ></input-default>
                 </div>
                 <div class="form-group ms-small">
                   <label>Ngày cấp</label>
-                  <input class="input" type="date" />
+                  <input :tabindex="10" class="input" type="date" />
                 </div>
               </div>
               <div class="form-group">
                 <input-default
                   :type="'text'"
                   :label="'Nơi cấp'"
+                  :tab="11"
                 ></input-default>
               </div>
             </div>
           </div>
           <div class="form-detail">
             <div class="form-group">
-              <input-default :type="'text'" :label="'Địa chỉ'"></input-default>
+              <input-default
+                :type="'text'"
+                :label="'Địa chỉ'"
+                :tab="12"
+              ></input-default>
             </div>
             <div class="form-item flex-center">
               <div class="form-group">
                 <input-default
                   :type="'text'"
                   :label="'ĐT di động'"
+                  :tab="13"
                 ></input-default>
               </div>
               <div class="form-group">
                 <input-default
                   :type="'text'"
                   :label="'ĐT cố định'"
+                  :tab="14"
                 ></input-default>
               </div>
               <div class="form-group">
-                <input-default :type="'text'" :label="'Email'"></input-default>
+                <input-default
+                  :type="'text'"
+                  :label="'Email'"
+                  :tab="15"
+                ></input-default>
               </div>
             </div>
             <div class="form-item flex-center">
@@ -142,18 +164,21 @@
                 <input-default
                   :type="'text'"
                   :label="'Tài khoản ngân hàng'"
+                  :tab="16"
                 ></input-default>
               </div>
               <div class="form-group">
                 <input-default
                   :type="'text'"
                   :label="'Tên ngân hàng'"
+                  :tab="17"
                 ></input-default>
               </div>
               <div class="form-group">
                 <input-default
                   :type="'text'"
                   :label="'Chi nhánh'"
+                  :tab="18"
                 ></input-default>
               </div>
             </div>
@@ -169,12 +194,14 @@
                 @click="handleSaveData(true)"
                 style="margin-right: 5px"
                 class="btn modal-icon btn-form_cat"
+                :tabindex="19"
               >
                 Cất
               </button>
               <button
                 @click="handleSaveData(false)"
                 class="btn btn-success modal-icon btn-form_cat-them"
+                :tabindex="20"
               >
                 Cất và thêm
               </button>
@@ -187,18 +214,22 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import InputDefault from "../InputComponents/InputDefault.vue";
 import InputCombobox from "../InputComponents/InputCombobox.vue";
+import InputRadio from "../InputComponents/InputRadio.vue";
 import eNum from "../../utils/eNum.js";
 export default {
   components: {
     InputCheckbox,
     InputDefault,
     InputCombobox,
+    InputRadio,
   },
   setup(props, context) {
+    const radio = ref(1);
+
     const { ESC, CTRL, SHIFT, S } = eNum;
     const eventCtrlShiftS = [];
     //Hàm xử lý các event nút bấm tắt
@@ -259,6 +290,7 @@ export default {
     }
 
     return {
+      radio,
       handleCloseModal,
       handleSaveData,
     };
@@ -508,5 +540,9 @@ label.required::after {
 }
 .modal-notification_action-item .btn + .btn {
   margin-left: 5px;
+}
+.input-radio_item {
+  display: flex;
+  padding-top: 5px;
 }
 </style>
