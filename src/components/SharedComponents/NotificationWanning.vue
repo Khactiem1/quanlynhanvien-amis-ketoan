@@ -12,7 +12,10 @@
         </button>
       </div>
       <div class="modal-notification_action-item">
-        <button @click="agreeAction.action(messageAction.id)" class="btn btn-success">
+        <button
+          @click="agreeAction.action(messageAction.id)"
+          class="btn btn-success"
+        >
           {{ agreeAction.display }}
         </button>
       </div>

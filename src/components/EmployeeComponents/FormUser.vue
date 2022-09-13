@@ -208,7 +208,7 @@
     <div class="form-action">
       <div class="form-action_container">
         <div class="form-action_item">
-          <button @click="handleCloseModal" :tabindex="21" class="btn">
+          <button @click="handleCloseModal(true)" :tabindex="21" class="btn">
             Huỷ
           </button>
         </div>
@@ -234,9 +234,9 @@
     <teleport to="#app">
       <modal-notification v-if="isShowNotificationQuestion">
         <notification-question
-          :cancelAction="cancelAction"
-          :agreeAction="agreeAction"
-          :messageAction="messageAction"
+          :cancelAction="cancelActionQuestion"
+          :agreeAction="agreeActionQuestion"
+          :messageAction="messageActionQuestion"
         ></notification-question>
       </modal-notification>
     </teleport>
@@ -253,6 +253,7 @@ import ModalNotification from "../SharedComponents/ModalNotification.vue";
 import NotificationQuestion from "../SharedComponents/NotificationQuestion.vue";
 import { useStore } from "vuex";
 import eNum from "../../utils/eNum.js";
+import notificationMessage from "../../utils/notification.js";
 export default {
   components: {
     InputCheckbox,
@@ -268,9 +269,13 @@ export default {
     },
   },
   setup(props, context) {
+    const { QUESTION_DATA_CHANGE } = notificationMessage;
     const inputFocus = ref(null);
     const stateAddUser = ref(true);
     const { userEdit } = toRefs(props);
+    const cancelActionQuestion = ref({});
+    const agreeActionQuestion = ref({});
+    const messageActionQuestion = ref({});
     const isShowNotificationQuestion = ref(false);
     const user = ref({
       name: "",
@@ -313,7 +318,7 @@ export default {
       if (userEdit.value) {
         user.value = { ...userEdit.value }; // chuyển đổi props thành data
         stateAddUser.value = false;
-        userEditReset.value = {...userEdit.value};
+        userEditReset.value = { ...userEdit.value };
       }
     });
     const store = useStore();
@@ -384,24 +389,74 @@ export default {
     onUnmounted(() =>
       window.removeEventListener("keyup", handleEventInterrupt)
     );
-    function handleCloseModal() {
-      if (stateAddUser.value) {
-        if (JSON.stringify(user.value) != JSON.stringify(userReset.value)) {
-          console.log("khác khi thêm");
-        }
-      }
-      if(stateAddUser.value === false){
-        if(JSON.stringify(user.value) != JSON.stringify(userEditReset.value)){
-          console.log('khác khi sửa');
-        }
-      }
+    // Hàm xử lý đóng mở thông báo
+    function handleToggleNotificationQuestion() {
+      isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
+    }
+    // Hàm xử lý đóng thông báo và đóng modal
+    function handleCloseNotificationAndCloseModal(){
+      isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
       context.emit("handle-click-close-modal");
+    }
+    // Hàm xử lý đóng thông báo và modal và thêm dữ liệu
+    function handleSaveDataAndCloseNotificationAndCloseModal(){
+      isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
+      handleSaveData(true);
+    }
+    function handleCloseModal(closeNow) {
+      //Kiếm tra dữ liệu khi đóng form khác thì hỏi có lưu hay không
+      if(closeNow){
+        context.emit("handle-click-close-modal");
+      }
+      else if (stateAddUser.value) {
+        if (JSON.stringify(user.value) != JSON.stringify(userReset.value)) {
+          cancelActionQuestion.value = {
+            display: "Huỷ",
+            action: handleToggleNotificationQuestion,
+          };
+          agreeActionQuestion.value = {
+            display: "Có",
+            refuseActionDisplay: "Không",
+            refuseAction:handleCloseNotificationAndCloseModal,
+            action: handleSaveDataAndCloseNotificationAndCloseModal,
+          };
+          messageActionQuestion.value = {
+            display: QUESTION_DATA_CHANGE,
+          };
+          isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
+        } else {
+          context.emit("handle-click-close-modal");
+        }
+      }
+      else if (stateAddUser.value === false) {
+        if (JSON.stringify(user.value) != JSON.stringify(userEditReset.value)) {
+          cancelActionQuestion.value = {
+            display: "Huỷ",
+            action: handleToggleNotificationQuestion,
+          };
+          agreeActionQuestion.value = {
+            display: "Có",
+            refuseActionDisplay: "Không",
+            refuseAction:handleCloseNotificationAndCloseModal,
+            action: handleSaveDataAndCloseNotificationAndCloseModal,
+          };
+          messageActionQuestion.value = {
+            display: QUESTION_DATA_CHANGE,
+          };
+          isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
+        } else {
+          context.emit("handle-click-close-modal");
+        }
+      }
     }
 
     return {
       inputFocus,
       user,
+      cancelActionQuestion,
       isShowNotificationQuestion,
+      agreeActionQuestion,
+      messageActionQuestion,
       handleCloseModal,
       handleSaveData,
     };
