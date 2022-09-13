@@ -54,7 +54,7 @@ export default {
       default: () => [],
     },
     required: {},
-    tab:{},
+    tab: {},
   },
   setup(props, context) {
     const { options, header, modelValue, defaultValue, value } = toRefs(props);
@@ -70,6 +70,7 @@ export default {
         // xử lý bấm lên
         if (!valueClick.value && options.value) {
           valueClick.value = options.value[0][value.value];
+          headerValue.value = options.value[0][header.value];
         } else {
           for (let i = 0; i < options.value.length; i++) {
             if (options.value[i][value.value] == valueClick.value) {
@@ -86,6 +87,7 @@ export default {
         // xử lý bấm xuống
         if (!valueClick.value && options.value) {
           valueClick.value = options.value[0][value.value];
+          headerValue.value = options.value[0][header.value];
         } else {
           for (let i = 0; i < options.value.length; i++) {
             if (options.value[i][value.value] == valueClick.value) {

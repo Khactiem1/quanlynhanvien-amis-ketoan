@@ -4,7 +4,6 @@
     <div class="content">
       <the-header></the-header>
       <router-view></router-view>
-      <the-footer></the-footer>
     </div>
   </div>
 </template>
@@ -12,14 +11,12 @@
 <script>
 import TheSidebar from "./components/TheSidebar.vue";
 import TheHeader from "./components/TheHeader.vue";
-import TheFooter from "./components/TheFooter.vue";
 
 export default {
   name: "App",
   components: {
     TheSidebar,
     TheHeader,
-    TheFooter,
   },
   setup(){
   }

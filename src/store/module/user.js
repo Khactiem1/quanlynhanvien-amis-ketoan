@@ -1,4 +1,4 @@
-import { getUserList } from "../../api/user";
+import { getUserList, createUserApi } from "../../api/user";
 const users = {
   namespaced: true,
   state: () => {
@@ -8,21 +8,21 @@ const users = {
         actionList: ["Nhân bản", "Xoá", "Ngừng sử dụng"],
       },
       columns: [
-        { field: "Id", header: "Mã nhân viên" },
-        { field: "Name", header: "Tên nhân viên", width: "150px" },
-        { field: "Sex", header: "Giới tính" },
+        { field: "userId", header: "Mã nhân viên" },
+        { field: "name", header: "Tên nhân viên", width: "150px" },
+        { field: "sex", header: "Giới tính" },
         {
-          field: "Birth",
+          field: "birth",
           header: "Ngày sinh",
           textAlign: "center",
           formatDate: true,
-        },
-        { field: "BranchBank", header: "Chi nhánh ngân hàng" },
-        { field: "Cmnd", header: "Số cmnd", fractionSize: true },
-        { field: "Title", header: "Chức danh" },
-        { field: "Unit", header: "Tên đơn vị" },
-        { field: "BankAccount", header: "Số tài khoản" },
-        { field: "NameBank", header: "Tên ngân hàng" },
+        },//formatDate Định dạng hiển thị ngày/tháng/năm
+        { field: "branchBank", header: "Chi nhánh ngân hàng" },
+        { field: "cmnd", header: "Số cmnd", },
+        { field: "title", header: "Chức danh" },
+        { field: "unit", header: "Tên đơn vị" },
+        { field: "bankAccount", header: "Số tài khoản", }, //fractionSize: true ,fractionSize Thêm dấu phẩy vào đơn vị tiền tệ
+        { field: "nameBank", header: "Tên ngân hàng" },
       ],
       userList: [],
       //Biến check xem tất cả các danh sách có được check hay không
@@ -68,6 +68,11 @@ const users = {
   },
   actions: {
     async getUserListAction(context) {
+      const data = await getUserList();
+      context.commit("setUserListMutation", data);
+    },
+    async addUserAction(context,payload) {
+      await createUserApi(payload);
       const data = await getUserList();
       context.commit("setUserListMutation", data);
     },

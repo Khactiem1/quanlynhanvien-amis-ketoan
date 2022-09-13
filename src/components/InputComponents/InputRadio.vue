@@ -18,7 +18,7 @@ export default {
     label: { type: String, default: "", required: true },
     modelValue: { default: "" },
     value: { type: String, default: undefined },
-    tab:{},
+    tab: {},
   },
   computed: {
     isChecked() {
@@ -60,10 +60,10 @@ export default {
   border: solid 1px #0076c04b;
   opacity: 0;
   visibility: hidden;
-  transition: all ease 0.15s;
 }
 .input-radio_check input {
-  display: none;
+  position: absolute;
+  opacity: 0;
 }
 .input-radio_check .info {
   padding-left: 28px;
@@ -81,7 +81,7 @@ export default {
   border-radius: 50%;
   background: var(--primary__color);
 }
-.input-radio_check.active .input-radio_focus {
+input:focus ~ .input-radio_focus {
   opacity: 1;
   visibility: visible;
 }

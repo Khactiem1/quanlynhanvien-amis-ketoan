@@ -5,7 +5,7 @@
         <h1>Nhân viên</h1>
       </div>
       <div class="action-table">
-        <button @click="handleOpenModal('add')" class="btn btn-success btn-add">
+        <button @click="handleOpenModal()" class="btn btn-success btn-add">
           Thêm một nhân viên
         </button>
       </div>
@@ -37,7 +37,9 @@
         <!-- End Table -->
       </div>
       <div class="paging-container">
-        <div class="total-record">Tổng số: <strong>1</strong> bản ghi</div>
+        <div class="total-record">
+          Tổng số: <strong>{{ userList.length }}</strong> bản ghi
+        </div>
         <div class="paging">
           <!-- Thêm 'active' là sẽ chạy -->
           <input-combobox
@@ -65,18 +67,17 @@
     </div>
     <!-- Đưa modal ra nằm trong thẻ #app -->
     <teleport to="#app">
-      <modal-form
-        v-if="isShowModal"
-        @handle-click-close-modal="handleCloseModal"
-        :class="{ active: isShowModalAnimation }"
-      ></modal-form>
+      <modal-form v-if="isShowModal" :class="{ active: isShowModalAnimation }">
+        <form-user @handle-click-close-modal="handleCloseModal"></form-user>
+      </modal-form>
     </teleport>
   </div>
 </template>
 
 <script>
 import TableData from "../components/SharedComponents/TableData.vue";
-import ModalForm from "../components/NhanVienComponents/ModalForm.vue";
+import ModalForm from "../components/EmployeeComponents/ModalForm.vue";
+import FormUser from "../components/EmployeeComponents/FormUser.vue";
 import InputCombobox from "../components/InputComponents/InputCombobox.vue";
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
@@ -85,6 +86,7 @@ export default {
     TableData,
     ModalForm,
     InputCombobox,
+    FormUser,
   },
   setup() {
     const store = useStore();
@@ -96,9 +98,9 @@ export default {
     const isShowModal = ref(false);
     const isShowModalAnimation = ref(false);
     const recordPage = ref(20);
-    watch(recordPage,(newValue)=>{
-      console.log('Loading: '+ newValue);
-    })
+    watch(recordPage, (newValue) => {
+      console.log("Loading: " + newValue);
+    });
     //Hàm xử lý checkbox value true thì là check ô tất cả check, value là 0,1,2 là xử lý các phần tử được check
     function handleClickCheckbox(value) {
       if (value === true) {
@@ -108,8 +110,7 @@ export default {
       }
     }
     //Hàm xử lý mở modal với state là trạng thái thêm hay sửa
-    function handleOpenModal(state) {
-      console.log(state);
+    function handleOpenModal() {
       isShowModal.value = !isShowModal.value;
       // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
       setTimeout(() => {
