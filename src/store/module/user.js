@@ -1,4 +1,4 @@
-import { getUserList, createUserApi } from "../../api/user";
+import { getUserList, createUserApi, getUserApi, editUserApi } from "../../api/user";
 const users = {
   namespaced: true,
   state: () => {
@@ -6,6 +6,7 @@ const users = {
       actionTable: {
         actionDefault: "Sửa",
         actionList: ["Nhân bản", "Xoá", "Ngừng sử dụng"],
+        fieldId: 'id'
       },
       columns: [
         { field: "userId", header: "Mã nhân viên" },
@@ -70,6 +71,14 @@ const users = {
     async getUserListAction(context) {
       const data = await getUserList();
       context.commit("setUserListMutation", data);
+    },
+    async editUserAction(context,payload) {
+      await editUserApi(payload);
+      const data = await getUserList();
+      context.commit("setUserListMutation", data);
+    },
+    async getUserAction(context,payload) {
+      return await getUserApi(payload);
     },
     async addUserAction(context,payload) {
       await createUserApi(payload);

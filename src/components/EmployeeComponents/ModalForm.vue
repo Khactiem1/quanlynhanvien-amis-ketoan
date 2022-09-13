@@ -14,44 +14,6 @@ export default {
 
 <style>
 /* modal */
-.modal {
-  visibility: hidden;
-  opacity: 0;
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 10;
-  transition: all ease 0.15s;
-}
-.modal-notification {
-  z-index: 20;
-}
-.modal.active {
-  visibility: visible !important;
-  opacity: 1 !important;
-  top: 0;
-}
-.modal-overlay {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.4);
-}
-.modal-body {
-  position: relative;
-  z-index: 1;
-  margin: 0 10px;
-  background-color: var(--while__color);
-  max-width: 900px;
-  width: 900px;
-  left: calc(50vw - 450px);
-  top: 50vh;
-  transform: translateY(-50%);
-  box-shadow: 0 5px 20px 0 rgb(0, 0, 0, 10%);
-  min-height: 100px;
-  transition: all ease 0.15s;
-}
 .form-header {
   display: flex;
   justify-content: space-between;

@@ -51,7 +51,18 @@
         <td class="text-center">
           <div class="action-colum_table">
             <button class="action-table action-table_left">
-              <div class="action-default">{{ actionTable.actionDefault }}</div>
+              <div
+                class="action-default"
+                @click="
+                  handleCloseAction();
+                  handleClickActionColumTable(
+                    actionTable.actionDefault,
+                    row[actionTable.fieldId]
+                  );
+                "
+              >
+                {{ actionTable.actionDefault }}
+              </div>
             </button>
             <button
               @click="handleShowAction"
@@ -66,6 +77,13 @@
                 v-for="(actionItem, index) in actionTable.actionList"
                 :key="index"
                 class="list_action-item"
+                @click="
+                  handleCloseAction();
+                  handleClickActionColumTable(
+                    actionItem,
+                    row[actionTable.fieldId]
+                  );
+                "
               >
                 {{ actionItem }}
               </div>
@@ -97,6 +115,9 @@ export default {
       type: Object,
     },
     handleClickCheckbox: {
+      type: Function,
+    },
+    handleClickActionColumTable: {
       type: Function,
     },
   },
@@ -142,10 +163,17 @@ export default {
         }
       });
     }
+    // Hàm xử lý ẩn action
+    function handleCloseAction() {
+      if (elmClose) {
+        elmClose.classList.remove("active");
+      }
+    }
     return {
       formatDate,
       Comma,
       handleShowAction,
+      handleCloseAction,
     };
   },
 };

@@ -1,50 +1,89 @@
-:root{
-    --primary__color: #2ca01c;
-    --primary__color-hover: #35bf22;
-    --primary__color-active: #248b15;
-    --while__color: #ffffff;
-    --background__color: #ECEEF1;
-    --menu__color: #393A3D;
-    --menu__color-active: #58595D;
-    --text__while-color: #ffffff;
-    --black__color: #000000;
-    --border-icon__color: #babec5;
-    --border-icon__color-hover:#6B6C72;
-    --text__color: #111111;
-    --height__header: 48px;
-    --primary__button-height: 34px;
-    --input__height: 32px;
-    --border__input: #babec5;
-    --url__icon: url('../logo/Sprites.64af8f61.svg');
+:root {
+  --primary__color: #2ca01c;
+  --primary__color-hover: #35bf22;
+  --primary__color-active: #248b15;
+  --while__color: #ffffff;
+  --background__color: #eceef1;
+  --menu__color: #393a3d;
+  --menu__color-active: #58595d;
+  --text__while-color: #ffffff;
+  --black__color: #000000;
+  --border-icon__color: #babec5;
+  --border-icon__color-hover: #6b6c72;
+  --text__color: #111111;
+  --height__header: 48px;
+  --primary__button-height: 34px;
+  --input__height: 32px;
+  --border__input: #babec5;
+  --url__icon: url("../logo/Sprites.64af8f61.svg");
 }
-*{
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-html,body{
-    font-family: "notosans-regular";  
+html,
+body {
+  font-family: "notosans-regular";
 }
-a{
-    text-decoration: none;
+a {
+  text-decoration: none;
 }
-.wrapper{
-    display: flex;
+.wrapper {
+  display: flex;
 }
-.text-center{
-    text-align: center;
+.text-center {
+  text-align: center;
 }
-.none{
-    display: none;
+.none {
+  display: none;
 }
-.block{
-    display: block;
+.block {
+  display: block;
 }
-.flex-center{
-    display: flex;
+.flex-center {
+  display: flex;
 }
 /* Thuộc tính css thẻ input checkbox cần public */
 .info-checkbox {
-    padding-left: 8px;
-    cursor: pointer;
+  padding-left: 8px;
+  cursor: pointer;
+}
+.modal {
+  visibility: hidden;
+  opacity: 0;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  transition: all ease 0.15s;
+}
+.modal-notification {
+  z-index: 20;
+}
+.modal.active {
+  visibility: visible !important;
+  opacity: 1 !important;
+  top: 0;
+}
+.modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-body {
+  position: relative;
+  z-index: 1;
+  margin: 0 10px;
+  background-color: var(--while__color);
+  max-width: 900px;
+  width: 900px;
+  left: calc(50vw - 450px);
+  top: 50vh;
+  transform: translateY(-50%);
+  box-shadow: 0 5px 20px 0 rgb(0, 0, 0, 10%);
+  min-height: 100px;
+  transition: all ease 0.15s;
 }

@@ -228,7 +228,6 @@
           >
             Cất và thêm
           </button>
-          {{user.unit}}
         </div>
       </div>
     </div>
@@ -236,7 +235,7 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, toRefs, onBeforeMount } from "vue";
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import InputDefault from "../InputComponents/InputDefault.vue";
 import InputCombobox from "../InputComponents/InputCombobox.vue";
@@ -250,8 +249,15 @@ export default {
     InputCombobox,
     InputRadio,
   },
+  props: {
+    userEdit: {
+      type: Object,
+    },
+  },
   setup(props, context) {
     const inputFocus = ref(null);
+    const stateAddUser = ref(true);
+    const { userEdit } = toRefs(props);
     const user = ref({
       name: "",
       sex: "Nữ",
@@ -269,6 +275,12 @@ export default {
       email: "",
       address: "",
       userId: "",
+    });
+    onBeforeMount(() => {
+      if (userEdit.value) {
+        user.value = { ...userEdit.value }; // chuyển đổi props thành data
+        stateAddUser.value = false;
+      }
     });
     const store = useStore();
     const { ESC, CTRL, SHIFT, S } = eNum;
@@ -313,29 +325,38 @@ export default {
     };
     //Hàm xử lý sự kiện khi bấm nút save
     const handleSaveData = async function (closeModal) {
-      // Gọi hàm loading quay quay ở đây
-      await store.dispatch("user/addUserAction", user.value);
-      user.value = {
-        name: "",
-        sex: user.value.sex,
-        birth: "",
-        cmnd: "",
-        title: "",
-        unit: "",
-        bankAccount: "",
-        nameBank: "",
-        branchBank: "",
-        dateRange: "",
-        grantAddress: "",
-        phoneNumber: "",
-        landlinePhone: "",
-        email: "",
-        address: "",
-        id: "",
-      };
-      inputFocus.value.tagInput.focus(); //Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
+      if (stateAddUser.value) {
+        // Thêm
+        // Gọi hàm loading quay quay ở đây
+        await store.dispatch("user/addUserAction", user.value);
+        // tắt hàm loading quay quay ở đây
+      } else {
+        // sửa
+        await store.dispatch("user/editUserAction", user.value);
+        stateAddUser.value = true; // sau khi sửa xong sửa trạng thái modal thành thêm user
+      }
       if (closeModal === true) {
         context.emit("handle-click-close-modal");
+      } else {
+        user.value = {
+          name: "",
+          sex: user.value.sex,
+          birth: "",
+          cmnd: "",
+          title: "",
+          unit: "",
+          bankAccount: "",
+          nameBank: "",
+          branchBank: "",
+          dateRange: "",
+          grantAddress: "",
+          phoneNumber: "",
+          landlinePhone: "",
+          email: "",
+          address: "",
+          id: "",
+        };
+        inputFocus.value.tagInput.focus(); //Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
       }
     };
     //Khi mounted component thì sẽ lắng nghe sự kiện các phím tắ

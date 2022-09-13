@@ -32,6 +32,7 @@
           :handleClickCheckbox="handleClickCheckbox"
           :columns="columns"
           :actionTable="actionTable"
+          :handleClickActionColumTable="handleClickActionColumTable"
         >
         </table-data>
         <!-- End Table -->
@@ -68,7 +69,10 @@
     <!-- Đưa modal ra nằm trong thẻ #app -->
     <teleport to="#app">
       <modal-form v-if="isShowModal" :class="{ active: isShowModalAnimation }">
-        <form-user @handle-click-close-modal="handleCloseModal"></form-user>
+        <form-user
+          @handle-click-close-modal="handleCloseModal"
+          :userEdit="userEdit"
+        ></form-user>
       </modal-form>
     </teleport>
   </div>
@@ -81,6 +85,7 @@ import FormUser from "../components/EmployeeComponents/FormUser.vue";
 import InputCombobox from "../components/InputComponents/InputCombobox.vue";
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
+import actionTableStore from "../utils/actionTable";
 export default {
   components: {
     TableData,
@@ -89,6 +94,7 @@ export default {
     FormUser,
   },
   setup() {
+    const { EDIT, DELETE } = actionTableStore;
     const store = useStore();
     store.dispatch("user/getUserListAction");
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
@@ -98,9 +104,23 @@ export default {
     const isShowModal = ref(false);
     const isShowModalAnimation = ref(false);
     const recordPage = ref(20);
+    const userEdit = ref(null); // Chứa thông tin người cần sửa
     watch(recordPage, (newValue) => {
       console.log("Loading: " + newValue);
     });
+    //Hàm xử lý khi click vào các hành động của từng cột dữ liệu table
+    async function handleClickActionColumTable(action, employeeId) {
+      if (action == EDIT) {
+        userEdit.value = await store.dispatch("user/getUserAction", employeeId);
+        isShowModal.value = !isShowModal.value;
+        // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
+        setTimeout(() => {
+          isShowModalAnimation.value = !isShowModalAnimation.value;
+        }, 0);
+      } else if (action == DELETE) {
+        console.log(employeeId);
+      }
+    }
     //Hàm xử lý checkbox value true thì là check ô tất cả check, value là 0,1,2 là xử lý các phần tử được check
     function handleClickCheckbox(value) {
       if (value === true) {
@@ -111,6 +131,9 @@ export default {
     }
     //Hàm xử lý mở modal với state là trạng thái thêm hay sửa
     function handleOpenModal() {
+      if (userEdit.value) {
+        userEdit.value = null; // Nếu tồn tại user cần sửa thì sẽ xoá user cần sửa đi khi mở chức năng thêm
+      }
       isShowModal.value = !isShowModal.value;
       // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
       setTimeout(() => {
@@ -130,9 +153,11 @@ export default {
       isShowModal,
       isShowModalAnimation,
       recordPage,
+      userEdit,
       handleOpenModal,
       handleClickCheckbox,
       handleCloseModal,
+      handleClickActionColumTable,
     };
   },
 };

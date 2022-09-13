@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { ref, toRefs, onMounted, onUnmounted, onBeforeMount } from "vue";
+import { ref, toRefs, onMounted, onUnmounted, onBeforeMount, watch } from "vue";
 import eNum from "../../utils/eNum";
 export default {
   props: {
@@ -64,6 +64,22 @@ export default {
     const input = ref(null); // biến bắt thẻ input
     const valueClick = ref(null); // biến lưu dữ liệu value khi được click
     const headerValue = ref(null); // biến lưu dữ liệu sẽ hiển thị lên giao diện người dùng được chọn
+    //nếu có sự thay đổi modelValue từ bên ngoài thì sẽ check render dropdown cho hợp lý
+    watch(modelValue, () => {
+      let checkModelValueCoincideValue = false;
+      options.value.forEach((item) => {
+        if (item[value.value] == modelValue.value) {
+          headerValue.value = item[header.value];
+          valueClick.value = item[value.value];
+          checkModelValueCoincideValue = true;
+          return;
+        }
+      });
+      if (checkModelValueCoincideValue === false) {
+        headerValue.value = null;
+        valueClick.value = null;
+      }
+    });
     //hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
     const handleEnum = function (event) {
       if (event.keyCode === UP) {

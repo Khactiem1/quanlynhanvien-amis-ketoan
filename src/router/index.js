@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import NotFoundPage from "../view/NotFoundPage";
-import NhanVienPage from "../view/NhanVienPage";
+import EmployeePage from "../view/EmployeePage";
 import HomePage from "../view/HomePage";
 const routes = [
   {
@@ -25,7 +25,7 @@ const routes = [
       document.title = 'Nhân viên';
       next();
     },
-    component: NhanVienPage,
+    component: EmployeePage,
   },
   {
     path: "/:pathMatch(.*)*",
