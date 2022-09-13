@@ -81,7 +81,8 @@
                   handleCloseAction();
                   handleClickActionColumTable(
                     actionItem,
-                    row[actionTable.fieldId]
+                    row[actionTable.fieldId],
+                    row[actionTable.fieldCode]
                   );
                 "
               >

@@ -74,27 +74,40 @@
           :userEdit="userEdit"
         ></form-user>
       </modal-form>
+      <modal-notification v-if="isShowNotification">
+        <notification-wanning
+          :cancelAction="cancelAction"
+          :agreeAction="agreeAction"
+          :messageAction="messageAction"
+        ></notification-wanning>
+      </modal-notification>
     </teleport>
   </div>
 </template>
 
 <script>
 import TableData from "../components/SharedComponents/TableData.vue";
+import ModalNotification from "../components/SharedComponents/ModalNotification.vue";
+import NotificationWanning from "../components/SharedComponents/NotificationWanning.vue";
 import ModalForm from "../components/EmployeeComponents/ModalForm.vue";
 import FormUser from "../components/EmployeeComponents/FormUser.vue";
 import InputCombobox from "../components/InputComponents/InputCombobox.vue";
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import actionTableStore from "../utils/actionTable";
+import notification from "../utils/notification";
 export default {
   components: {
     TableData,
     ModalForm,
     InputCombobox,
     FormUser,
+    ModalNotification,
+    NotificationWanning,
   },
   setup() {
     const { EDIT, DELETE } = actionTableStore;
+    const { WANNING_DELETE } = notification;
     const store = useStore();
     store.dispatch("user/getUserListAction");
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
@@ -104,12 +117,31 @@ export default {
     const isShowModal = ref(false);
     const isShowModalAnimation = ref(false);
     const recordPage = ref(20);
+    const cancelAction = ref({}); // hành động đóng notification
+    const agreeAction = ref({}); // hành hoàn tác và đóng notification
+    const messageAction = ref({}); // Thông báo hiển thị lên notification
     const userEdit = ref(null); // Chứa thông tin người cần sửa
+    const isShowNotification = ref(false); // biến kích hoạt đóng mở thông báo
     watch(recordPage, (newValue) => {
       console.log("Loading: " + newValue);
     });
+    // Hàm xử lý đóng mở thông báo
+    function handleToggleNotification() {
+      isShowNotification.value = !isShowNotification.value;
+    }
+    // Hàm xử lý xoá một bản ghi
+    async function deleteUser(id) {
+      handleToggleNotification();
+      //Loading
+      await store.dispatch("user/deleteUserAction", id);
+      //End Loading
+    }
     //Hàm xử lý khi click vào các hành động của từng cột dữ liệu table
-    async function handleClickActionColumTable(action, employeeId) {
+    async function handleClickActionColumTable(
+      action,
+      employeeId,
+      employeeCode
+    ) {
       if (action == EDIT) {
         userEdit.value = await store.dispatch("user/getUserAction", employeeId);
         isShowModal.value = !isShowModal.value;
@@ -118,7 +150,19 @@ export default {
           isShowModalAnimation.value = !isShowModalAnimation.value;
         }, 0);
       } else if (action == DELETE) {
-        console.log(employeeId);
+        cancelAction.value = {
+          display: "Không",
+          action: handleToggleNotification,
+        };
+        agreeAction.value = {
+          display: "Có",
+          action: deleteUser,
+        };
+        messageAction.value = {
+          display: WANNING_DELETE + `<${employeeCode}>`,
+          id: employeeId,
+        };
+        handleToggleNotification();
       }
     }
     //Hàm xử lý checkbox value true thì là check ô tất cả check, value là 0,1,2 là xử lý các phần tử được check
@@ -154,6 +198,10 @@ export default {
       isShowModalAnimation,
       recordPage,
       userEdit,
+      cancelAction,
+      agreeAction,
+      isShowNotification,
+      messageAction,
       handleOpenModal,
       handleClickCheckbox,
       handleCloseModal,

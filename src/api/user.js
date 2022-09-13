@@ -12,3 +12,6 @@ export const getUserApi = (id) => {
 export const editUserApi = (user) => {
   return axiosAPI.put(`/user/${user.id}`,user);
 };
+export const deleteUserApi = (id) => {
+  return axiosAPI.delete(`/user/${id}`);
+};

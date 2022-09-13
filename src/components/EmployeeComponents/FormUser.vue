@@ -231,6 +231,15 @@
         </div>
       </div>
     </div>
+    <teleport to="#app">
+      <modal-notification v-if="isShowNotificationQuestion">
+        <notification-question
+          :cancelAction="cancelAction"
+          :agreeAction="agreeAction"
+          :messageAction="messageAction"
+        ></notification-question>
+      </modal-notification>
+    </teleport>
   </div>
 </template>
 
@@ -240,6 +249,8 @@ import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import InputDefault from "../InputComponents/InputDefault.vue";
 import InputCombobox from "../InputComponents/InputCombobox.vue";
 import InputRadio from "../InputComponents/InputRadio.vue";
+import ModalNotification from "../SharedComponents/ModalNotification.vue";
+import NotificationQuestion from "../SharedComponents/NotificationQuestion.vue";
 import { useStore } from "vuex";
 import eNum from "../../utils/eNum.js";
 export default {
@@ -248,6 +259,8 @@ export default {
     InputDefault,
     InputCombobox,
     InputRadio,
+    ModalNotification,
+    NotificationQuestion,
   },
   props: {
     userEdit: {
@@ -258,9 +271,29 @@ export default {
     const inputFocus = ref(null);
     const stateAddUser = ref(true);
     const { userEdit } = toRefs(props);
+    const isShowNotificationQuestion = ref(false);
     const user = ref({
       name: "",
-      sex: "Nữ",
+      sex: "Nam",
+      birth: "",
+      cmnd: "",
+      title: "",
+      unit: "",
+      bankAccount: "",
+      nameBank: "",
+      branchBank: "",
+      dateRange: "",
+      grantAddress: "",
+      phoneNumber: "",
+      landlinePhone: "",
+      email: "",
+      address: "",
+      userId: "",
+    });
+    const userEditReset = ref(null);
+    const userReset = ref({
+      name: "",
+      sex: "Nam",
       birth: "",
       cmnd: "",
       title: "",
@@ -280,6 +313,7 @@ export default {
       if (userEdit.value) {
         user.value = { ...userEdit.value }; // chuyển đổi props thành data
         stateAddUser.value = false;
+        userEditReset.value = {...userEdit.value};
       }
     });
     const store = useStore();
@@ -288,7 +322,7 @@ export default {
     //Hàm xử lý các event nút bấm tắt
     const handleEvent = function (event) {
       if (event.keyCode === ESC) {
-        context.emit("handle-click-close-modal");
+        handleCloseModal();
       } else if (
         event.keyCode === CTRL ||
         event.keyCode === SHIFT ||
@@ -338,24 +372,7 @@ export default {
       if (closeModal === true) {
         context.emit("handle-click-close-modal");
       } else {
-        user.value = {
-          name: "",
-          sex: user.value.sex,
-          birth: "",
-          cmnd: "",
-          title: "",
-          unit: "",
-          bankAccount: "",
-          nameBank: "",
-          branchBank: "",
-          dateRange: "",
-          grantAddress: "",
-          phoneNumber: "",
-          landlinePhone: "",
-          email: "",
-          address: "",
-          id: "",
-        };
+        user.value = { ...userReset.value };
         inputFocus.value.tagInput.focus(); //Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
       }
     };
@@ -368,12 +385,23 @@ export default {
       window.removeEventListener("keyup", handleEventInterrupt)
     );
     function handleCloseModal() {
+      if (stateAddUser.value) {
+        if (JSON.stringify(user.value) != JSON.stringify(userReset.value)) {
+          console.log("khác khi thêm");
+        }
+      }
+      if(stateAddUser.value === false){
+        if(JSON.stringify(user.value) != JSON.stringify(userEditReset.value)){
+          console.log('khác khi sửa');
+        }
+      }
       context.emit("handle-click-close-modal");
     }
 
     return {
       inputFocus,
       user,
+      isShowNotificationQuestion,
       handleCloseModal,
       handleSaveData,
     };
