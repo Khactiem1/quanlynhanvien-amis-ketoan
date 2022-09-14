@@ -6,7 +6,6 @@
     </div>
     <div class="mess-line_notification"></div>
     <div class="modal-notification_action">
-      <div class="modal-notification_action-item"></div>
       <div class="modal-notification_action-item">
         <button @click="agreeAction.action" class="btn btn-success">
           {{ agreeAction.display }}
@@ -29,4 +28,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+  .modal-notification_action{
+    justify-content: center;
+  }
+</style>
