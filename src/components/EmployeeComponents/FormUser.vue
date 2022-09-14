@@ -414,6 +414,7 @@ export default {
         if (closeModal === true) {
           context.emit("handle-click-close-modal");
         } else {
+          isValid.value = false;
           user.value = { ...userReset.value };
           inputFocus.value.tagInput.focus(); //Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
         }
