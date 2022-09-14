@@ -32,6 +32,10 @@ const users = {
     };
   },
   mutations: {
+    // Xét trống mảng user
+    setEmptyUser(state){
+      state.userList = [];
+    },
     // lấy danh sách user
     setUserListMutation(state, payload) {
       state.userList = [...payload];
@@ -70,6 +74,7 @@ const users = {
   },
   actions: {
     async getUserListAction(context) {
+      context.commit("setEmptyUser");
       const data = await getUserList();
       context.commit("setUserListMutation", data);
     },

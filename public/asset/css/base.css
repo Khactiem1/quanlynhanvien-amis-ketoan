@@ -16,6 +16,7 @@
   --input__height: 32px;
   --border__input: #babec5;
   --url__icon: url("../logo/Sprites.64af8f61.svg");
+  --url__loader: url("../logo/loading.svg");
 }
 * {
   box-sizing: border-box;
@@ -61,6 +62,9 @@ a {
 }
 .modal-notification {
   z-index: 20;
+}
+.modal-loader{
+  z-index: 30;
 }
 .modal.active {
   visibility: visible !important;

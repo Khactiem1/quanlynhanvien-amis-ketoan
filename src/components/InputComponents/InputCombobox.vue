@@ -1,5 +1,5 @@
 <template>
-  <div ref="template" class="data-input">
+  <div ref="template" class="data-input" :class="{'is-valid': isValid}">
     <label v-if="label" :class="{ required: required }">{{ label }}</label>
     <!-- Thêm 'active' là sẽ chạy -->
     <div class="combobox-select" :class="{ active: isShow }">
@@ -29,6 +29,7 @@
         </div>
       </div>
     </div>
+    <span class="message-valid">{{ messageValid }}</span>
   </div>
 </template>
 
@@ -55,10 +56,12 @@ export default {
     },
     required: {},
     tab: {},
+    messageValid: {},
   },
   setup(props, context) {
-    const { options, header, modelValue, defaultValue, value } = toRefs(props);
+    const { options, header, modelValue, defaultValue, value, required } = toRefs(props);
     const { UP, DOWN, ENTER, TAB } = eNum;
+    const isValid = ref(false);
     const isShow = ref(false); // biến thực hiện ẩn mở dropdown
     const template = ref(null); // biến bắt lấy thẻ to nhất của component
     const input = ref(null); // biến bắt thẻ input
@@ -78,6 +81,9 @@ export default {
       if (checkModelValueCoincideValue === false) {
         headerValue.value = null;
         valueClick.value = null;
+      }
+      if(required.value){
+        isValid.value = false;
       }
     });
     //hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
@@ -190,6 +196,7 @@ export default {
     return {
       input,
       isShow,
+      isValid,
       template,
       handleFocusInput,
       handleClickItem,

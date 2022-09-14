@@ -1,5 +1,5 @@
 <template>
-  <div class="data-input">
+  <div class="data-input" :class="{ 'is-valid': isValid }">
     <label :class="{ required: required }">{{ label }}</label>
     <input
       ref="tagInput"
@@ -8,7 +8,7 @@
       :value="modelValue"
       :placeholder="placeholder"
       :tabindex="tab"
-      @input="$emit('update:modelValue', $event.target.value)"
+      @input="handleInput"
     />
     <span class="message-valid">{{ messageValid }}</span>
   </div>
@@ -28,20 +28,34 @@ export default {
     "tab",
   ],
   emits: ["update:modelValue"],
-  setup(props) {
+  setup(props, context) {
     const tagInput = ref(null);
+    const { focus, required } = toRefs(props);
+    const isValid = ref(false);
     //Sau khi được mounted vào dom thì nếu đc chỉ định focus ô input sẽ đc focus
     onMounted(() => {
-      const { focus } = toRefs(props);
       if (focus.value === true) {
         setTimeout(() => {
           tagInput.value.focus();
         }, 150);
       }
     });
+    function handleInput(event) {
+      context.emit("update:modelValue", event.target.value);
+      if (required.value) {
+        if (event.target.value.trim() == "") {
+          isValid.value = true;
+        }
+        else{
+          isValid.value = false;
+        }
+      }
+    }
 
     return {
       tagInput,
+      isValid,
+      handleInput,
     };
   },
 };

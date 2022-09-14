@@ -5,21 +5,34 @@
       <the-header></the-header>
       <router-view></router-view>
     </div>
+    <teleport to="#app">
+      <loader-animation v-if="isShowLoader"></loader-animation>
+    </teleport>
   </div>
 </template>
 
 <script>
 import TheSidebar from "./components/TheSidebar.vue";
 import TheHeader from "./components/TheHeader.vue";
+import LoaderAnimation from "./components/SharedComponents/LoaderAnimation.vue";
+import { useStore } from "vuex";
+import { ref, computed } from "vue";
 
 export default {
   name: "App",
   components: {
     TheSidebar,
     TheHeader,
+    LoaderAnimation,
   },
-  setup(){
-  }
+  setup() {
+    const store = useStore();
+    let isShowLoader = ref(false);
+    isShowLoader = computed(() => store.state.config.isShowLoader);
+    return {
+      isShowLoader,
+    };
+  },
 };
 </script>
 
@@ -55,10 +68,10 @@ export default {
   min-width: 1024px;
   min-height: 768px;
 }
-.content{
-    flex: 1;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
+.content {
+  flex: 1;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 </style>

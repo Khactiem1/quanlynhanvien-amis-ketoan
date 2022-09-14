@@ -21,7 +21,7 @@
             />
             <div class="icon-search"></div>
           </div>
-          <div class="reload-table"></div>
+          <div @click="loadData" class="reload-table"></div>
         </div>
       </div>
       <div class="table-container">
@@ -92,7 +92,7 @@ import NotificationWanning from "../components/SharedComponents/NotificationWann
 import ModalForm from "../components/EmployeeComponents/ModalForm.vue";
 import FormUser from "../components/EmployeeComponents/FormUser.vue";
 import InputCombobox from "../components/InputComponents/InputCombobox.vue";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import actionTableStore from "../utils/actionTable";
 import notification from "../utils/notification";
@@ -109,7 +109,6 @@ export default {
     const { EDIT, DELETE } = actionTableStore;
     const { WANNING_DELETE } = notification;
     const store = useStore();
-    store.dispatch("user/getUserListAction");
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
     const columns = computed(() => store.state.user.columns); //Lấy danh sách columns hiển thị
     const checkAllRecord = computed(() => store.state.user.CheckAll); //Lấy ra biến check all những ng dùng đc click
@@ -125,6 +124,14 @@ export default {
     watch(recordPage, (newValue) => {
       console.log("Loading: " + newValue);
     });
+    async function loadData() {
+      console.log('loading');
+      await store.dispatch("user/getUserListAction");
+      console.log('end load');
+    }
+    onBeforeMount(()=>{
+      loadData();
+    })
     // Hàm xử lý đóng mở thông báo
     function handleToggleNotification() {
       isShowNotification.value = !isShowNotification.value;
@@ -133,7 +140,9 @@ export default {
     async function deleteUser(id) {
       handleToggleNotification();
       //Loading
+      store.dispatch("config/setToggleShowLoaderAction");
       await store.dispatch("user/deleteUserAction", id);
+      store.dispatch("config/setToggleShowLoaderAction");
       //End Loading
     }
     //Hàm xử lý khi click vào các hành động của từng cột dữ liệu table
@@ -143,7 +152,9 @@ export default {
       employeeCode
     ) {
       if (action == EDIT) {
+        store.dispatch("config/setToggleShowLoaderAction");
         userEdit.value = await store.dispatch("user/getUserAction", employeeId);
+        store.dispatch("config/setToggleShowLoaderAction");
         isShowModal.value = !isShowModal.value;
         // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
         setTimeout(() => {
@@ -206,6 +217,7 @@ export default {
       handleClickCheckbox,
       handleCloseModal,
       handleClickActionColumTable,
+      loadData,
     };
   },
 };
