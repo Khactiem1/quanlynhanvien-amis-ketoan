@@ -33,6 +33,7 @@
           :columns="columns"
           :actionTable="actionTable"
           :handleClickActionColumTable="handleClickActionColumTable"
+          :isShowLoaderTable="isShowLoaderTable"
         >
         </table-data>
         <!-- End Table -->
@@ -116,6 +117,7 @@ export default {
     const isShowModal = ref(false);
     const isShowModalAnimation = ref(false);
     const recordPage = ref(20);
+    const isShowLoaderTable = ref(false);// Biến chứa trạng thái ẩn hiện loader table
     const cancelAction = ref({}); // hành động đóng notification
     const agreeAction = ref({}); // hành hoàn tác và đóng notification
     const messageAction = ref({}); // Thông báo hiển thị lên notification
@@ -125,9 +127,9 @@ export default {
       console.log("Loading: " + newValue);
     });
     async function loadData() {
-      console.log('loading');
+      isShowLoaderTable.value = true; // Kích hoạt hiệu ứng loader table
       await store.dispatch("user/getUserListAction");
-      console.log('end load');
+      isShowLoaderTable.value = false; // Dừng hiệu ứng loader table
     }
     onBeforeMount(()=>{
       loadData();
@@ -213,6 +215,7 @@ export default {
       agreeAction,
       isShowNotification,
       messageAction,
+      isShowLoaderTable,
       handleOpenModal,
       handleClickCheckbox,
       handleCloseModal,

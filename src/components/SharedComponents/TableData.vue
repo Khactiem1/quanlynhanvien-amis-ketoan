@@ -19,7 +19,8 @@
         <th style="width: 120px" class="text-center">Chức năng</th>
       </tr>
     </thead>
-    <tbody>
+    <table-loader v-if="isShowLoaderTable" :columns="columns"></table-loader>
+    <tbody v-if="!isShowLoaderTable">
       <!-- Vòng lặp các user -->
       <tr
         v-for="(row, index) in tableList"
@@ -106,9 +107,11 @@
 
 <script>
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
+import TableLoader from "../SharedComponents/TableLoader.vue";
 export default {
   components: {
     InputCheckbox,
+    TableLoader,
   },
   props: {
     tableList: {
@@ -129,6 +132,9 @@ export default {
     handleClickActionColumTable: {
       type: Function,
     },
+    isShowLoaderTable: {
+      type: Boolean,
+    }
   },
   setup() {
     // Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
