@@ -38,6 +38,12 @@
           v-for="(col, index) in columns"
           :style="{ 'text-align': col.textAlign }"
           :key="index"
+          @dblclick="
+            handleClickActionColumTable(
+              actionTable.actionDefault,
+              row[actionTable.fieldId]
+            )
+          "
         >
           <!-- khi render các trường kiểm tra xem có yêu cầu cần thêm dấu phẩy thì sẽ thêm  -->
           {{
@@ -50,6 +56,7 @@
         </td>
         <td class="text-center">
           <div class="action-colum_table">
+            <!-- Phần render action mặc định -->
             <button class="action-table action-table_left">
               <div
                 class="action-default"
@@ -73,6 +80,7 @@
               </div>
             </button>
             <div class="table-list_action">
+              <!-- Phần render danh sách action ẩn -->
               <div
                 v-for="(actionItem, index) in actionTable.actionList"
                 :key="index"

@@ -45,8 +45,7 @@ export default {
       if (required.value) {
         if (event.target.value.trim() == "") {
           isValid.value = true;
-        }
-        else{
+        } else {
           isValid.value = false;
         }
       }
