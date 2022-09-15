@@ -12,6 +12,15 @@
     </div>
     <div class="table-content">
       <div class="table-function">
+        <div class="table-function_series">
+          <button
+            v-if="checkShowActionSeries.length > 0"
+            @click="handleDeleteAll"
+            class="btn"
+          >
+            Xoá hàng loạt
+          </button>
+        </div>
         <div class="table-function_search">
           <div class="search-table">
             <input
@@ -121,9 +130,12 @@ export default {
   },
   setup() {
     const { EDIT, DELETE } = actionTableStore;
-    const { WANNING_DELETE } = notification;
+    const { WANNING_DELETE, WANNING_DELETE_ALL } = notification;
     const store = useStore();
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
+    const checkShowActionSeries = computed(() =>
+      userList.value.filter((value) => value.Check)
+    ); //Lấy danh sách ng dùng
     const columns = computed(() =>
       store.state.user.columns.filter(function (value) {
         return value.isShow;
@@ -154,6 +166,28 @@ export default {
     onBeforeMount(() => {
       loadData();
     });
+    // Hàm xử lý xoá toàn bộ user
+    function DeleteAll(){
+      console.log('Đây là những thằng sẽ bị xoá hehe');
+      console.log(checkShowActionSeries.value);
+      handleToggleNotification();
+      console.log('chưa xoá đâu khi nào có api 1 lần xoá cho tiện chứ giờ xoá k tiện hehe');
+    }
+    //Hàm xử lý hỏi xoá hàng loạt
+    function handleDeleteAll() {
+      cancelAction.value = {
+        display: "Không",
+        action: handleToggleNotification,
+      };
+      agreeAction.value = {
+        display: "Có",
+        action: DeleteAll,
+      };
+      messageAction.value = {
+        display: WANNING_DELETE_ALL,
+      };
+      handleToggleNotification();
+    }
     // Hàm xử lý đóng mở setting table
     function handleShowSettingTable() {
       if (isShowSettingTable.value === false) {
@@ -257,7 +291,9 @@ export default {
       isShowLoaderTable,
       isShowSettingTable,
       isShowSettingTableAnimation,
+      checkShowActionSeries,
       handleShowSettingTable,
+      handleDeleteAll,
       handleClickToggleSettingTable,
       handleOpenModal,
       handleClickCheckbox,
@@ -291,8 +327,9 @@ export default {
 .table-function {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 16px 0;
+  height: 66px;
 }
 /* Phần search */
 .search-table {
