@@ -21,7 +21,11 @@
             />
             <div class="icon-search"></div>
           </div>
-          <div @click="loadData" class="reload-table"></div>
+          <div @click="loadData" class="action-render_table reload-table"></div>
+          <div
+            @click="handleShowSettingTable"
+            class="action-render_table setting-table"
+          ></div>
         </div>
       </div>
       <div class="table-container">
@@ -82,6 +86,13 @@
           :messageAction="messageAction"
         ></notification-wanning>
       </modal-notification>
+      <setting-table
+        v-if="isShowSettingTable"
+        :columns="columnSetting"
+        :handleShowSettingTable="handleShowSettingTable"
+        :class="{ active: isShowSettingTableAnimation }"
+        :handleClickCheckbox="handleClickToggleSettingTable"
+      ></setting-table>
     </teleport>
   </div>
 </template>
@@ -90,6 +101,7 @@
 import TableData from "../components/SharedComponents/TableData.vue";
 import ModalNotification from "../components/SharedComponents/ModalNotification.vue";
 import NotificationWanning from "../components/SharedComponents/NotificationWanning.vue";
+import SettingTable from "../components/SharedComponents/SettingTable.vue";
 import ModalForm from "../components/EmployeeComponents/ModalForm.vue";
 import FormUser from "../components/EmployeeComponents/FormUser.vue";
 import InputCombobox from "../components/InputComponents/InputCombobox.vue";
@@ -105,24 +117,32 @@ export default {
     FormUser,
     ModalNotification,
     NotificationWanning,
+    SettingTable,
   },
   setup() {
     const { EDIT, DELETE } = actionTableStore;
     const { WANNING_DELETE } = notification;
     const store = useStore();
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
-    const columns = computed(() => store.state.user.columns); //Lấy danh sách columns hiển thị
+    const columns = computed(() =>
+      store.state.user.columns.filter(function (value) {
+        return value.isShow;
+      })
+    ); //Lấy danh sách columns hiển thị, lọc ra cái cần được hiển thị
+    const columnSetting = computed(() => store.state.user.columns); //Lấy danh sách columns hiển thị cài đặt
     const checkAllRecord = computed(() => store.state.user.CheckAll); //Lấy ra biến check all những ng dùng đc click
     const actionTable = computed(() => store.state.user.actionTable); //Lấy danh sách các chức năng
-    const isShowModal = ref(false);
-    const isShowModalAnimation = ref(false);
     const recordPage = ref(20);
-    const isShowLoaderTable = ref(false);// Biến chứa trạng thái ẩn hiện loader table
     const cancelAction = ref({}); // hành động đóng notification
     const agreeAction = ref({}); // hành hoàn tác và đóng notification
     const messageAction = ref({}); // Thông báo hiển thị lên notification
     const userEdit = ref(null); // Chứa thông tin người cần sửa
+    const isShowModal = ref(false); // Biến trạng thái ẩn hiện modal thêm sửa
+    const isShowModalAnimation = ref(false); // Biến trạng thái khi mounted modal có hiệu ứng hiện từ từ
     const isShowNotification = ref(false); // biến kích hoạt đóng mở thông báo
+    const isShowLoaderTable = ref(false); // Biến chứa trạng thái ẩn hiện loader table
+    const isShowSettingTable = ref(false); // Biến chứa trạng thái ẩn hiện setting table
+    const isShowSettingTableAnimation = ref(false); // Biến chứa trạng thái ẩn hiện setting table
     watch(recordPage, (newValue) => {
       console.log("Loading: " + newValue);
     });
@@ -131,9 +151,27 @@ export default {
       await store.dispatch("user/getUserListAction");
       isShowLoaderTable.value = false; // Dừng hiệu ứng loader table
     }
-    onBeforeMount(()=>{
+    onBeforeMount(() => {
       loadData();
-    })
+    });
+    // Hàm xử lý đóng mở setting table
+    function handleShowSettingTable() {
+      if (isShowSettingTable.value === false) {
+        isShowSettingTable.value = true;
+        setTimeout(() => {
+          isShowSettingTableAnimation.value = true;
+        }, 0);
+      } else {
+        isShowSettingTableAnimation.value = false;
+        setTimeout(() => {
+          isShowSettingTable.value = false;
+        }, 150);
+      }
+    }
+    // Hàm xử lý toggle hiển thị các trường dữ liệu của bảng
+    function handleClickToggleSettingTable(fieldIndex) {
+      store.dispatch("user/setToggleShowColumnTableAction", fieldIndex);
+    }
     // Hàm xử lý đóng mở thông báo
     function handleToggleNotification() {
       isShowNotification.value = !isShowNotification.value;
@@ -214,8 +252,13 @@ export default {
       cancelAction,
       agreeAction,
       isShowNotification,
+      columnSetting,
       messageAction,
       isShowLoaderTable,
+      isShowSettingTable,
+      isShowSettingTableAnimation,
+      handleShowSettingTable,
+      handleClickToggleSettingTable,
       handleOpenModal,
       handleClickCheckbox,
       handleCloseModal,
@@ -266,21 +309,15 @@ export default {
   transform: translateY(-50%);
   cursor: pointer;
 }
-.reload-table {
+.action-render_table {
   background: var(--url__icon) no-repeat;
-  background-position: -423px -201px;
-  width: 24px;
-  height: 24px;
   cursor: pointer;
   margin-left: 12px;
   position: relative;
 }
-.reload-table::before {
+.action-render_table::before {
   display: none;
-  content: "Lấy lại dữ liệu";
-  width: 80px;
   position: absolute;
-  left: -52px;
   background-color: var(--menu__color);
   color: var(--text__while-color);
   text-align: center;
@@ -289,12 +326,36 @@ export default {
   top: 120%;
   font-size: 12px;
 }
-.reload-table:hover:before {
+.action-render_table:hover:before {
   display: block;
 }
 .reload-table:hover {
   background-position: -1097px -88px;
 }
+.reload-table {
+  background-position: -423px -201px;
+  width: 24px;
+  height: 24px;
+}
+.reload-table::before {
+  content: "Lấy lại dữ liệu";
+  width: 80px;
+  left: -40px;
+}
+.setting-table:hover {
+  background-position: -88px -256px;
+}
+.setting-table {
+  background-position: -88px -200px;
+  width: 24px;
+  height: 24px;
+}
+.setting-table::before {
+  content: "Tuỳ chỉnh giao diện";
+  width: 110px;
+  left: -98px;
+}
+
 .table-function_search {
   display: flex;
   align-items: center;

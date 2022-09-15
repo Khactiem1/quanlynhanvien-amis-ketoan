@@ -11,7 +11,7 @@
         </th>
         <th
           v-for="(item, index) in columns"
-          :style="{ 'text-align': item.textAlign, width: item.width }"
+          :style="{ 'text-align': item.textAlign, 'width': item.width }"
           :key="index"
         >
           {{ item.header }}

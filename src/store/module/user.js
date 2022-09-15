@@ -1,4 +1,10 @@
-import { getUserList, createUserApi, getUserApi, editUserApi, deleteUserApi } from "../../api/user";
+import {
+  getUserList,
+  createUserApi,
+  getUserApi,
+  editUserApi,
+  deleteUserApi,
+} from "../../api/user";
 const users = {
   namespaced: true,
   state: () => {
@@ -6,25 +12,31 @@ const users = {
       actionTable: {
         actionDefault: "Sửa",
         actionList: ["Nhân bản", "Xoá", "Ngừng sử dụng"],
-        fieldId: 'id',
-        fieldCode: 'userId'
+        fieldId: "id",
+        fieldCode: "userId",
       },
       columns: [
-        { field: "userId", header: "Mã nhân viên" },
-        { field: "name", header: "Tên nhân viên", width: "150px" },
-        { field: "sex", header: "Giới tính" },
+        { field: "userId", isShow: true, header: "Mã nhân viên" },
+        {
+          field: "name",
+          isShow: true,
+          header: "Tên nhân viên",
+          width: "150px",
+        },
+        { field: "sex", isShow: true, header: "Giới tính" },
         {
           field: "birth",
+          isShow: true,
           header: "Ngày sinh",
           textAlign: "center",
           formatDate: true,
-        },//formatDate Định dạng hiển thị ngày/tháng/năm
-        { field: "branchBank", header: "Chi nhánh ngân hàng" },
-        { field: "cmnd", header: "Số cmnd", },
-        { field: "title", header: "Chức danh" },
-        { field: "unit", header: "Tên đơn vị" },
-        { field: "bankAccount", header: "Số tài khoản", }, //fractionSize: true ,fractionSize Thêm dấu phẩy vào đơn vị tiền tệ
-        { field: "nameBank", header: "Tên ngân hàng" },
+        }, //formatDate Định dạng hiển thị ngày/tháng/năm
+        { field: "branchBank", isShow: false, header: "Chi nhánh ngân hàng" },
+        { field: "cmnd", isShow: false, header: "Số cmnd" },
+        { field: "title", isShow: true, header: "Chức danh" },
+        { field: "unit", isShow: true, header: "Tên đơn vị" },
+        { field: "bankAccount", isShow: true, header: "Số tài khoản" }, //fractionSize: true ,fractionSize Thêm dấu phẩy vào đơn vị tiền tệ
+        { field: "nameBank", isShow: true, header: "Tên ngân hàng" },
       ],
       userList: [],
       //Biến check xem tất cả các danh sách có được check hay không
@@ -32,8 +44,12 @@ const users = {
     };
   },
   mutations: {
+    // Xét toggle các trường được hiển thị lên giao diện table
+    setToggleShowColumnTableMutation(state,payload) {
+      state.columns[payload].isShow = !state.columns[payload].isShow;
+    },
     // Xét trống mảng user
-    setEmptyUser(state){
+    setEmptyUserMutation(state) {
       state.userList = [];
     },
     // lấy danh sách user
@@ -74,24 +90,24 @@ const users = {
   },
   actions: {
     async getUserListAction(context) {
-      context.commit("setEmptyUser");
+      context.commit("setEmptyUserMutation");
       const data = await getUserList();
       context.commit("setUserListMutation", data);
     },
-    async editUserAction(context,payload) {
+    async editUserAction(context, payload) {
       await editUserApi(payload);
       const data = await getUserList();
       context.commit("setUserListMutation", data);
     },
-    async deleteUserAction(context,payload) {
+    async deleteUserAction(context, payload) {
       await deleteUserApi(payload);
       const data = await getUserList();
       context.commit("setUserListMutation", data);
     },
-    async getUserAction(context,payload) {
+    async getUserAction(context, payload) {
       return await getUserApi(payload);
     },
-    async addUserAction(context,payload) {
+    async addUserAction(context, payload) {
       await createUserApi(payload);
       const data = await getUserList();
       context.commit("setUserListMutation", data);
@@ -101,6 +117,9 @@ const users = {
     },
     setAllCheckboxUserAction(context) {
       context.commit("setAllCheckboxUserMutation");
+    },
+    setToggleShowColumnTableAction(context, payload) {
+      context.commit("setToggleShowColumnTableMutation", payload);
     },
   },
 };
