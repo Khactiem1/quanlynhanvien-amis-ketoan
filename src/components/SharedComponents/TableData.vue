@@ -11,7 +11,7 @@
         </th>
         <th
           v-for="(item, index) in columns"
-          :style="{ 'text-align': item.textAlign, 'width': item.width }"
+          :style="{ 'text-align': item.textAlign, width: item.width }"
           :key="index"
         >
           {{ item.header }}
@@ -134,7 +134,7 @@ export default {
     },
     isShowLoaderTable: {
       type: Boolean,
-    }
+    },
   },
   setup() {
     // Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
@@ -214,12 +214,6 @@ table {
 }
 .table .thead-light th:last-child {
   border-right: none;
-}
-tbody tr:hover {
-  background-color: #f2f9ff;
-}
-tbody tr.active {
-  background-color: #e5f3ff;
 }
 .table tbody th,
 .table tbody td {

@@ -38,18 +38,20 @@
         </div>
       </div>
       <div class="table-container">
-        <!-- Table -->
-        <table-data
-          :tableList="userList"
-          :checkAllRecord="checkAllRecord"
-          :handleClickCheckbox="handleClickCheckbox"
-          :columns="columns"
-          :actionTable="actionTable"
-          :handleClickActionColumTable="handleClickActionColumTable"
-          :isShowLoaderTable="isShowLoaderTable"
-        >
-        </table-data>
-        <!-- End Table -->
+        <div class="table-scroll">
+          <!-- Table -->
+          <table-data
+            :tableList="userList"
+            :checkAllRecord="checkAllRecord"
+            :handleClickCheckbox="handleClickCheckbox"
+            :columns="columns"
+            :actionTable="actionTable"
+            :handleClickActionColumTable="handleClickActionColumTable"
+            :isShowLoaderTable="isShowLoaderTable"
+          >
+          </table-data>
+          <!-- End Table -->
+        </div>
       </div>
       <div class="paging-container">
         <div class="total-record">
@@ -167,11 +169,13 @@ export default {
       loadData();
     });
     // Hàm xử lý xoá toàn bộ user
-    function DeleteAll(){
-      console.log('Đây là những thằng sẽ bị xoá hehe');
+    function DeleteAll() {
+      console.log("Đây là những thằng sẽ bị xoá hehe");
       console.log(checkShowActionSeries.value);
       handleToggleNotification();
-      console.log('chưa xoá đâu khi nào có api 1 lần xoá cho tiện chứ giờ xoá k tiện hehe');
+      console.log(
+        "chưa xoá đâu khi nào có api 1 lần xoá cho tiện chứ giờ xoá k tiện hehe"
+      );
     }
     //Hàm xử lý hỏi xoá hàng loạt
     function handleDeleteAll() {
@@ -312,6 +316,8 @@ export default {
 /* Phần header table */
 .container-table {
   padding: 0 16px;
+  flex-grow: 1;
+  overflow: auto;
 }
 .container-table_header {
   display: flex;
@@ -324,6 +330,16 @@ export default {
   padding: 0 16px;
   margin-bottom: 16px;
 }
+.table-scroll {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+.table-container {
+  display: table-cell;
+  width: 100%;
+}
+
 .table-function {
   display: flex;
   align-items: center;

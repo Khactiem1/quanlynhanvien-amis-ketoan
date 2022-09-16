@@ -161,6 +161,7 @@
               :type="'text'"
               :label="'ĐT di động'"
               :tab="13"
+              :messageValid="'Nhập đúng Số điện thoại.'"
               v-model="user.phoneNumber"
             ></input-default>
           </div>
@@ -169,6 +170,7 @@
               :type="'text'"
               :label="'ĐT cố định'"
               :tab="14"
+              :messageValid="'Nhập đúng Số điện thoại.'"
               v-model="user.landlinePhone"
             ></input-default>
           </div>
@@ -177,6 +179,7 @@
               :type="'text'"
               :label="'Email'"
               :tab="15"
+              :messageValid="'Nhập đúng địa chỉ Email.'"
               v-model="user.email"
             ></input-default>
           </div>
@@ -265,6 +268,7 @@ import NotificationError from "../SharedComponents/NotificationError.vue";
 import { useStore } from "vuex";
 import eNum from "../../utils/eNum.js";
 import notificationMessage from "../../utils/notification.js";
+import validate from "../../utils/validate.js";
 export default {
   components: {
     InputCheckbox,
@@ -281,7 +285,8 @@ export default {
     },
   },
   setup(props, context) {
-    const { QUESTION_DATA_CHANGE, ERROR_EMPTY_DATA } = notificationMessage;
+    const { QUESTION_DATA_CHANGE, ERROR_EMPTY_DATA, ERROR_CORRECT_DATA } =
+      notificationMessage;
     const inputFocus = ref(null);
     const stateAddUser = ref(true);
     const { userEdit } = toRefs(props);
@@ -293,6 +298,7 @@ export default {
     const isShowNotificationError = ref(false);
     const store = useStore();
     const { ESC, CTRL, SHIFT, S } = eNum;
+    const { isEmail, isPhone } = validate;
     const eventCtrlShiftS = [];
     const user = ref({
       name: "",
@@ -393,6 +399,22 @@ export default {
         };
         messageAction.value = {
           display: ERROR_EMPTY_DATA,
+        };
+        isValid.value = true;
+        handleToggleNotificationError();
+      } else if (
+        (isPhone(user.value.phoneNumber) === false &&
+          user.value.phoneNumber != "") ||
+        (isPhone(user.value.landlinePhone) === false &&
+          user.value.landlinePhone != "") ||
+        (isEmail(user.value.email) === false && user.value.email != "")
+      ) {
+        agreeAction.value = {
+          display: "Đóng",
+          action: handleToggleNotificationError,
+        };
+        messageAction.value = {
+          display: ERROR_CORRECT_DATA,
         };
         isValid.value = true;
         handleToggleNotificationError();
@@ -497,6 +519,8 @@ export default {
       isShowNotificationQuestion,
       isShowNotificationError,
       handleCloseModal,
+      isEmail,
+      isPhone,
       handleSaveData,
     };
   },
