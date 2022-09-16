@@ -416,7 +416,6 @@ export default {
         messageAction.value = {
           display: ERROR_CORRECT_DATA,
         };
-        isValid.value = true;
         handleToggleNotificationError();
       } else {
         if (stateAddUser.value) {
