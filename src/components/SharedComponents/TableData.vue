@@ -11,12 +11,16 @@
         </th>
         <th
           v-for="(item, index) in columns"
-          :style="{ 'text-align': item.textAlign, width: item.width }"
+          :style="{
+            'text-align': item.textAlign,
+            'min-width': item.width,
+            width: item.width,
+          }"
           :key="index"
         >
           {{ item.header }}
         </th>
-        <th style="width: 120px" class="text-center">Chức năng</th>
+        <th style="width: 120px; max-width: 120px;" class="text-center">Chức năng</th>
       </tr>
     </thead>
     <table-loader v-if="isShowLoaderTable" :columns="columns"></table-loader>
@@ -198,6 +202,7 @@ export default {
 table {
   border-collapse: collapse;
   width: 100%;
+  background-color: var(--while__color);
 }
 .table .thead-light th {
   border-right: 1px solid #c7c7c7;
@@ -205,15 +210,29 @@ table {
   min-height: 34px;
   padding: 0 10px;
   height: 34px;
-  top: 0;
+  position: sticky;
+  top: 66px;
   background-color: #e5e8ec;
   text-transform: uppercase;
   vertical-align: middle;
-  font-size: 12px;
-  /* white-space: nowrap; */
+  white-space: nowrap;
 }
 .table .thead-light th:last-child {
   border-right: none;
+}
+tbody tr:hover,
+.table tbody tr:hover th:last-child,
+.table tbody tr:hover th:first-child,
+.table tbody tr:hover td:last-child,
+.table tbody tr:hover td:first-child {
+  background-color: #f2f9ff;
+}
+tbody tr.active,
+.table tbody tr.active th:last-child,
+.table tbody tr.active th:first-child,
+.table tbody tr.active td:last-child,
+.table tbody tr.active td:first-child {
+  background-color: #e5f3ff;
 }
 .table tbody th,
 .table tbody td {
@@ -222,7 +241,47 @@ table {
   height: 44px;
   border-right: 1px dotted #c7c7c7;
   border-bottom: 1px solid #c7c7c7;
-  /* white-space: nowrap; */
+}
+.table .thead-light th:last-child,
+.table .thead-light th:first-child {
+  background-color: #e5e8ec;
+  z-index: 1;
+}
+.table .thead-light th:last-child,
+.table tbody th:last-child,
+.table tbody td:last-child {
+  right: -1px !important;
+}
+.table .thead-light th:first-child,
+.table tbody th:first-child,
+.table tbody td:first-child {
+  left: 16px;
+}
+.table .thead-light th:first-child::before,
+.table tbody th:first-child::before,
+.table tbody td:first-child::before {
+  content: "";
+  left: -38px;
+  top: 0;
+  width: 100%;
+  height: 110%;
+  position: absolute;
+  background-color: var(--while__color);
+}
+.table .thead-light th:last-child,
+.table .thead-light th:first-child,
+.table tbody th:last-child,
+.table tbody th:first-child,
+.table tbody td:last-child,
+.table tbody td:first-child {
+  position: -webkit-sticky;
+  position: sticky;
+}
+.table tbody th:last-child,
+.table tbody th:first-child,
+.table tbody td:last-child,
+.table tbody td:first-child {
+  background-color: var(--while__color);
 }
 .table tbody td:last-child {
   border-right: none;

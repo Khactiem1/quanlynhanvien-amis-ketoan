@@ -86,6 +86,47 @@ tbody td {
   display: block;
   animation: pulse-bg 1s infinite;
 }
+.table .thead-light th:last-child,
+.table .thead-light th:first-child {
+  background-color: #e5e8ec;
+  z-index: 1;
+}
+.table .thead-light th:last-child,
+.table tbody th:last-child,
+.table tbody td:last-child {
+  right: -1px !important;
+}
+.table .thead-light th:first-child,
+.table tbody th:first-child,
+.table tbody td:first-child {
+  left: 16px;
+}
+.table .thead-light th:first-child::before,
+.table tbody th:first-child::before,
+.table tbody td:first-child::before {
+  content: "";
+  left: -38px;
+  top: 0;
+  width: 100%;
+  height: 110%;
+  position: absolute;
+  background-color: var(--while__color);
+}
+.table .thead-light th:last-child,
+.table .thead-light th:first-child,
+.table tbody th:last-child,
+.table tbody th:first-child,
+.table tbody td:last-child,
+.table tbody td:first-child {
+  position: -webkit-sticky;
+  position: sticky;
+}
+.table tbody th:last-child,
+.table tbody th:first-child,
+.table tbody td:last-child,
+.table tbody td:first-child {
+  background-color: var(--while__color);
+}
 @keyframes pulse-bg {
   0% {
     background-color: #eee;

@@ -16,27 +16,48 @@ const users = {
         fieldCode: "userId",
       },
       columns: [
-        { field: "userId", isShow: true, header: "Mã nhân viên" },
+        {
+          field: "userId",
+          isShow: true,
+          header: "Mã nhân viên",
+          width: "120px",
+        },
         {
           field: "name",
           isShow: true,
           header: "Tên nhân viên",
-          width: "150px",
+          width: "200px",
         },
-        { field: "sex", isShow: true, header: "Giới tính" },
+        { field: "sex", isShow: true, header: "Giới tính", width: "120px" },
         {
           field: "birth",
           isShow: true,
           header: "Ngày sinh",
           textAlign: "center",
           formatDate: true,
+          width: "130px",
         }, //formatDate Định dạng hiển thị ngày/tháng/năm
-        { field: "branchBank", isShow: false, header: "Chi nhánh ngân hàng" },
-        { field: "cmnd", isShow: false, header: "Số cmnd" },
-        { field: "title", isShow: true, header: "Chức danh" },
-        { field: "unit", isShow: true, header: "Tên đơn vị" },
-        { field: "bankAccount", isShow: true, header: "Số tài khoản" }, //fractionSize: true ,fractionSize Thêm dấu phẩy vào đơn vị tiền tệ
-        { field: "nameBank", isShow: true, header: "Tên ngân hàng" },
+        {
+          field: "branchBank",
+          isShow: false,
+          header: "Chi nhánh ngân hàng",
+          width: "200px",
+        },
+        { field: "cmnd", isShow: true, header: "Số cmnd", width: "150px" },
+        { field: "title", isShow: true, header: "Chức danh", width: "120px" },
+        { field: "unit", isShow: true, header: "Tên đơn vị", width: "200px" },
+        {
+          field: "bankAccount",
+          isShow: true,
+          header: "Số tài khoản",
+          width: "150px",
+        }, //fractionSize: true ,fractionSize Thêm dấu phẩy vào đơn vị tiền tệ
+        {
+          field: "nameBank",
+          isShow: true,
+          header: "Tên ngân hàng",
+          width: "180px",
+        },
       ],
       userList: [],
       //Biến check xem tất cả các danh sách có được check hay không
@@ -45,7 +66,7 @@ const users = {
   },
   mutations: {
     // Xét toggle các trường được hiển thị lên giao diện table
-    setToggleShowColumnTableMutation(state,payload) {
+    setToggleShowColumnTableMutation(state, payload) {
       state.columns[payload].isShow = !state.columns[payload].isShow;
     },
     // Xét trống mảng user

@@ -11,7 +11,7 @@
       </div>
     </div>
     <div class="table-content">
-      <div class="table-function">
+      <div class="table-function sticky">
         <div class="table-function_series">
           <button
             v-if="checkShowActionSeries.length > 0"
@@ -37,8 +37,8 @@
           ></div>
         </div>
       </div>
-      <div class="table-container">
-        <div class="table-scroll">
+      <div class="table-scroll">
+        <div class="table-container">
           <!-- Table -->
           <table-data
             :tableList="userList"
@@ -53,7 +53,7 @@
           <!-- End Table -->
         </div>
       </div>
-      <div class="paging-container">
+      <div class="paging-container sticky">
         <div class="total-record">
           Tổng số: <strong>{{ userList.length }}</strong> bản ghi
         </div>
@@ -314,10 +314,31 @@ export default {
  ------------------- 
 */
 /* Phần header table */
+
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: #eeeeee;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: #b0b0b0;
+}
+::-webkit-scrollbar {
+  height: 10px; /* height of horizontal scrollbar ← You're missing this */
+  width: 8px;
+  border: 1px solid #d5d5d5;
+}
 .container-table {
-  padding: 0 16px;
+  padding: 0 16px 16px 16px;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
   overflow: auto;
+}
+.table-scroll {
+  padding: 0 16px;
+  background-color: var(--while__color);
 }
 .container-table_header {
   display: flex;
@@ -326,9 +347,10 @@ export default {
 }
 /* Phần table */
 .table-content {
-  background-color: var(--while__color);
-  padding: 0 16px;
-  margin-bottom: 16px;
+  position: relative;
+  overflow: auto;
+  scroll-behavior: smooth;
+  flex-grow: 1;
 }
 .table-scroll {
   display: table;
@@ -344,9 +366,15 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
+  padding: 16px 16px;
+  z-index: 5;
   height: 66px;
+  background-color: var(--while__color);
 }
+.table-container {
+  background-color: var(--while__color);
+}
+
 /* Phần search */
 .search-table {
   position: relative;
@@ -419,16 +447,14 @@ export default {
 }
 
 /* Phần phân trang */
-.paging-container {
-  margin-right: 35px;
-}
 .paging {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .paging-container {
-  padding: 12px 0;
+  padding: 12px 51px 12px 16px;
+  background-color: var(--while__color);
   display: flex;
   align-items: center;
   justify-content: space-between;

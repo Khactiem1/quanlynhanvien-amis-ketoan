@@ -84,7 +84,6 @@ export default {
   position: relative;
   width: auto;
   background-color: var(--menu__color);
-  width: auto;
   height: 100vh;
   top: 0;
   left: 0;
