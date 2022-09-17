@@ -261,9 +261,9 @@ tbody tr.active,
 .table tbody th:first-child::before,
 .table tbody td:first-child::before {
   content: "";
-  left: -38px;
+  left: -16px;
   top: 0;
-  width: 100%;
+  width: 16px;
   height: 110%;
   position: absolute;
   background-color: var(--while__color);
@@ -289,6 +289,7 @@ tbody tr.active,
 .table .thead-light th:first-child,
 .table tbody th:first-child {
   width: 40px;
+  max-width: 40px;
 }
 /* Nút bấm action */
 .action-colum_table {

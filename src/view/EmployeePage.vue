@@ -26,6 +26,7 @@
             <input
               class="input input-table_search"
               type="text"
+              @input="handleSearchData"
               placeholder="Tìm theo mã, tên nhân viên"
             />
             <div class="icon-search"></div>
@@ -262,6 +263,12 @@ export default {
         store.dispatch("user/setCheckboxUserAction", value);
       }
     }
+    async function handleSearchData(event) {
+      setTimeout(() => {
+        console.log('Key tìm kiếm: '+event.target.value+', Khi nào có api sẽ call api tìm kiếm sau');
+        loadData();
+      }, 200);
+    }
     //Hàm xử lý mở modal với state là trạng thái thêm hay sửa
     function handleOpenModal() {
       if (userEdit.value) {
@@ -303,6 +310,7 @@ export default {
       handleClickCheckbox,
       handleCloseModal,
       handleClickActionColumTable,
+      handleSearchData,
       loadData,
     };
   },
@@ -323,6 +331,10 @@ export default {
 ::-webkit-scrollbar-thumb {
   border-radius: 0;
   background: #b0b0b0;
+}
+::-webkit-scrollbar-thumb:hover {
+  border-radius: 0;
+  background: #808080;
 }
 ::-webkit-scrollbar {
   height: 10px; /* height of horizontal scrollbar ← You're missing this */

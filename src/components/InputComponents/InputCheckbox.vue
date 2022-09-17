@@ -63,6 +63,8 @@ export default defineComponent({
 .check {
   position: relative;
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .label-checkbox {
   width: 18px;
