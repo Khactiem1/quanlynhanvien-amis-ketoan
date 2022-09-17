@@ -94,7 +94,7 @@ tbody td {
 .table .thead-light th:last-child,
 .table tbody th:last-child,
 .table tbody td:last-child {
-  right: -1px !important;
+  right: 16px !important;
 }
 .table .thead-light th:first-child,
 .table tbody th:first-child,
@@ -105,9 +105,20 @@ tbody td {
 .table tbody th:first-child::before,
 .table tbody td:first-child::before {
   content: "";
-  left: -38px;
+  left: -16px;
   top: 0;
-  width: 100%;
+  width: 16px;
+  height: 110%;
+  position: absolute;
+  background-color: var(--while__color);
+}
+.table .thead-light th:last-child::before,
+.table tbody th:last-child::before,
+.table tbody td:last-child::before {
+  content: "";
+  right: -16px;
+  top: 0;
+  width: 16px;
   height: 110%;
   position: absolute;
   background-color: var(--while__color);

@@ -265,7 +265,11 @@ export default {
     }
     async function handleSearchData(event) {
       setTimeout(() => {
-        console.log('Key tìm kiếm: '+event.target.value+', Khi nào có api sẽ call api tìm kiếm sau');
+        console.log(
+          "Key tìm kiếm: " +
+            event.target.value +
+            ", Khi nào có api sẽ call api tìm kiếm sau"
+        );
         loadData();
       }, 200);
     }

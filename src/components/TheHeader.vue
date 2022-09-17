@@ -42,7 +42,7 @@ export default {
 .header {
   height: var(--height__header);
   background-color: var(--while__color);
-  padding: 0 14px;
+  padding: 10px 14px;
   display: flex;
   justify-content: space-between;
   font-family: "notosans-semibold";

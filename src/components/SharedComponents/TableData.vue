@@ -20,7 +20,9 @@
         >
           {{ item.header }}
         </th>
-        <th style="width: 120px; max-width: 120px;" class="text-center">Chức năng</th>
+        <th style="width: 120px; min-width: 120px" class="text-center">
+          Chức năng
+        </th>
       </tr>
     </thead>
     <table-loader v-if="isShowLoaderTable" :columns="columns"></table-loader>
@@ -66,7 +68,7 @@
               <div
                 class="action-default"
                 @click="
-                  handleCloseAction();
+                  handleCloseAction;
                   handleClickActionColumTable(
                     actionTable.actionDefault,
                     row[actionTable.fieldId]
@@ -77,45 +79,40 @@
               </div>
             </button>
             <button
-              @click="handleShowAction"
+              @click="handleShowAction($event, row)"
               class="action-table action-table_right"
             >
               <div class="border-icon_table">
                 <div class="action-icon"></div>
               </div>
             </button>
-            <div class="table-list_action">
-              <!-- Phần render danh sách action ẩn -->
-              <div
-                v-for="(actionItem, index) in actionTable.actionList"
-                :key="index"
-                class="list_action-item"
-                @click="
-                  handleCloseAction();
-                  handleClickActionColumTable(
-                    actionItem,
-                    row[actionTable.fieldId],
-                    row[actionTable.fieldCode]
-                  );
-                "
-              >
-                {{ actionItem }}
-              </div>
-            </div>
           </div>
         </td>
       </tr>
     </tbody>
+
+    <teleport to="#app">
+      <table-list-action
+        :actionTable="actionTable"
+        :positionAction="positionAction"
+        :row="rowColumn"
+        :handleCloseAction="handleCloseAction"
+        :handleClickActionColumTable="handleClickActionColumTable"
+      ></table-list-action>
+    </teleport>
   </table>
 </template>
 
 <script>
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import TableLoader from "../SharedComponents/TableLoader.vue";
+import TableListAction from "../SharedComponents/TableListAction.vue";
+import { ref } from "vue";
 export default {
   components: {
     InputCheckbox,
     TableLoader,
+    TableListAction,
   },
   props: {
     tableList: {
@@ -141,6 +138,8 @@ export default {
     },
   },
   setup() {
+    const rowColumn = ref(null);
+    const positionAction = ref({ top: 0, right: 0 });
     // Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
     function Comma(number) {
       number = "" + number;
@@ -160,39 +159,73 @@ export default {
       return [d.getDate(), d.getMonth() + 1, d.getFullYear()].join("/");
     }
     // Hàm xử lý ẩn hiện các action
-    let elmClose = null;
-    function handleShowAction(event) {
+    function handleShowAction(event, row) {
+      if (JSON.stringify(rowColumn.value) === JSON.stringify(row)) {
+        rowColumn.value = null;
+      } else {
+        if (JSON.stringify(rowColumn.value) !== JSON.stringify(row)) {
+          setTimeout(() => {
+            setPositionActionTable(event);
+            rowColumn.value = row;
+          }, 0);
+        }
+      }
+    }
+    // Hàm xử lý ẩn action
+    function handleCloseAction() {
+      rowColumn.value = null;
+    }
+    // Hàm xử lý vị trí ẩn hiện các action
+    function setPositionActionTable(event) {
       event.path.forEach((item) => {
         try {
           if (item.className.includes("action-colum_table")) {
-            if (item.className.includes("action-colum_table active")) {
-              item.classList.remove("active");
-              elmClose = null;
-            } else {
-              if (elmClose) {
-                elmClose.classList.remove("active");
-              }
-              item.classList.add("active");
-              elmClose = item;
-            }
-            return;
+            const rect = item.getBoundingClientRect();
+            positionAction.value.top = rect.top + window.scrollY + 32;
+            positionAction.value.right = rect.right + window.scrollX - rect.left + window.scrollX - 45;
           }
         } catch {
           return;
         }
       });
     }
+    // let elmClose = null;
+    // function handleShowAction(event) {
+    //   event.path.forEach((item) => {
+    //     try {
+    //       if (item.className.includes("action-colum_table")) {
+    //         if (item.className.includes("action-colum_table active")) {
+    //           item.classList.remove("active");
+    //           elmClose = null;
+    //         } else {
+    //           if (elmClose) {
+    //             elmClose.classList.remove("active");
+    //           }
+    //           item.classList.add("active");
+    //           elmClose = item;
+    //         }
+    //         return;
+    //       }
+    //     } catch {
+    //       return;
+    //     }
+    //   });
+    // }
     // Hàm xử lý ẩn action
-    function handleCloseAction() {
-      if (elmClose) {
-        elmClose.classList.remove("active");
-      }
-    }
+    // function handleCloseAction() {
+    //   if (elmClose) {
+    //     elmClose.classList.remove("active");
+    //   }
+    // }
     return {
+      rowColumn,
       formatDate,
+      positionAction,
       Comma,
       handleShowAction,
       handleCloseAction,
+      // handleShowAction,
+      // handleCloseAction,
     };
   },
 };
@@ -250,7 +283,18 @@ tbody tr.active,
 .table .thead-light th:last-child,
 .table tbody th:last-child,
 .table tbody td:last-child {
-  right: -1px !important;
+  right: 16px !important;
+}
+.table .thead-light th:last-child::before,
+.table tbody th:last-child::before,
+.table tbody td:last-child::before {
+  content: "";
+  right: -16px;
+  top: 0;
+  width: 16px;
+  height: 110%;
+  position: absolute;
+  background-color: var(--while__color);
 }
 .table .thead-light th:first-child,
 .table tbody th:first-child,
@@ -347,7 +391,7 @@ tbody tr.active,
   border: solid 1px #0075c0;
 }
 /* Phần action ẩn */
-.table-list_action {
+/* .table-list_action {
   position: absolute;
   border: solid 1px var(--border__input);
   background-color: var(--while__color);
@@ -365,8 +409,8 @@ tbody tr.active,
   opacity: 1;
   visibility: visible;
   top: 90%;
-}
-.list_action-item {
+} */
+/* .list_action-item {
   white-space: nowrap;
   text-align: left;
   padding: 5px 10px;
@@ -377,5 +421,5 @@ tbody tr.active,
 .list_action-item:hover {
   background-color: #f5f5f5;
   color: var(--primary__color);
-}
+} */
 </style>
