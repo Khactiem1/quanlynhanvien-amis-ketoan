@@ -182,41 +182,14 @@ export default {
           if (item.className.includes("action-colum_table")) {
             const rect = item.getBoundingClientRect();
             positionAction.value.top = rect.top + window.scrollY + 32;
-            positionAction.value.right = rect.right + window.scrollX - rect.left + window.scrollX - 55;
+            positionAction.value.right =
+              rect.right + window.scrollX - rect.left + window.scrollX - 55;
           }
         } catch {
           return;
         }
       });
     }
-    // let elmClose = null;
-    // function handleShowAction(event) {
-    //   event.path.forEach((item) => {
-    //     try {
-    //       if (item.className.includes("action-colum_table")) {
-    //         if (item.className.includes("action-colum_table active")) {
-    //           item.classList.remove("active");
-    //           elmClose = null;
-    //         } else {
-    //           if (elmClose) {
-    //             elmClose.classList.remove("active");
-    //           }
-    //           item.classList.add("active");
-    //           elmClose = item;
-    //         }
-    //         return;
-    //       }
-    //     } catch {
-    //       return;
-    //     }
-    //   });
-    // }
-    // Hàm xử lý ẩn action
-    // function handleCloseAction() {
-    //   if (elmClose) {
-    //     elmClose.classList.remove("active");
-    //   }
-    // }
     return {
       rowColumn,
       formatDate,
@@ -224,8 +197,6 @@ export default {
       Comma,
       handleShowAction,
       handleCloseAction,
-      // handleShowAction,
-      // handleCloseAction,
     };
   },
 };
@@ -390,36 +361,4 @@ tbody tr.active,
 .action-table:active .action-default {
   border: solid 1px #0075c0;
 }
-/* Phần action ẩn */
-/* .table-list_action {
-  position: absolute;
-  border: solid 1px var(--border__input);
-  background-color: var(--while__color);
-  border-radius: 2px;
-  padding: 5px 0;
-  top: 0;
-  right: 5px;
-  top: 110%;
-  opacity: 0;
-  visibility: hidden;
-  z-index: 5;
-  transition: all ease 0.15s;
-}
-.action-colum_table.active .table-list_action {
-  opacity: 1;
-  visibility: visible;
-  top: 90%;
-} */
-/* .list_action-item {
-  white-space: nowrap;
-  text-align: left;
-  padding: 5px 10px;
-  cursor: pointer;
-  transition: all ease 0.15s;
-  color: inherit;
-}
-.list_action-item:hover {
-  background-color: #f5f5f5;
-  color: var(--primary__color);
-} */
 </style>
