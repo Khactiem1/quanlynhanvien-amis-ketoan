@@ -182,7 +182,7 @@ export default {
           if (item.className.includes("action-colum_table")) {
             const rect = item.getBoundingClientRect();
             positionAction.value.top = rect.top + window.scrollY + 32;
-            positionAction.value.right = rect.right + window.scrollX - rect.left + window.scrollX - 45;
+            positionAction.value.right = rect.right + window.scrollX - rect.left + window.scrollX - 55;
           }
         } catch {
           return;
