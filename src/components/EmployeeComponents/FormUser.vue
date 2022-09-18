@@ -160,6 +160,7 @@
             <input-default
               :type="'text'"
               :label="'ĐT di động'"
+              :toolTip="'Điện thoại di động'"
               :tab="13"
               :messageValid="'Nhập đúng Số điện thoại.'"
               v-model="user.phoneNumber"
@@ -170,6 +171,7 @@
               :type="'text'"
               :label="'ĐT cố định'"
               :tab="14"
+              :toolTip="'Điện thoại cố định'"
               :messageValid="'Nhập đúng Số điện thoại.'"
               v-model="user.landlinePhone"
             ></input-default>

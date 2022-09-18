@@ -1,6 +1,9 @@
 <template>
   <div class="data-input" :class="{ 'is-valid': isValid }">
     <label :class="{ required: required }">{{ label }}</label>
+    <span v-if="toolTip" class="tool-tip">
+      {{ toolTip }}
+    </span>
     <input
       ref="tagInput"
       class="input"
@@ -26,6 +29,7 @@ export default {
     "label",
     "focus",
     "tab",
+    "toolTip",
   ],
   emits: ["update:modelValue"],
   setup(props, context) {
@@ -60,4 +64,25 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.data-input {
+  position: relative;
+}
+.tool-tip {
+  position: absolute;
+  left: 18px;
+  top: 202x;
+  background-color: #505050;
+  border-radius: 2px;
+  padding: 2px 4px;
+  z-index: 3;
+  text-align: center;
+  visibility: hidden;
+  opacity: 0;
+  color: var(--while__color);
+}
+.data-input label:hover ~ .tool-tip {
+  visibility: visible;
+  opacity: 1;
+}
+</style>
