@@ -123,6 +123,7 @@
                 :type="'text'"
                 :label="'Số CMND'"
                 :tab="9"
+                :toolTip="'Số chứng minh nhân dân'"
                 v-model="user.cmnd"
               ></input-default>
             </div>

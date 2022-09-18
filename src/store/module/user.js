@@ -45,11 +45,16 @@ const users = {
         }, //formatDate Định dạng hiển thị ngày/tháng/năm
         {
           field: "branchBank",
-          isShow: false,
+          isShow: true,
           header: "Chi nhánh ngân hàng",
           width: "200px",
         },
-        { field: "cmnd", isShow: true, header: "Số cmnd", width: "150px" },
+        {
+          field: "cmnd",
+          isShow: true,
+          header: "Số chứng minh",
+          width: "200px",
+        },
         { field: "title", isShow: true, header: "Chức danh", width: "120px" },
         { field: "unit", isShow: true, header: "Tên đơn vị", width: "200px" },
         {
@@ -64,6 +69,38 @@ const users = {
           header: "Tên ngân hàng",
           width: "180px",
         },
+        {
+          field: "dateRange",
+          isShow: true,
+          header: "Ngày cấp chứng minh",
+          width: "230px",
+          formatDate: true,
+        },
+        {
+          field: "grantAddress",
+          isShow: true,
+          header: "Nơi cấp chứng minh",
+          width: "230px",
+        },
+        {
+          field: "phoneNumber",
+          isShow: true,
+          header: "Số điện thoại",
+          width: "230px",
+        },
+        {
+          field: "landlinePhone",
+          isShow: true,
+          header: "Điện thoại cố định",
+          width: "230px",
+        },
+        {
+          field: "email",
+          isShow: true,
+          header: "Địa chỉ email",
+          width: "230px",
+        },
+        { field: "address", isShow: true, header: "Địa chỉ", width: "200px" },
       ],
       userList: [],
       //Biến check xem tất cả các danh sách có được check hay không
