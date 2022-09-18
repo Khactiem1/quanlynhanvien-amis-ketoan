@@ -7,4 +7,7 @@ export default {
   DOWN: 40,
   ENTER: 13,
   TAB: 9,
+  MALE: 0, // nam
+  FEMALE: 1, // nữ
+  OTHER: 2, // khác
 };

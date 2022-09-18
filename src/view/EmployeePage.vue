@@ -138,7 +138,7 @@ export default {
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
     const checkShowActionSeries = computed(() =>
       userList.value.filter((value) => value.Check)
-    ); //Lấy danh sách ng dùng
+    ); //Lấy danh sách ng dùng được check để thực hiện chức năng như xoá hàng loạt
     const columns = computed(() =>
       store.state.user.columns.filter(function (value) {
         return value.isShow;

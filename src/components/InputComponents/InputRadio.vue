@@ -17,7 +17,7 @@ export default {
   props: {
     label: { type: String, default: "", required: true },
     modelValue: { default: "" },
-    value: { type: String, default: undefined },
+    value: { default: undefined },
     tab: {},
   },
   computed: {

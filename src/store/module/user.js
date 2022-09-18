@@ -28,7 +28,13 @@ const users = {
           header: "Tên nhân viên",
           width: "200px",
         },
-        { field: "sex", isShow: true, header: "Giới tính", width: "120px" },
+        {
+          field: "sex",
+          isShow: true,
+          header: "Giới tính",
+          width: "120px",
+          isGender: true,
+        },
         {
           field: "birth",
           isShow: true,

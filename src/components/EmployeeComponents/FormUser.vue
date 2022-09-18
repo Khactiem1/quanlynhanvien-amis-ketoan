@@ -98,19 +98,19 @@
               <div class="input-radio_item">
                 <input-radio
                   label="Nam"
-                  value="Nam"
+                  :value="MALE"
                   v-model="user.sex"
                   :tab="6"
                 ></input-radio>
                 <input-radio
                   label="Nữ"
-                  value="Nữ"
+                  :value="FEMALE"
                   v-model="user.sex"
                   :tab="7"
                 ></input-radio>
                 <input-radio
                   label="Khác"
-                  value="Khác"
+                  :value="OTHER"
                   v-model="user.sex"
                   :tab="8"
                 ></input-radio>
@@ -297,12 +297,12 @@ export default {
     const isShowNotificationQuestion = ref(false);
     const isShowNotificationError = ref(false);
     const store = useStore();
-    const { ESC, CTRL, SHIFT, S } = eNum;
+    const { ESC, CTRL, SHIFT, S, MALE, FEMALE, OTHER } = eNum;
     const { isEmail, isPhone } = validate;
     const eventCtrlShiftS = [];
     const user = ref({
       name: "",
-      sex: "Nam",
+      sex: MALE,
       birth: "",
       cmnd: "",
       title: "",
@@ -321,7 +321,7 @@ export default {
     const userEditReset = ref(null);
     const userReset = ref({
       name: "",
-      sex: "Nam",
+      sex: MALE,
       birth: "",
       cmnd: "",
       title: "",
@@ -511,6 +511,9 @@ export default {
     return {
       inputFocus,
       user,
+      MALE,
+      FEMALE,
+      OTHER,
       isValid,
       cancelAction,
       agreeAction,

@@ -58,6 +58,8 @@
               ? Comma(row[col.field])
               : col.formatDate === true
               ? formatDate(row[col.field])
+              : col.isGender === true
+              ? formatGender(row[col.field])
               : row[col.field]
           }}
         </td>
@@ -107,6 +109,7 @@
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import TableLoader from "../SharedComponents/TableLoader.vue";
 import TableListAction from "../SharedComponents/TableListAction.vue";
+import eNum from "../../utils/eNum";
 import { ref } from "vue";
 export default {
   components: {
@@ -140,6 +143,7 @@ export default {
   setup() {
     const rowColumn = ref(null);
     const positionAction = ref({ top: 0, right: 0 });
+    const { MALE, FEMALE, OTHER } = eNum;
     // Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
     function Comma(number) {
       number = "" + number;
@@ -153,6 +157,17 @@ export default {
         }
         return output;
       } else return number;
+    }
+    function formatGender(gender) {
+      if(MALE == gender){
+        return "Nam";
+      }
+      else if(FEMALE == gender){
+        return "Nữ";
+      }
+      else if(OTHER == gender){
+        return "Khác";
+      }
     }
     function formatDate(date) {
       const d = new Date(date);
@@ -193,6 +208,7 @@ export default {
     return {
       rowColumn,
       formatDate,
+      formatGender,
       positionAction,
       Comma,
       handleShowAction,
