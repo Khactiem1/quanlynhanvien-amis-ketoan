@@ -240,6 +240,7 @@
         </div>
       </div>
     </div>
+    <div tabindex="21" ref="focusLoop" class="focus-loop"></div>
     <teleport to="#app">
       <modal-notification v-if="isShowNotificationQuestion">
         <notification-question
@@ -290,6 +291,7 @@ export default {
     const { QUESTION_DATA_CHANGE, ERROR_EMPTY_DATA, ERROR_CORRECT_DATA } =
       notificationMessage;
     const inputFocus = ref(null);
+    const focusLoop = ref(null);
     const stateAddUser = ref(true);
     const { userEdit } = toRefs(props);
     const cancelAction = ref({});
@@ -443,11 +445,17 @@ export default {
         }
       }
     };
+    // hàm xử lý lặp focus
+    const handleLoopFocus = function () {
+      inputFocus.value.tagInput.focus();
+    };
     //Khi mounted component thì sẽ lắng nghe sự kiện các phím tắ
     onMounted(() => window.addEventListener("keydown", handleEvent));
+    onMounted(() => focusLoop.value.addEventListener("focus", handleLoopFocus));
     onMounted(() => window.addEventListener("keyup", handleEventInterrupt));
     // Khi unMounted thì sẽ xoá bỏ các sự kiện khỏi bộ nhớ
     onUnmounted(() => window.removeEventListener("keydown", handleEvent));
+    onUnmounted(() => window.removeEventListener("focus", handleLoopFocus));
     onUnmounted(() =>
       window.removeEventListener("keyup", handleEventInterrupt)
     );
@@ -518,6 +526,7 @@ export default {
       OTHER,
       isValid,
       cancelAction,
+      focusLoop,
       agreeAction,
       messageAction,
       isShowNotificationQuestion,
@@ -531,3 +540,8 @@ export default {
   emits: ["handle-click-close-modal"],
 };
 </script>
+<style>
+.focus-loop {
+  opacity: 0;
+}
+</style>
