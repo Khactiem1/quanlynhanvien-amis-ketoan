@@ -163,6 +163,7 @@
               :label="'ĐT di động'"
               :toolTip="'Điện thoại di động'"
               :tab="13"
+              :isPhone="true"
               :messageValid="'Nhập đúng Số điện thoại.'"
               v-model="user.phoneNumber"
             ></input-default>
@@ -172,6 +173,7 @@
               :type="'text'"
               :label="'ĐT cố định'"
               :tab="14"
+              :isPhone="true"
               :toolTip="'Điện thoại cố định'"
               :messageValid="'Nhập đúng Số điện thoại.'"
               v-model="user.landlinePhone"
@@ -182,6 +184,7 @@
               :type="'text'"
               :label="'Email'"
               :tab="15"
+              :isEmail="true"
               :messageValid="'Nhập đúng địa chỉ Email.'"
               v-model="user.email"
             ></input-default>
@@ -303,7 +306,7 @@ export default {
     const isShowNotificationError = ref(false);
     const store = useStore();
     const { ESC, CTRL, SHIFT, S, MALE, FEMALE, OTHER } = eNum;
-    const { isEmail, isPhone } = validate;
+    const { validateEmail, validatePhone } = validate;
     const eventCtrlShiftS = [];
     const user = ref({
       name: "",
@@ -408,11 +411,11 @@ export default {
         isValid.value = true;
         handleToggleNotificationError();
       } else if (
-        (isPhone(user.value.phoneNumber) === false &&
+        (validatePhone(user.value.phoneNumber) === false &&
           user.value.phoneNumber != "") ||
-        (isPhone(user.value.landlinePhone) === false &&
+        (validatePhone(user.value.landlinePhone) === false &&
           user.value.landlinePhone != "") ||
-        (isEmail(user.value.email) === false && user.value.email != "")
+        (validateEmail(user.value.email) === false && user.value.email != "")
       ) {
         agreeAction.value = {
           display: "Đóng",
@@ -533,8 +536,6 @@ export default {
       isShowNotificationQuestion,
       isShowNotificationError,
       handleCloseModal,
-      isEmail,
-      isPhone,
       handleSaveData,
     };
   },

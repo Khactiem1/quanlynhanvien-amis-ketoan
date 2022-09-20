@@ -1,5 +1,5 @@
 <template>
-  <div class="data-input" :class="{ 'is-valid': isValid }">
+  <div class="data-input" :class="{ 'is-valid': isValid | isValidEmailPhone }">
     <label :class="{ required: required }">{{ label }}</label>
     <span v-if="toolTip" class="tool-tip">
       {{ toolTip }}
@@ -12,6 +12,7 @@
       :placeholder="placeholder"
       :tabindex="tab"
       @input="handleInput"
+      @blur="handleCheckEmailPhone"
     />
     <span class="message-valid">{{ messageValid }}</span>
   </div>
@@ -19,6 +20,7 @@
 
 <script>
 import { ref, onMounted, toRefs } from "vue";
+import validate from "../../utils/validate.js";
 export default {
   props: [
     "modelValue",
@@ -30,12 +32,16 @@ export default {
     "focus",
     "tab",
     "toolTip",
+    "isPhone",
+    "isEmail",
   ],
   emits: ["update:modelValue"],
   setup(props, context) {
     const tagInput = ref(null);
-    const { focus, required } = toRefs(props);
+    const { focus, required, isEmail, isPhone } = toRefs(props);
     const isValid = ref(false);
+    const isValidEmailPhone = ref(false);
+    const { validateEmail, validatePhone } = validate;
     //Sau khi được mounted vào dom thì nếu đc chỉ định focus ô input sẽ đc focus
     onMounted(() => {
       if (focus.value === true) {
@@ -46,11 +52,29 @@ export default {
     });
     function handleInput(event) {
       context.emit("update:modelValue", event.target.value);
+      isValidEmailPhone.value = false;
       if (required.value) {
-        if (event.target.value.trim() == "") {
+        if (event.target.value == "") {
           isValid.value = true;
         } else {
           isValid.value = false;
+        }
+      }
+    }
+    function handleCheckEmailPhone(event) {
+      if (event.target.value != "") {
+        if (isEmail.value) {
+          if (validateEmail(event.target.value) === false) {
+            isValidEmailPhone.value = true;
+          } else {
+            isValidEmailPhone.value = false;
+          }
+        } else if (isPhone.value) {
+          if (validatePhone(event.target.value) === false) {
+            isValidEmailPhone.value = true;
+          } else {
+            isValidEmailPhone.value = false;
+          }
         }
       }
     }
@@ -58,6 +82,8 @@ export default {
     return {
       tagInput,
       isValid,
+      isValidEmailPhone,
+      handleCheckEmailPhone,
       handleInput,
     };
   },
