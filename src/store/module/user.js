@@ -73,7 +73,8 @@ const users = {
           field: "dateRange",
           isShow: true,
           header: "Ngày cấp chứng minh",
-          width: "230px",
+          textAlign: "center",
+          width: "180px",
           formatDate: true,
         },
         {

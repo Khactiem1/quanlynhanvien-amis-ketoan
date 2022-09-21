@@ -158,6 +158,7 @@ export default {
         return output;
       } else return number;
     }
+    // hàm xử lý hiển thị giới tính dựa trên enum
     function formatGender(gender) {
       if(MALE == gender){
         return "Nam";
@@ -169,9 +170,18 @@ export default {
         return "Khác";
       }
     }
+    // hàm xử lý hiển thị ngày/tháng/năm
     function formatDate(date) {
       const d = new Date(date);
-      return [d.getDate(), d.getMonth() + 1, d.getFullYear()].join("/");
+      let getMonth = d.getMonth() + 1 + '';
+      if(getMonth.length === 1){
+        getMonth = `0${getMonth}`;
+      }
+      let getDate = d.getDate() + '';
+      if(getDate.length === 1){
+        getDate = `0${getDate}`;
+      }
+      return [getDate, getMonth, d.getFullYear()].join("/");
     }
     // Hàm xử lý ẩn hiện các action
     function handleShowAction(event, row) {
