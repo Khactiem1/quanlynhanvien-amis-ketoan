@@ -56,7 +56,7 @@
       </div>
       <div class="paging-container sticky">
         <div class="total-record">
-          Tổng số: <strong>{{ userList.length }}</strong> bản ghi
+          Tổng số: <strong>{{ totalCount }}</strong> bản ghi
         </div>
         <div class="paging">
           <!-- Thêm 'active' là sẽ chạy -->
@@ -70,16 +70,13 @@
             ]"
             :value="'value'"
             :header="'header'"
-            v-model="recordPage"
+            v-model="countRecordPageUser"
           ></input-combobox>
-          <div class="show-paging">
-            <div class="show-paging_item disabled">Trước</div>
-            <div class="show-paging_item show-paging_text active">1</div>
-            <div class="show-paging_item show-paging_text">2</div>
-            <div class="show-paging_item show-paging_text">...</div>
-            <div class="show-paging_item show-paging_text">52</div>
-            <div class="show-paging_item">Sau</div>
-          </div>
+          <paging-page
+            :totalCount="totalCount"
+            :countRecordPageUser="countRecordPageUser"
+            v-model="recordSelectPaging"
+          ></paging-page>
         </div>
       </div>
     </div>
@@ -113,6 +110,7 @@
 import TableData from "../components/SharedComponents/TableData.vue";
 import ModalNotification from "../components/SharedComponents/ModalNotification.vue";
 import NotificationWanning from "../components/SharedComponents/NotificationWanning.vue";
+import PagingPage from "../components/SharedComponents/PagingPage.vue";
 import SettingTable from "../components/SharedComponents/SettingTable.vue";
 import ModalForm from "../components/EmployeeComponents/ModalForm.vue";
 import FormUser from "../components/EmployeeComponents/FormUser.vue";
@@ -121,6 +119,7 @@ import { computed, ref, watch, onBeforeMount } from "vue";
 import { useStore } from "vuex";
 import actionTableStore from "../utils/actionTable";
 import notification from "../utils/notification";
+import index from "../utils/index";
 export default {
   components: {
     TableData,
@@ -130,12 +129,15 @@ export default {
     ModalNotification,
     NotificationWanning,
     SettingTable,
+    PagingPage,
   },
   setup() {
+    const { getCountRecordPageUser, setCountRecordPageUser } = index; // hàm lấy và lưu số lượng bản ghi của page
     const { EDIT, DELETE } = actionTableStore;
     const { WANNING_DELETE, WANNING_DELETE_ALL } = notification;
     const store = useStore();
     const userList = computed(() => store.state.user.userList); //Lấy danh sách ng dùng
+    const totalCount = computed(() => store.state.user.totalCount); //Lấy ra tổng số lượng bản ghi
     const checkShowActionSeries = computed(() =>
       userList.value.filter((value) => value.Check)
     ); //Lấy danh sách ng dùng được check để thực hiện chức năng như xoá hàng loạt
@@ -147,7 +149,6 @@ export default {
     const columnSetting = computed(() => store.state.user.columns); //Lấy danh sách columns hiển thị cài đặt
     const checkAllRecord = computed(() => store.state.user.CheckAll); //Lấy ra biến check all những ng dùng đc click
     const actionTable = computed(() => store.state.user.actionTable); //Lấy danh sách các chức năng
-    const recordPage = ref(20);
     const cancelAction = ref({}); // hành động đóng notification
     const agreeAction = ref({}); // hành hoàn tác và đóng notification
     const messageAction = ref({}); // Thông báo hiển thị lên notification
@@ -158,8 +159,16 @@ export default {
     const isShowLoaderTable = ref(false); // Biến chứa trạng thái ẩn hiện loader table
     const isShowSettingTable = ref(false); // Biến chứa trạng thái ẩn hiện setting table
     const isShowSettingTableAnimation = ref(false); // Biến chứa trạng thái ẩn hiện setting table
-    watch(recordPage, (newValue) => {
-      console.log("Loading: " + newValue);
+    const countRecordPageUser = ref(getCountRecordPageUser()); // lấy ra số lượng bản ghi của page
+    const recordSelectPaging = ref(0); // biến theo dõi số bản ghi muốn lấy chuyển trang mặc định lấy từ bản ghi số 0
+    // Kiểm tra sự thay đổi của biến số lượng bản ghi trên 1 trang và thực hiện reload lại dữ liệu đúng số lượng
+    watch(countRecordPageUser, (newValue) => {
+      setCountRecordPageUser(newValue);
+      loadData();
+    });
+    watch(recordSelectPaging, (newValue) => {
+      console.log("Load lấy bản ghi bắt đầu từ bản ghi số: " + newValue);
+      loadData();
     });
     async function loadData() {
       isShowLoaderTable.value = true; // Kích hoạt hiệu ứng loader table
@@ -291,12 +300,13 @@ export default {
     }
     return {
       userList,
+      totalCount,
       columns,
       checkAllRecord,
       actionTable,
       isShowModal,
       isShowModalAnimation,
-      recordPage,
+      countRecordPageUser,
       userEdit,
       cancelAction,
       agreeAction,
@@ -305,6 +315,7 @@ export default {
       messageAction,
       isShowLoaderTable,
       isShowSettingTable,
+      recordSelectPaging,
       isShowSettingTableAnimation,
       checkShowActionSeries,
       handleShowSettingTable,
@@ -474,32 +485,5 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-.show-paging {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 16px;
-}
-.show-paging_item {
-  cursor: pointer;
-}
-.show-paging_item.disabled {
-  color: #9e9e9e;
-  cursor: context-menu;
-}
-.show-paging_text {
-  margin: 0 6px;
-}
-.show-paging_text.active {
-  border: solid 1px var(--border__input);
-  padding: 0 0.5rem;
-  font-weight: bold;
-}
-.show-paging_item:last-child {
-  margin-left: 6px;
-}
-.show-paging_item:first-child {
-  margin-right: 6px;
 }
 </style>

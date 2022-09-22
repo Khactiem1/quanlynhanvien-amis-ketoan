@@ -104,6 +104,7 @@ const users = {
         { field: "address", isShow: true, header: "Địa chỉ", width: "200px" },
       ],
       userList: [],
+      totalCount: 100,
       //Biến check xem tất cả các danh sách có được check hay không
       CheckAll: false,
     };
