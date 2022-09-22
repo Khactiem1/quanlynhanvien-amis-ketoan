@@ -164,10 +164,11 @@ export default {
     // Kiểm tra sự thay đổi của biến số lượng bản ghi trên 1 trang và thực hiện reload lại dữ liệu đúng số lượng
     watch(countRecordPageUser, (newValue) => {
       setCountRecordPageUser(newValue);
+      console.log("Load lấy bản ghi bắt đầu từ bản ghi số: " + newValue + ' và lấy ' + countRecordPageUser.value + ' bản ghi');
       loadData();
     });
     watch(recordSelectPaging, (newValue) => {
-      console.log("Load lấy bản ghi bắt đầu từ bản ghi số: " + newValue + ' và lấy' + countRecordPageUser.value + ' bản ghi');
+      console.log("Load lấy bản ghi bắt đầu từ bản ghi số: " + newValue + ' và lấy ' + countRecordPageUser.value + ' bản ghi');
       loadData();
     });
     async function loadData() {
