@@ -56,19 +56,13 @@
           </div>
           <div class="form-group">
             <input-combobox
-              :options="[
-                { value: 'Đà Nẵng', header: 'Đà Nẵng' },
-                { value: 'Hà Nội', header: 'Hà Nội' },
-                { value: 'Hồ Chí Minh', header: 'Hồ Chí Minh' },
-                { value: 'Ngoại Giao Đoàn', header: 'Ngoại Giao Đoàn' },
-                { value: 'Duy Tân', header: 'Duy Tân' },
-              ]"
+              :options="optionUnit"
               :value="'value'"
               :header="'header'"
               :label="'Đơn vị'"
               :required="true"
               :messageValid="'Dữ liệu <đơn vị> không có trong danh mục.'"
-              :tab="3"
+              :tab="7"
               :class="{ 'is-valid': isValid && !user.unit }"
               v-model="user.unit"
             ></input-combobox>
@@ -77,7 +71,7 @@
             <input-default
               :type="'text'"
               :label="'Chức danh'"
-              :tab="4"
+              :tab="10"
               v-model="user.title"
             ></input-default>
           </div>
@@ -87,7 +81,7 @@
             <div class="form-group ms-small">
               <label>Ngày sinh</label>
               <input
-                :tabindex="5"
+                :tabindex="3"
                 v-model="user.birth"
                 class="input"
                 type="date"
@@ -100,19 +94,19 @@
                   label="Nam"
                   :value="MALE"
                   v-model="user.sex"
-                  :tab="6"
+                  :tab="4"
                 ></input-radio>
                 <input-radio
                   label="Nữ"
                   :value="FEMALE"
                   v-model="user.sex"
-                  :tab="7"
+                  :tab="5"
                 ></input-radio>
                 <input-radio
                   label="Khác"
                   :value="OTHER"
                   v-model="user.sex"
-                  :tab="8"
+                  :tab="6"
                 ></input-radio>
               </div>
             </div>
@@ -122,7 +116,7 @@
               <input-default
                 :type="'text'"
                 :label="'Số CMND'"
-                :tab="9"
+                :tab="8"
                 :toolTip="'Số chứng minh nhân dân'"
                 v-model="user.cmnd"
               ></input-default>
@@ -130,7 +124,7 @@
             <div class="form-group ms-small">
               <label>Ngày cấp</label>
               <input
-                :tabindex="10"
+                :tabindex="9"
                 v-model="user.dateRange"
                 class="input"
                 type="date"
@@ -294,20 +288,20 @@ export default {
   setup(props, context) {
     const { QUESTION_DATA_CHANGE, ERROR_EMPTY_DATA, ERROR_CORRECT_DATA } =
       notificationMessage;
-    const inputFocus = ref(null);
-    const focusLoop = ref(null);
-    const stateAddUser = ref(true);
-    const { userEdit } = toRefs(props);
-    const cancelAction = ref({});
-    const agreeAction = ref({});
-    const messageAction = ref({});
-    const isValid = ref(false);
-    const isShowNotificationQuestion = ref(false);
-    const isShowNotificationError = ref(false);
+    const inputFocus = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ input phục vụ cho việc dom đến để focus
+    const focusLoop = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ tab phục vụ cho việc xây dựng vòng lặp phím tab
+    const stateAddUser = ref(true); //(Khắc Tiềm - 15.09.2022)  Biến kiểm tra trạng thái thêm hay sửa 
+    const { userEdit } = toRefs(props); //(Khắc Tiềm - 15.09.2022)  Biến chứa dữ liệu props nhận vào là một user | employee
+    const cancelAction = ref({}); //(Khắc Tiềm - 15.09.2022)  biến chứa các hành động huỷ thông báo
+    const agreeAction = ref({}); //(Khắc Tiềm - 15.09.2022)  Biến chứa các hành động chấp nhận thông báo
+    const messageAction = ref({}); //(Khắc Tiềm - 15.09.2022)  Biến chứa thông tin hiển thị thông báo
+    const isValid = ref(false); //(Khắc Tiềm - 15.09.2022)  Biến điều kiện hiển thị các ô nhập sẽ validate
+    const isShowNotificationQuestion = ref(false); //(Khắc Tiềm - 15.09.2022)  Biến hiển thị thông báo hỏi
+    const isShowNotificationError = ref(false); //(Khắc Tiềm - 15.09.2022)  Biến hiển thị thông báo lỗi
     const store = useStore();
     const { ESC, CTRL, SHIFT, S, MALE, FEMALE, OTHER } = eNum;
     const { validateEmail, validatePhone } = validate;
-    const eventCtrlShiftS = [];
+    const eventCtrlShiftS = []; //(Khắc Tiềm - 15.09.2022)  lưu lại giá trị các phím bấm tắt không ngắt quãng
     const user = ref({
       name: "",
       sex: MALE,
@@ -326,7 +320,7 @@ export default {
       address: "",
       userId: "",
     });
-    const userEditReset = ref(null);
+    const userEditReset = ref(null); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sửa nếu form sửa thì sẽ nhận được thông tin cần sửa
     const userReset = ref({
       name: "",
       sex: MALE,
@@ -344,15 +338,22 @@ export default {
       email: "",
       address: "",
       userId: "",
-    });
+    }); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sẽ reset sau khi thêm, sửa mà form không đóng
+    const optionUnit = [
+      { value: "Đà Nẵng", header: "Đà Nẵng" },
+      { value: "Hà Nội", header: "Hà Nội" },
+      { value: "Hồ Chí Minh", header: "Hồ Chí Minh" },
+      { value: "Ngoại Giao Đoàn", header: "Ngoại Giao Đoàn" },
+      { value: "Duy Tân", header: "Duy Tân" },
+    ]; //(Khắc Tiềm - 15.09.2022)  danh sách đơn vị
     onBeforeMount(() => {
       if (userEdit.value) {
-        user.value = { ...userEdit.value }; // chuyển đổi props thành data
+        user.value = { ...userEdit.value }; //(Khắc Tiềm - 15.09.2022)  chuyển đổi props thành data
         stateAddUser.value = false;
         userEditReset.value = { ...userEdit.value };
       }
     });
-    //Hàm xử lý các event nút bấm tắt
+    //(Khắc Tiềm - 15.09.2022) Hàm xử lý các event nút bấm tắt
     const handleEvent = function (event) {
       if (event.keyCode === ESC) {
         handleCloseModal();
@@ -364,13 +365,13 @@ export default {
         if (!eventCtrlShiftS.includes(event.keyCode)) {
           eventCtrlShiftS.push(event.keyCode);
           if (eventCtrlShiftS.length === 3) {
-            //Khi bấm đủ 3 phím sẽ kích hoạt hành động nhấn
+            //(Khắc Tiềm - 15.09.2022) Khi bấm đủ 3 phím sẽ kích hoạt hành động nhấn
             eventCtrlShiftS.length = 0;
             handleSaveData(false);
           } else if (eventCtrlShiftS.length === 2) {
-            //Nếu số lượng nút bấm mà === 2 trong đó k có nút shift thì sẽ là chức năng khác
+            //(Khắc Tiềm - 15.09.2022) Nếu số lượng nút bấm mà === 2 trong đó k có nút shift thì sẽ là chức năng khác
             if (!eventCtrlShiftS.includes(SHIFT)) {
-              event.preventDefault(); //Không cho trình duyệt mở save as khi bấm ctrl + s
+              event.preventDefault(); //(Khắc Tiềm - 15.09.2022) Không cho trình duyệt mở save as khi bấm ctrl + s
               eventCtrlShiftS.length = 0;
               handleSaveData(true);
             }
@@ -378,7 +379,7 @@ export default {
         }
       }
     };
-    // Hàm xử lý khi các phím tắt bấm bị ngắt quãng thì hành động sẽ k đc thực hiện
+    //(Khắc Tiềm - 15.09.2022)  Hàm xử lý khi các phím tắt bấm bị ngắt quãng thì hành động sẽ k đc thực hiện
     const handleEventInterrupt = function (event) {
       if (
         event.keyCode === CTRL ||
@@ -390,24 +391,44 @@ export default {
         }
       }
     };
-    //Hàm đóng mở thông báo nhập sai dữ liệu
+    //(Khắc Tiềm - 15.09.2022) Hàm đóng mở thông báo nhập sai dữ liệu
     function handleToggleNotificationError() {
       isShowNotificationError.value = !isShowNotificationError.value;
     }
-    //Hàm xử lý sự kiện khi bấm nút save
+    //(Khắc Tiềm - 15.09.2022) Hàm xử lý sự kiện khi bấm nút save
     const handleSaveData = async function (closeModal) {
       if (
         user.value.userId.trim() == "" ||
         user.value.name.trim() == "" ||
-        !user.value.unit
+        !user.value.unit ||
+        optionUnit.filter((item) => item.value !== user.value.unit).length === 0
       ) {
         agreeAction.value = {
           display: "Đóng",
           action: handleToggleNotificationError,
         };
-        messageAction.value = {
-          display: ERROR_EMPTY_DATA,
-        };
+        if (user.value.userId.trim() == "") {
+          messageAction.value = {
+            display: ERROR_EMPTY_DATA + "mã nhân viên",
+          };
+        } else if (user.value.name.trim() == "") {
+          messageAction.value = {
+            display: ERROR_EMPTY_DATA + "Tên nhân viên",
+          };
+        } else {
+          if (!user.value.unit || user.value.unit === "") {
+            messageAction.value = {
+              display: ERROR_EMPTY_DATA + "Đơn vị",
+            };
+          } else if (
+            optionUnit.filter((item) => item.value !== user.value.unit)
+              .length === 0
+          ) {
+            messageAction.value = {
+              display: "Đơn vị không có trong danh mục",
+            };
+          }
+        }
         isValid.value = true;
         handleToggleNotificationError();
       } else if (
@@ -421,64 +442,83 @@ export default {
           display: "Đóng",
           action: handleToggleNotificationError,
         };
-        messageAction.value = {
-          display: ERROR_CORRECT_DATA,
-        };
+        if (
+          validatePhone(user.value.phoneNumber) === false &&
+          user.value.phoneNumber != ""
+        ) {
+          messageAction.value = {
+            display: ERROR_CORRECT_DATA + "Điện thoại di động",
+          };
+        } else if (
+          validatePhone(user.value.landlinePhone) === false &&
+          user.value.landlinePhone != ""
+        ) {
+          messageAction.value = {
+            display: ERROR_CORRECT_DATA + "Điện thoại cố định",
+          };
+        } else if (
+          validateEmail(user.value.email) === false &&
+          user.value.email != ""
+        ) {
+          messageAction.value = {
+            display: ERROR_CORRECT_DATA + "Email",
+          };
+        }
         handleToggleNotificationError();
       } else {
         if (stateAddUser.value) {
-          // Thêm
-          // Gọi hàm loading quay quay ở đây
+          //(Khắc Tiềm - 15.09.2022)  Thêm
+          //(Khắc Tiềm - 15.09.2022)  Gọi hàm loading quay quay ở đây
           store.dispatch("config/setToggleShowLoaderAction");
           await store.dispatch("user/addUserAction", user.value);
           store.dispatch("config/setToggleShowLoaderAction");
-          // tắt hàm loading quay quay ở đây
+          //(Khắc Tiềm - 15.09.2022)  tắt hàm loading quay quay ở đây
         } else {
-          // sửa
+          //(Khắc Tiềm - 15.09.2022)  sửa
           store.dispatch("config/setToggleShowLoaderAction");
           await store.dispatch("user/editUserAction", user.value);
           store.dispatch("config/setToggleShowLoaderAction");
-          stateAddUser.value = true; // sau khi sửa xong sửa trạng thái modal thành thêm user
+          stateAddUser.value = true; //(Khắc Tiềm - 15.09.2022)  sau khi sửa xong sửa trạng thái modal thành thêm user
         }
         if (closeModal === true) {
           context.emit("handle-click-close-modal");
         } else {
           isValid.value = false;
           user.value = { ...userReset.value };
-          inputFocus.value.tagInput.focus(); //Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
+          inputFocus.value.tagInput.focus(); //(Khắc Tiềm - 15.09.2022) Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
         }
       }
     };
-    // hàm xử lý lặp focus
+    //(Khắc Tiềm - 15.09.2022)  hàm xử lý lặp focus
     const handleLoopFocus = function () {
       inputFocus.value.tagInput.focus();
     };
-    //Khi mounted component thì sẽ lắng nghe sự kiện các phím tắ
+    //(Khắc Tiềm - 15.09.2022) Khi mounted component thì sẽ lắng nghe sự kiện các phím tắ
     onMounted(() => window.addEventListener("keydown", handleEvent));
     onMounted(() => focusLoop.value.addEventListener("focus", handleLoopFocus));
     onMounted(() => window.addEventListener("keyup", handleEventInterrupt));
-    // Khi unMounted thì sẽ xoá bỏ các sự kiện khỏi bộ nhớ
+    //(Khắc Tiềm - 15.09.2022)  Khi unMounted thì sẽ xoá bỏ các sự kiện khỏi bộ nhớ
     onUnmounted(() => window.removeEventListener("keydown", handleEvent));
     onUnmounted(() => window.removeEventListener("focus", handleLoopFocus));
     onUnmounted(() =>
       window.removeEventListener("keyup", handleEventInterrupt)
     );
-    // Hàm xử lý đóng mở thông báo
+    //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng mở thông báo
     function handleToggleNotificationQuestion() {
       isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
     }
-    // Hàm xử lý đóng thông báo và đóng modal
+    //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng thông báo và đóng modal
     function handleCloseNotificationAndCloseModal() {
       isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
       context.emit("handle-click-close-modal");
     }
-    // Hàm xử lý đóng thông báo và modal và thêm dữ liệu
+    //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng thông báo và modal và thêm dữ liệu
     function handleSaveDataAndCloseNotificationAndCloseModal() {
       isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
       handleSaveData(true);
     }
     function handleCloseModal(closeNow) {
-      //Kiếm tra dữ liệu khi đóng form khác thì hỏi có lưu hay không
+      //(Khắc Tiềm - 15.09.2022) Kiếm tra dữ liệu khi đóng form khác thì hỏi có lưu hay không
       if (closeNow) {
         context.emit("handle-click-close-modal");
       } else if (stateAddUser.value) {
@@ -531,6 +571,7 @@ export default {
       isValid,
       cancelAction,
       focusLoop,
+      optionUnit,
       agreeAction,
       messageAction,
       isShowNotificationQuestion,

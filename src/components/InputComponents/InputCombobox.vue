@@ -38,19 +38,19 @@ import { ref, toRefs, onMounted, onUnmounted, onBeforeMount, watch } from "vue";
 import eNum from "../../utils/eNum";
 export default {
   props: {
-    modelValue: {}, //v-model
+    modelValue: {}, //(Khắc Tiềm - 15.09.2022)  v-model
     value: {
-      type: String, // key được lấy làm value trong object
+      type: String, //(Khắc Tiềm - 15.09.2022)   key được lấy làm value trong object
     },
     header: {
-      type: String, // key được hiển thị lên cho người dùng
+      type: String, //(Khắc Tiềm - 15.09.2022)   key được hiển thị lên cho người dùng
     },
-    defaultValue: {}, // key mặc định
+    defaultValue: {}, //(Khắc Tiềm - 15.09.2022)   key mặc định
     label: {
-      type: String, // label bổ nghĩa cho combo box
+      type: String, //(Khắc Tiềm - 15.09.2022)   label bổ nghĩa cho combo box
     },
     options: {
-      // mảng dữ liệu bên trong là các object dữ liệu
+      //(Khắc Tiềm - 15.09.2022)   mảng dữ liệu bên trong là các object dữ liệu
       type: Array,
       default: () => [],
     },
@@ -62,12 +62,12 @@ export default {
     const { options, header, modelValue, defaultValue, value, required } = toRefs(props);
     const { UP, DOWN, ENTER, TAB } = eNum;
     const isValid = ref(false);
-    const isShow = ref(false); // biến thực hiện ẩn mở dropdown
-    const template = ref(null); // biến bắt lấy thẻ to nhất của component
-    const input = ref(null); // biến bắt thẻ input
-    const valueClick = ref(null); // biến lưu dữ liệu value khi được click
-    const headerValue = ref(null); // biến lưu dữ liệu sẽ hiển thị lên giao diện người dùng được chọn
-    //nếu có sự thay đổi modelValue từ bên ngoài thì sẽ check render dropdown cho hợp lý
+    const isShow = ref(false); //(Khắc Tiềm - 15.09.2022)   biến thực hiện ẩn mở dropdown
+    const template = ref(null); //(Khắc Tiềm - 15.09.2022)   biến bắt lấy thẻ to nhất của component
+    const input = ref(null); //(Khắc Tiềm - 15.09.2022)   biến bắt thẻ input
+    const valueClick = ref(null); //(Khắc Tiềm - 15.09.2022)   biến lưu dữ liệu value khi được click
+    const headerValue = ref(null); //(Khắc Tiềm - 15.09.2022)   biến lưu dữ liệu sẽ hiển thị lên giao diện người dùng được chọn
+    //(Khắc Tiềm - 15.09.2022)  nếu có sự thay đổi modelValue từ bên ngoài thì sẽ check render dropdown cho hợp lý
     watch(modelValue, () => {
       let checkModelValueCoincideValue = false;
       options.value.forEach((item) => {
@@ -86,10 +86,10 @@ export default {
         isValid.value = false;
       }
     });
-    //hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
+    //(Khắc Tiềm - 15.09.2022)  hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
     const handleEnum = function (event) {
       if (event.keyCode === UP) {
-        // xử lý bấm lên
+        //(Khắc Tiềm - 15.09.2022)   xử lý bấm lên
         if (!valueClick.value && options.value) {
           valueClick.value = options.value[0][value.value];
           headerValue.value = options.value[0][header.value];
@@ -106,7 +106,7 @@ export default {
           }
         }
       } else if (event.keyCode === DOWN) {
-        // xử lý bấm xuống
+        //(Khắc Tiềm - 15.09.2022)   xử lý bấm xuống
         if (!valueClick.value && options.value) {
           valueClick.value = options.value[0][value.value];
           headerValue.value = options.value[0][header.value];
@@ -123,18 +123,18 @@ export default {
           }
         }
       } else if (event.keyCode === ENTER) {
-        // xử lý bấm enter
+        //(Khắc Tiềm - 15.09.2022)   xử lý bấm enter
         context.emit("update:modelValue", valueClick.value);
         isShow.value = !isShow.value;
         window.removeEventListener("keydown", handleEnum);
       } else if (event.keyCode === TAB) {
-        // xử lý bấm tab
+        //(Khắc Tiềm - 15.09.2022)   xử lý bấm tab
         context.emit("update:modelValue", valueClick.value);
         isShow.value = !isShow.value;
         window.removeEventListener("keydown", handleEnum);
       }
     };
-    // hàm xử lý ẩn dropdown khi click không trúng vào component
+    //(Khắc Tiềm - 15.09.2022)   hàm xử lý ẩn dropdown khi click không trúng vào component
     const handleClickTemplate = function () {
       const isClick = template.value.contains(event.target);
       if (!isClick) {
@@ -144,21 +144,21 @@ export default {
         }
       }
     };
-    // hàm xử lý khi người dùng focus vào ô input sẽ hiện dropdown
+    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng focus vào ô input sẽ hiện dropdown
     function handleFocusInput() {
       if (!isShow.value) {
         isShow.value = true;
         window.addEventListener("keydown", handleEnum);
       }
     }
-    // hàm xử lý khi người dùng nhập input sẽ hiện dropdown
+    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng nhập input sẽ hiện dropdown
     function handleInput() {
       if (!isShow.value) {
         isShow.value = true;
         window.addEventListener("keydown", handleEnum);
       }
     }
-    // hàm xử lý khi người dùng click vào từng item trong dropdown
+    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng click vào từng item trong dropdown
     function handleClickItem(value, index) {
       context.emit("update:modelValue", value);
       isShow.value = !isShow.value;
@@ -166,7 +166,7 @@ export default {
       valueClick.value = value;
       window.removeEventListener("keydown", handleEnum);
     }
-    // hàm xử lý khi người dùng bấm vào icon mở hoặc đóng dropdown
+    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng bấm vào icon mở hoặc đóng dropdown
     function handleClickOpenCombobox() {
       isShow.value = !isShow.value;
       if (isShow.value) {
@@ -176,7 +176,7 @@ export default {
         window.removeEventListener("keydown", handleEnum);
       }
     }
-    // trước khi mounted thì sẽ set giá trị cho giá trị đc click thông qua v-model hoặc defaultValue
+    //(Khắc Tiềm - 15.09.2022)   trước khi mounted thì sẽ set giá trị cho giá trị đc click thông qua v-model hoặc defaultValue
     onBeforeMount(() => {
       options.value.forEach((item) => {
         if (
@@ -189,9 +189,9 @@ export default {
         }
       });
     });
-    // lắng nghe sự kiện click component
+    //(Khắc Tiềm - 15.09.2022)   lắng nghe sự kiện click component
     onMounted(() => window.addEventListener("click", handleClickTemplate));
-    // xoá bỏ sự kiện lắng nghe
+    //(Khắc Tiềm - 15.09.2022)   xoá bỏ sự kiện lắng nghe
     onUnmounted(() => window.removeEventListener("click", handleClickTemplate));
     return {
       input,
@@ -207,20 +207,20 @@ export default {
     };
   },
 };
-// <custom-combobox
-//     :options="[
-//       { name: 'Khắc Tiềm', age: 21 },
-//       { name: 'Đỗ Mạnh', age: 20 },
-//       { name: 'Lê Tú', age: 19 },
-//       { name: 'Quách Tỉnh', age: 18 },
-//     ]"
-//     :header="'name'"
-//     :value="'age'"
-//     :label="'Đơn vị'"
-//     v-model="combobox"
-//   >
-//   </custom-combobox>
-//      :defaultValue="combobox"
+//(Khắc Tiềm - 15.09.2022)   <custom-combobox
+//(Khắc Tiềm - 15.09.2022)       :options="[
+//(Khắc Tiềm - 15.09.2022)         { name: 'Khắc Tiềm', age: 21 },
+//(Khắc Tiềm - 15.09.2022)         { name: 'Đỗ Mạnh', age: 20 },
+//(Khắc Tiềm - 15.09.2022)         { name: 'Lê Tú', age: 19 },
+//(Khắc Tiềm - 15.09.2022)         { name: 'Quách Tỉnh', age: 18 },
+//(Khắc Tiềm - 15.09.2022)       ]"
+//(Khắc Tiềm - 15.09.2022)       :header="'name'"
+//(Khắc Tiềm - 15.09.2022)       :value="'age'"
+//(Khắc Tiềm - 15.09.2022)       :label="'Đơn vị'"
+//(Khắc Tiềm - 15.09.2022)       v-model="combobox"
+//(Khắc Tiềm - 15.09.2022)     >
+//(Khắc Tiềm - 15.09.2022)     </custom-combobox>
+//(Khắc Tiềm - 15.09.2022)        :defaultValue="combobox"
 </script>
 
 <style scoped>

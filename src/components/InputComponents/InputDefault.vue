@@ -42,7 +42,7 @@ export default {
     const isValid = ref(false);
     const isValidEmailPhone = ref(false);
     const { validateEmail, validatePhone } = validate;
-    //Sau khi được mounted vào dom thì nếu đc chỉ định focus ô input sẽ đc focus
+    //(Khắc Tiềm - 15.09.2022)Sau khi được mounted vào dom thì nếu đc chỉ định focus ô input sẽ đc focus
     onMounted(() => {
       if (focus.value === true) {
         setTimeout(() => {
@@ -50,6 +50,7 @@ export default {
         }, 150);
       }
     });
+    //(Khắc Tiềm - 15.09.2022) hàm xử lý nhập input và validate
     function handleInput(event) {
       context.emit("update:modelValue", event.target.value);
       isValidEmailPhone.value = false;
@@ -61,6 +62,7 @@ export default {
         }
       }
     }
+    //(Khắc Tiềm - 15.09.2022) hàm xử lý validate điện thoại và email
     function handleCheckEmailPhone(event) {
       if (event.target.value != "") {
         if (isEmail.value) {

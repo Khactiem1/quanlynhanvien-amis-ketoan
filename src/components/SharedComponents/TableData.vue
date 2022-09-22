@@ -144,7 +144,7 @@ export default {
     const rowColumn = ref(null);
     const positionAction = ref({ top: 0, right: 0 });
     const { MALE, FEMALE, OTHER } = eNum;
-    // Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
+    //(Khắc Tiềm - 15.09.2022) Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
     function Comma(number) {
       number = "" + number;
       if (number.length > 3) {
@@ -158,7 +158,7 @@ export default {
         return output;
       } else return number;
     }
-    // hàm xử lý hiển thị giới tính dựa trên enum
+    //(Khắc Tiềm - 15.09.2022) hàm xử lý hiển thị giới tính dựa trên enum
     function formatGender(gender) {
       if(MALE == gender){
         return "Nam";
@@ -170,7 +170,7 @@ export default {
         return "Khác";
       }
     }
-    // hàm xử lý hiển thị ngày/tháng/năm
+    //(Khắc Tiềm - 15.09.2022) hàm xử lý hiển thị ngày/tháng/năm
     function formatDate(date) {
       const d = new Date(date);
       let getMonth = d.getMonth() + 1 + '';
@@ -183,7 +183,7 @@ export default {
       }
       return [getDate, getMonth, d.getFullYear()].join("/");
     }
-    // Hàm xử lý ẩn hiện các action
+    //(Khắc Tiềm - 15.09.2022) Hàm xử lý ẩn hiện các action
     function handleShowAction(event, row) {
       if (JSON.stringify(rowColumn.value) === JSON.stringify(row)) {
         rowColumn.value = null;
@@ -196,11 +196,11 @@ export default {
         }
       }
     }
-    // Hàm xử lý ẩn action
+    //(Khắc Tiềm - 15.09.2022) Hàm xử lý ẩn action
     function handleCloseAction() {
       rowColumn.value = null;
     }
-    // Hàm xử lý vị trí ẩn hiện các action
+    //(Khắc Tiềm - 15.09.2022) Hàm xử lý vị trí ẩn hiện các action
     function setPositionActionTable(event) {
       event.path.forEach((item) => {
         try {
@@ -322,7 +322,7 @@ tbody tr.active,
 .table tbody th:first-child,
 .table tbody td:last-child,
 .table tbody td:first-child {
-  background-color: var(--while__color);
+  background-color: aliceblue;
 }
 .table tbody td:last-child {
   border-right: none;

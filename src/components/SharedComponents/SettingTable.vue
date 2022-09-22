@@ -60,6 +60,10 @@ export default {
   setup(props) {
     const { handleShowSettingTable } = toRefs(props);
     const { ESC } = eNum;
+    /**
+     * Hàm xử lý đóng mở cài đặt table
+     * Khắc Tiềm 19.09.2022
+     */
     const handleEventKey = function (event) {
       if (event.keyCode === ESC) {
         handleShowSettingTable;

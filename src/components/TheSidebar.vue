@@ -63,7 +63,7 @@ export default {
   setup(){
     const store = useStore();
     let showSidebar = computed(() => store.state.config.showSidebar);
-    //Hàm sử lý sự kiện toggle sidebar
+    //(Khắc Tiềm - 15.09.2022)Hàm sử lý sự kiện toggle sidebar
     function handleToggleSidebar(){
       store.dispatch("config/setToggleShowSidebarAction");
     }

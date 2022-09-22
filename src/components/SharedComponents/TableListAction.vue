@@ -45,8 +45,8 @@ export default {
     },
   },
   setup(props) {
-    const template = ref(null); // biến bắt lấy thẻ to nhất của component
-    // khi không click trúng component thì sẽ unmount component
+    const template = ref(null); //(Khắc Tiềm - 15.09.2022) biến bắt lấy thẻ to nhất của component
+    //(Khắc Tiềm - 15.09.2022) khi không click trúng component thì sẽ unmount component
     const handleClickTemplate = function () {
       try {
         const isClick = template.value.contains(event.target);
@@ -57,11 +57,11 @@ export default {
         return;
       }
     };
-    // lắng nghe sự kiện click component
+    //(Khắc Tiềm - 15.09.2022) lắng nghe sự kiện click component
     setTimeout(() => {
       window.addEventListener("click", handleClickTemplate);
     }, 100);
-    // xoá bỏ sự kiện lắng nghe
+    //(Khắc Tiềm - 15.09.2022) xoá bỏ sự kiện lắng nghe
     onUnmounted(() => window.removeEventListener("click", handleClickTemplate));
 
     return {

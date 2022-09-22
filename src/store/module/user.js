@@ -42,7 +42,7 @@ const users = {
           textAlign: "center",
           formatDate: true,
           width: "130px",
-        }, //formatDate Định dạng hiển thị ngày/tháng/năm
+        }, //(Khắc Tiềm - 15.09.2022)formatDate Định dạng hiển thị ngày/tháng/năm
         {
           field: "branchBank",
           isShow: true,
@@ -62,7 +62,7 @@ const users = {
           isShow: true,
           header: "Số tài khoản",
           width: "150px",
-        }, //fractionSize: true ,fractionSize Thêm dấu phẩy vào đơn vị tiền tệ
+        }, //(Khắc Tiềm - 15.09.2022)fractionSize: true ,fractionSize Thêm dấu phẩy vào đơn vị tiền tệ
         {
           field: "nameBank",
           isShow: true,
@@ -105,27 +105,27 @@ const users = {
       ],
       userList: [],
       totalCount: 100,
-      //Biến check xem tất cả các danh sách có được check hay không
+      //(Khắc Tiềm - 15.09.2022)Biến check xem tất cả các danh sách có được check hay không
       CheckAll: false,
     };
   },
   mutations: {
-    // Xét toggle các trường được hiển thị lên giao diện table
+    //(Khắc Tiềm - 15.09.2022) Xét toggle các trường được hiển thị lên giao diện table
     setToggleShowColumnTableMutation(state, payload) {
       state.columns[payload].isShow = !state.columns[payload].isShow;
     },
-    // Xét trống mảng user
+    //(Khắc Tiềm - 15.09.2022) Xét trống mảng user
     setEmptyUserMutation(state) {
       state.userList = [];
     },
-    // lấy danh sách user
+    //(Khắc Tiềm - 15.09.2022) lấy danh sách user
     setUserListMutation(state, payload) {
       state.userList = [...payload];
     },
-    //Xét toggle checkbox phần tử được check
+    //(Khắc Tiềm - 15.09.2022)Xét toggle checkbox phần tử được check
     setCheckboxUserMutation(state, payload) {
       state.userList[payload].Check = !state.userList[payload].Check;
-      //Kiểm tra xem tất cả đc check thì nút tất cả cũng sẽ được check
+      //(Khắc Tiềm - 15.09.2022)Kiểm tra xem tất cả đc check thì nút tất cả cũng sẽ được check
       let checkAllUser = true;
       state.userList.forEach((item) => {
         if (item.Check === false || !item.Check) {
@@ -139,7 +139,7 @@ const users = {
         state.CheckAll = false;
       }
     },
-    //Xét toggle tất cả checkbox được check
+    //(Khắc Tiềm - 15.09.2022)Xét toggle tất cả checkbox được check
     setAllCheckboxUserMutation(state) {
       if (state.CheckAll === true) {
         state.CheckAll = false;

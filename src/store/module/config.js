@@ -23,5 +23,5 @@ const config = {
     },
   },
 };
-//store.dispatch("config/setToggleShowLoaderAction");
+//(Khắc Tiềm - 15.09.2022)store.dispatch("config/setToggleShowLoaderAction");
 export default config;

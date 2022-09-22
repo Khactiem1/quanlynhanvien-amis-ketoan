@@ -26,11 +26,11 @@ import { defineComponent, computed } from "vue";
 export default defineComponent({
   name: "InputCheckbox",
   props: [
-    "modelValue", //v-model
-    "value", //Giá trị của ô checkbox
-    "trueValue", //Dữ liệu khi được check
-    "falseValue", //Dữu liệu khi không được check
-    "checked", //Có được check hay không khi k sử dụng đến v-model
+    "modelValue", //(Khắc Tiềm - 15.09.2022)  v-model
+    "value", //(Khắc Tiềm - 15.09.2022)  Giá trị của ô checkbox
+    "trueValue", //(Khắc Tiềm - 15.09.2022)  Dữ liệu khi được check
+    "falseValue", //(Khắc Tiềm - 15.09.2022)  Dữu liệu khi không được check
+    "checked", //(Khắc Tiềm - 15.09.2022)  Có được check hay không khi k sử dụng đến v-model
     "id",
     "name",
     "round",
@@ -49,8 +49,8 @@ export default defineComponent({
       },
       set(value) {
         emit("update:modelValue", value);
-        emit("custom-handle-click-checkbox"); //custom sự kiện check không có value
-        emit("custom-handle-click-checkbox-with-value", value); //custom sự kiện check có value truyền vào
+        emit("custom-handle-click-checkbox"); //(Khắc Tiềm - 15.09.2022)  custom sự kiện check không có value
+        emit("custom-handle-click-checkbox-with-value", value); //(Khắc Tiềm - 15.09.2022)  custom sự kiện check có value truyền vào
       },
     });
     return { computedValue };
