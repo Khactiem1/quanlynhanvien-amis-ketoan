@@ -167,7 +167,7 @@ export default {
       loadData();
     });
     watch(recordSelectPaging, (newValue) => {
-      console.log("Load lấy bản ghi bắt đầu từ bản ghi số: " + newValue);
+      console.log("Load lấy bản ghi bắt đầu từ bản ghi số: " + newValue + ' và lấy' + countRecordPageUser.value + ' bản ghi');
       loadData();
     });
     async function loadData() {
