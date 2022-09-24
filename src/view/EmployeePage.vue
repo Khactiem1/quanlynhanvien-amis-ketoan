@@ -43,7 +43,7 @@
           <!-- Table -->
           <table-data
             :tableList="userList"
-            :checkAllRecord="checkAllRecord"
+            :checkAllRecord="checkShowActionSeries.length === userList.length && checkShowActionSeries.length > 0"
             :handleClickCheckbox="handleClickCheckbox"
             :columns="columns"
             :actionTable="actionTable"
@@ -132,54 +132,199 @@ export default {
     PagingPage,
   },
   setup() {
-    const { getCountRecordPageUser, setCountRecordPageUser } = index; //(Khắc Tiềm - 15.09.2022) hàm lấy và lưu số lượng bản ghi của page
+    /**
+     * hàm lấy và lưu số lượng bản ghi của page
+     * Khắc Tiềm - 15.09.2022
+     */
+    const { getCountRecordPageUser, setCountRecordPageUser } = index;
+
+    /**
+     * Các hành động của table
+     * Khắc Tiềm - 15.09.2022
+     */
     const { EDIT, DELETE } = actionTableStore;
+
+    /**
+     * Các thông báo của cảnh báo khi xoá bản ghi
+     * Khắc Tiềm - 15.09.2022
+     */
     const { WANNING_DELETE, WANNING_DELETE_ALL } = notification;
+
+    /**
+     * Sử dụng store của vuex
+     * Khắc Tiềm - 15.09.2022
+     */
     const store = useStore();
-    const userList = computed(() => store.state.user.userList); //(Khắc Tiềm - 15.09.2022)Lấy danh sách ng dùng
-    const totalCount = computed(() => store.state.user.totalCount); //(Khắc Tiềm - 15.09.2022)Lấy ra tổng số lượng bản ghi
+
+    /**
+     * Lấy danh sách ng dùng
+     * Khắc Tiềm - 15.09.2022
+     */
+    const userList = computed(() => store.state.user.userList);
+
+    /**
+     * Lấy ra tổng số lượng bản ghi
+     * Khắc Tiềm - 15.09.2022
+     */
+    const totalCount = computed(() => store.state.user.totalCount);
+
+    /**
+     * Lấy danh sách ng dùng được check để thực hiện chức năng như xoá hàng loạt
+     * Khắc Tiềm - 15.09.2022
+     */
     const checkShowActionSeries = computed(() =>
-      userList.value.filter((value) => value.Check)
-    ); //(Khắc Tiềm - 15.09.2022)Lấy danh sách ng dùng được check để thực hiện chức năng như xoá hàng loạt
+      userList.value.filter((value) => value.Check).map((value) => value.id)
+    );
+
+    /**
+     * Lấy danh sách columns hiển thị, lọc ra cái cần được hiển thị
+     * Khắc Tiềm - 15.09.2022
+     */
     const columns = computed(() =>
       store.state.user.columns.filter(function (value) {
         return value.isShow;
       })
-    ); //(Khắc Tiềm - 15.09.2022)Lấy danh sách columns hiển thị, lọc ra cái cần được hiển thị
-    const columnSetting = computed(() => store.state.user.columns); //(Khắc Tiềm - 15.09.2022)Lấy danh sách columns hiển thị cài đặt
-    const checkAllRecord = computed(() => store.state.user.CheckAll); //(Khắc Tiềm - 15.09.2022)Lấy ra biến check all những ng dùng đc click
-    const actionTable = computed(() => store.state.user.actionTable); //(Khắc Tiềm - 15.09.2022)Lấy danh sách các chức năng
-    const cancelAction = ref({}); //(Khắc Tiềm - 15.09.2022) hành động đóng notification
-    const agreeAction = ref({}); //(Khắc Tiềm - 15.09.2022) hành hoàn tác và đóng notification
-    const messageAction = ref({}); //(Khắc Tiềm - 15.09.2022) Thông báo hiển thị lên notification
-    const userEdit = ref(null); //(Khắc Tiềm - 15.09.2022) Chứa thông tin người cần sửa
-    const isShowModal = ref(false); //(Khắc Tiềm - 15.09.2022) Biến trạng thái ẩn hiện modal thêm sửa
-    const isShowModalAnimation = ref(false); //(Khắc Tiềm - 15.09.2022) Biến trạng thái khi mounted modal có hiệu ứng hiện từ từ
-    const isShowNotification = ref(false); //(Khắc Tiềm - 15.09.2022) biến kích hoạt đóng mở thông báo
-    const isShowLoaderTable = ref(false); //(Khắc Tiềm - 15.09.2022) Biến chứa trạng thái ẩn hiện loader table
-    const isShowSettingTable = ref(false); //(Khắc Tiềm - 15.09.2022) Biến chứa trạng thái ẩn hiện setting table
-    const isShowSettingTableAnimation = ref(false); //(Khắc Tiềm - 15.09.2022) Biến chứa trạng thái ẩn hiện setting table
-    const countRecordPageUser = ref(getCountRecordPageUser()); //(Khắc Tiềm - 15.09.2022) lấy ra số lượng bản ghi của page
-    const recordSelectPaging = ref(0); //(Khắc Tiềm - 15.09.2022) biến theo dõi số bản ghi muốn lấy chuyển trang mặc định lấy từ bản ghi số 0
-    //(Khắc Tiềm - 15.09.2022) Kiểm tra sự thay đổi của biến số lượng bản ghi trên 1 trang và thực hiện reload lại dữ liệu đúng số lượng
+    );
+
+    /**
+     * Lấy danh sách columns hiển thị cài đặt
+     * Khắc Tiềm - 15.09.2022
+     */
+    const columnSetting = computed(() => store.state.user.columns);
+
+    /**
+     * Lấy danh sách các chức năng
+     * Khắc Tiềm - 15.09.2022
+     */
+    const actionTable = computed(() => store.state.user.actionTable);
+
+    /**
+     * hành động đóng notification
+     * Khắc Tiềm - 15.09.2022
+     */
+    const cancelAction = ref({});
+
+    /**
+     * hành hoàn tác và đóng notification
+     * Khắc Tiềm - 15.09.2022
+     */
+    const agreeAction = ref({});
+
+    /**
+     * Thông báo hiển thị lên notification
+     * Khắc Tiềm - 15.09.2022
+     */
+    const messageAction = ref({});
+
+    /**
+     * Chứa thông tin người cần sửa
+     * Khắc Tiềm - 15.09.2022
+     */
+    const userEdit = ref(null);
+
+    /**
+     * Biến trạng thái ẩn hiện modal thêm sửa
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowModal = ref(false);
+
+    /**
+     * Biến trạng thái khi mounted modal có hiệu ứng hiện từ từ
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowModalAnimation = ref(false);
+
+    /**
+     * biến kích hoạt đóng mở thông báo
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowNotification = ref(false);
+
+    /**
+     * Biến chứa trạng thái ẩn hiện loader table
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowLoaderTable = ref(false);
+
+    /**
+     * Biến chứa trạng thái ẩn hiện setting table
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowSettingTable = ref(false);
+
+    /**
+     * Biến chứa trạng thái ẩn hiện setting table
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowSettingTableAnimation = ref(false);
+
+    /**
+     * lấy ra số lượng bản ghi của page
+     * Khắc Tiềm - 15.09.2022
+     */
+    const countRecordPageUser = ref(getCountRecordPageUser());
+
+    /**
+     * biến theo dõi số bản ghi muốn lấy chuyển trang mặc định lấy từ bản ghi số 0
+     * Khắc Tiềm - 15.09.2022
+     */
+    const recordSelectPaging = ref(0);
+
+    /**
+     * Kiểm tra sự thay đổi của biến số lượng bản ghi trên 1 trang và thực hiện reload lại dữ liệu đúng số lượng
+     * Khắc Tiềm - 15.09.2022
+     */
     watch(countRecordPageUser, (newValue) => {
       setCountRecordPageUser(newValue);
-      console.log("Load lấy bản ghi bắt đầu từ bản ghi số: " + newValue + ' và lấy ' + countRecordPageUser.value + ' bản ghi');
+      console.log(
+        "Load lấy bản ghi bắt đầu từ bản ghi số: " +
+          newValue +
+          " và lấy " +
+          countRecordPageUser.value +
+          " bản ghi"
+      );
       loadData();
     });
+
+    /**
+     * Kiểm tra lấy số trang dữ liệu nếu có sự thay đỔi số trag sẽ call api lấy dữ liệu
+     * Khắc Tiềm - 15.09.2022
+     */
     watch(recordSelectPaging, (newValue) => {
-      console.log("Load lấy bản ghi bắt đầu từ bản ghi số: " + newValue + ' và lấy ' + countRecordPageUser.value + ' bản ghi');
+      console.log(
+        "Load lấy bản ghi bắt đầu từ bản ghi số: " +
+          newValue +
+          " và lấy " +
+          countRecordPageUser.value +
+          " bản ghi"
+      );
       loadData();
     });
+
+    /**
+     * Hàm Load danh sách người dùng
+     * Khắc Tiềm - 15.09.2022
+     */
     async function loadData() {
-      isShowLoaderTable.value = true; //(Khắc Tiềm - 15.09.2022) Kích hoạt hiệu ứng loader table
+      //Kích hoạt hiệu ứng loader table
+      isShowLoaderTable.value = true;
       await store.dispatch("user/getUserListAction");
-      isShowLoaderTable.value = false; //(Khắc Tiềm - 15.09.2022) Dừng hiệu ứng loader table
+      //Dừng hiệu ứng loader table
+      isShowLoaderTable.value = false;
     }
+
+    /**
+     * Trước khi mounted sẽ load dữ liệu 1 lần
+     * Khắc Tiềm - 15.09.2022
+     */
     onBeforeMount(() => {
       loadData();
     });
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý xoá toàn bộ user
+
+    /**
+     * Hàm xử lý xoá toàn bộ user
+     * Khắc Tiềm - 15.09.2022
+     */
     function DeleteAll() {
       console.log("Đây là những thằng sẽ bị xoá hehe");
       console.log(checkShowActionSeries.value);
@@ -188,7 +333,11 @@ export default {
         "chưa xoá đâu khi nào có api 1 lần xoá cho tiện chứ giờ xoá k tiện hehe"
       );
     }
-    //(Khắc Tiềm - 15.09.2022)Hàm xử lý hỏi xoá hàng loạt
+
+    /**
+     *Hàm xử lý hỏi xoá hàng loạt
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleDeleteAll() {
       cancelAction.value = {
         display: "Không",
@@ -203,7 +352,11 @@ export default {
       };
       handleToggleNotification();
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý đóng mở setting table
+
+    /**
+     * Hàm xử lý đóng mở setting table
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleShowSettingTable() {
       if (isShowSettingTable.value === false) {
         isShowSettingTable.value = true;
@@ -217,24 +370,46 @@ export default {
         }, 150);
       }
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý toggle hiển thị các trường dữ liệu của bảng
+
+    /**
+     * Hàm xử lý toggle hiển thị các trường dữ liệu của bảng
+     * Tham số đầu vào là vị trí cột cần ẩn hiện
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleClickToggleSettingTable(fieldIndex) {
       store.dispatch("user/setToggleShowColumnTableAction", fieldIndex);
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý đóng mở thông báo
+
+    /**
+     * Hàm xử lý đóng mở thông báo
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleToggleNotification() {
       isShowNotification.value = !isShowNotification.value;
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý xoá một bản ghi
+
+    /**
+     * Hàm xử lý xoá một bản ghi
+     * Tham số đầu vào là ID bản ghi cần xoá
+     * Khắc Tiềm - 15.09.2022
+     */
     async function deleteUser(id) {
       handleToggleNotification();
-      //(Khắc Tiềm - 15.09.2022)Loading
+      //Loading
       store.dispatch("config/setToggleShowLoaderAction");
       await store.dispatch("user/deleteUserAction", id);
       store.dispatch("config/setToggleShowLoaderAction");
-      //(Khắc Tiềm - 15.09.2022)End Loading
+      //End Loading
     }
-    //(Khắc Tiềm - 15.09.2022)Hàm xử lý khi click vào các hành động của từng cột dữ liệu table
+
+    /**
+     * Hàm xử lý khi click vào các hành động của từng cột dữ liệu table
+     * Tham số đầu vào là
+     * action: Hành động VD: Nhân bản, sửa, xoá
+     * employeeId: ID record sẽ thay đổi dữ liệu sau khi thực hiện record
+     * employeeCode: Mã nhân viên
+     * Khắc Tiềm - 15.09.2022
+     */
     async function handleClickActionColumTable(
       action,
       employeeId,
@@ -244,11 +419,7 @@ export default {
         store.dispatch("config/setToggleShowLoaderAction");
         userEdit.value = await store.dispatch("user/getUserAction", employeeId);
         store.dispatch("config/setToggleShowLoaderAction");
-        isShowModal.value = !isShowModal.value;
-        //(Khắc Tiềm - 15.09.2022) Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
-        setTimeout(() => {
-          isShowModalAnimation.value = !isShowModalAnimation.value;
-        }, 0);
+        handleOpenModal(userEdit.value);
       } else if (action == DELETE) {
         cancelAction.value = {
           display: "Không",
@@ -265,7 +436,12 @@ export default {
         handleToggleNotification();
       }
     }
-    //(Khắc Tiềm - 15.09.2022)Hàm xử lý checkbox value true thì là check ô tất cả check, value là 0,1,2 là xử lý các phần tử được check
+
+    /**
+     * Hàm xử lý checkbox value true thì là check ô tất cả check, value là 0,1,2 là xử lý các phần tử được check
+     * Tham số đầu vào là vị trí record cần check true là check tất cả
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleClickCheckbox(value) {
       if (value === true) {
         store.dispatch("user/setAllCheckboxUserAction");
@@ -273,6 +449,12 @@ export default {
         store.dispatch("user/setCheckboxUserAction", value);
       }
     }
+
+    /**
+     * Hàm xử lý tìm kiếm dữ liệu
+     * Tham số đầu vào là event để lấy giá trị nhập
+     * Khắc Tiềm - 15.09.2022
+     */
     async function handleSearchData(event) {
       setTimeout(() => {
         console.log(
@@ -283,18 +465,28 @@ export default {
         loadData();
       }, 200);
     }
-    //(Khắc Tiềm - 15.09.2022)Hàm xử lý mở modal với state là trạng thái thêm hay sửa
-    function handleOpenModal() {
-      if (userEdit.value) {
-        userEdit.value = null; //(Khắc Tiềm - 15.09.2022) Nếu tồn tại user cần sửa thì sẽ xoá user cần sửa đi khi mở chức năng thêm
+
+    /**
+     * Hàm xử lý mở modal với state là trạng thái thêm hay sửa
+     * Tham số đầu vào nếu không có user thì sẽ set userEdit = null để mở modal thêm và ngược lại
+     * Khắc Tiềm - 15.09.2022
+     */
+    function handleOpenModal(user) {
+      if (!user) {
+        // Nếu tồn tại user cần sửa thì sẽ xoá user cần sửa đi khi mở chức năng thêm
+        userEdit.value = null;
       }
+      // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
       isShowModal.value = !isShowModal.value;
-      //(Khắc Tiềm - 15.09.2022) Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
       setTimeout(() => {
         isShowModalAnimation.value = !isShowModalAnimation.value;
       }, 0);
     }
-    //(Khắc Tiềm - 15.09.2022)Hàm xử lý đóng modal
+
+    /**
+     * Hàm xử lý đóng modal
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleCloseModal() {
       isShowModalAnimation.value = !isShowModalAnimation.value;
       isShowModal.value = !isShowModal.value;
@@ -303,7 +495,6 @@ export default {
       userList,
       totalCount,
       columns,
-      checkAllRecord,
       actionTable,
       isShowModal,
       isShowModalAnimation,

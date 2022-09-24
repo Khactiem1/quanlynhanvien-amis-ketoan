@@ -105,8 +105,6 @@ const users = {
       ],
       userList: [],
       totalCount: 100,
-      //(Khắc Tiềm - 15.09.2022)Biến check xem tất cả các danh sách có được check hay không
-      CheckAll: false,
     };
   },
   mutations: {
@@ -125,32 +123,21 @@ const users = {
     //(Khắc Tiềm - 15.09.2022)Xét toggle checkbox phần tử được check
     setCheckboxUserMutation(state, payload) {
       state.userList[payload].Check = !state.userList[payload].Check;
-      //(Khắc Tiềm - 15.09.2022)Kiểm tra xem tất cả đc check thì nút tất cả cũng sẽ được check
-      let checkAllUser = true;
-      state.userList.forEach((item) => {
-        if (item.Check === false || !item.Check) {
-          checkAllUser = false;
-          return;
-        }
-      });
-      if (checkAllUser === true) {
-        state.CheckAll = true;
-      } else {
-        state.CheckAll = false;
-      }
     },
     //(Khắc Tiềm - 15.09.2022)Xét toggle tất cả checkbox được check
     setAllCheckboxUserMutation(state) {
-      if (state.CheckAll === true) {
-        state.CheckAll = false;
-        state.userList.forEach((item, index) => {
-          state.userList[index].Check = false;
-        });
-      } else {
-        state.CheckAll = true;
-        state.userList.forEach((item, index) => {
-          state.userList[index].Check = true;
-        });
+      if (
+        state.userList.filter((value) => value.Check).length ===
+        state.userList.length
+      ) {
+        state.userList = state.userList.reduce((acc, cur) => {
+          return [...acc, { ...cur, Check: false }];
+        }, []);
+      }
+      else{
+        state.userList = state.userList.reduce((acc, cur) => {
+          return [...acc, { ...cur, Check: true }];
+        }, []);
       }
     },
   },
