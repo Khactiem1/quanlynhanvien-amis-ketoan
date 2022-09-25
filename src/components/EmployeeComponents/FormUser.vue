@@ -290,7 +290,7 @@ export default {
       notificationMessage;
     const inputFocus = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ input phục vụ cho việc dom đến để focus
     const focusLoop = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ tab phục vụ cho việc xây dựng vòng lặp phím tab
-    const stateAddUser = ref(true); //(Khắc Tiềm - 15.09.2022)  Biến kiểm tra trạng thái thêm hay sửa 
+    const stateAddUser = ref(true); //(Khắc Tiềm - 15.09.2022)  Biến kiểm tra trạng thái thêm hay sửa
     const { userEdit } = toRefs(props); //(Khắc Tiềm - 15.09.2022)  Biến chứa dữ liệu props nhận vào là một user | employee
     const cancelAction = ref({}); //(Khắc Tiềm - 15.09.2022)  biến chứa các hành động huỷ thông báo
     const agreeAction = ref({}); //(Khắc Tiềm - 15.09.2022)  Biến chứa các hành động chấp nhận thông báo
@@ -397,73 +397,59 @@ export default {
     }
     //(Khắc Tiềm - 15.09.2022) Hàm xử lý sự kiện khi bấm nút save
     const handleSaveData = async function (closeModal) {
-      if (
-        user.value.userId.trim() == "" ||
-        user.value.name.trim() == "" ||
-        !user.value.unit ||
-        optionUnit.filter((item) => item.value !== user.value.unit).length === 0
-      ) {
-        agreeAction.value = {
-          display: "Đóng",
-          action: handleToggleNotificationError,
+      agreeAction.value = {
+        display: "Đóng",
+        action: handleToggleNotificationError,
+      };
+      if (user.value.userId.trim() == "") {
+        messageAction.value = {
+          display: ERROR_EMPTY_DATA + "mã nhân viên",
         };
-        if (user.value.userId.trim() == "") {
-          messageAction.value = {
-            display: ERROR_EMPTY_DATA + "mã nhân viên",
-          };
-        } else if (user.value.name.trim() == "") {
-          messageAction.value = {
-            display: ERROR_EMPTY_DATA + "Tên nhân viên",
-          };
-        } else {
-          if (!user.value.unit || user.value.unit === "") {
-            messageAction.value = {
-              display: ERROR_EMPTY_DATA + "Đơn vị",
-            };
-          } else if (
-            optionUnit.filter((item) => item.value !== user.value.unit)
-              .length === 0
-          ) {
-            messageAction.value = {
-              display: "Đơn vị không có trong danh mục",
-            };
-          }
-        }
+        isValid.value = true;
+        handleToggleNotificationError();
+      } else if (user.value.name.trim() == "") {
+        messageAction.value = {
+          display: ERROR_EMPTY_DATA + "Tên nhân viên",
+        };
+        isValid.value = true;
+        handleToggleNotificationError();
+      } else if (!user.value.unit) {
+        messageAction.value = {
+          display: ERROR_EMPTY_DATA + "Đơn vị",
+        };
         isValid.value = true;
         handleToggleNotificationError();
       } else if (
-        (validatePhone(user.value.phoneNumber) === false &&
-          user.value.phoneNumber != "") ||
-        (validatePhone(user.value.landlinePhone) === false &&
-          user.value.landlinePhone != "") ||
-        (validateEmail(user.value.email) === false && user.value.email != "")
+        optionUnit.filter((item) => item.value !== user.value.unit).length === 0
       ) {
-        agreeAction.value = {
-          display: "Đóng",
-          action: handleToggleNotificationError,
+        messageAction.value = {
+          display: "Đơn vị không có trong danh mục",
         };
-        if (
-          validatePhone(user.value.phoneNumber) === false &&
-          user.value.phoneNumber != ""
-        ) {
-          messageAction.value = {
-            display: ERROR_CORRECT_DATA + "Điện thoại di động",
-          };
-        } else if (
-          validatePhone(user.value.landlinePhone) === false &&
-          user.value.landlinePhone != ""
-        ) {
-          messageAction.value = {
-            display: ERROR_CORRECT_DATA + "Điện thoại cố định",
-          };
-        } else if (
-          validateEmail(user.value.email) === false &&
-          user.value.email != ""
-        ) {
-          messageAction.value = {
-            display: ERROR_CORRECT_DATA + "Email",
-          };
-        }
+        isValid.value = true;
+        handleToggleNotificationError();
+      } else if (
+        validatePhone(user.value.phoneNumber) === false &&
+        user.value.phoneNumber != ""
+      ) {
+        messageAction.value = {
+          display: ERROR_CORRECT_DATA + "Điện thoại di động",
+        };
+        handleToggleNotificationError();
+      } else if (
+        validatePhone(user.value.landlinePhone) === false &&
+        user.value.landlinePhone != ""
+      ) {
+        messageAction.value = {
+          display: ERROR_CORRECT_DATA + "Điện thoại cố định",
+        };
+        handleToggleNotificationError();
+      } else if (
+        validateEmail(user.value.email) === false &&
+        user.value.email != ""
+      ) {
+        messageAction.value = {
+          display: ERROR_CORRECT_DATA + "Email",
+        };
         handleToggleNotificationError();
       } else {
         if (stateAddUser.value) {

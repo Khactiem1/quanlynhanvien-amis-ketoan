@@ -43,7 +43,10 @@
           <!-- Table -->
           <table-data
             :tableList="userList"
-            :checkAllRecord="checkShowActionSeries.length === userList.length && checkShowActionSeries.length > 0"
+            :checkAllRecord="
+              checkShowActionSeries.length === userList.length &&
+              checkShowActionSeries.length > 0
+            "
             :handleClickCheckbox="handleClickCheckbox"
             :columns="columns"
             :actionTable="actionTable"
