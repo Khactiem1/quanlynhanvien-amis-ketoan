@@ -3,5 +3,5 @@ export default {
   QUESTION_DATA_CHANGE: "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?",
   ERROR_EMPTY_DATA: "Không được để trống ",
   ERROR_CORRECT_DATA: "Kiểm tra nhập đúng ",
-  WANNING_DELETE_ALL: "Hành động này sẽ xoá toàn bộ người dùng được chọn",
+  WANNING_DELETE_ALL: "Bạn có thực sự muốn xoá toàn bộ người dùng được chọn?",
 };

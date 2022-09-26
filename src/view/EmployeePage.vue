@@ -433,7 +433,7 @@ export default {
           action: deleteUser,
         };
         messageAction.value = {
-          display: WANNING_DELETE + `<${employeeCode}>`,
+          display: WANNING_DELETE + `<${employeeCode}> không?`,
           id: employeeId,
         };
         handleToggleNotification();

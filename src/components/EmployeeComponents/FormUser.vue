@@ -403,19 +403,19 @@ export default {
       };
       if (user.value.userId.trim() == "") {
         messageAction.value = {
-          display: ERROR_EMPTY_DATA + "mã nhân viên",
+          display: ERROR_EMPTY_DATA + "mã nhân viên.",
         };
         isValid.value = true;
         handleToggleNotificationError();
       } else if (user.value.name.trim() == "") {
         messageAction.value = {
-          display: ERROR_EMPTY_DATA + "Tên nhân viên",
+          display: ERROR_EMPTY_DATA + "Tên nhân viên.",
         };
         isValid.value = true;
         handleToggleNotificationError();
       } else if (!user.value.unit) {
         messageAction.value = {
-          display: ERROR_EMPTY_DATA + "Đơn vị",
+          display: ERROR_EMPTY_DATA + "Đơn vị.",
         };
         isValid.value = true;
         handleToggleNotificationError();
@@ -423,7 +423,7 @@ export default {
         optionUnit.filter((item) => item.value !== user.value.unit).length === 0
       ) {
         messageAction.value = {
-          display: "Đơn vị không có trong danh mục",
+          display: "Đơn vị không có trong danh mục.",
         };
         isValid.value = true;
         handleToggleNotificationError();
@@ -432,7 +432,7 @@ export default {
         user.value.phoneNumber != ""
       ) {
         messageAction.value = {
-          display: ERROR_CORRECT_DATA + "Điện thoại di động",
+          display: ERROR_CORRECT_DATA + "Điện thoại di động.",
         };
         handleToggleNotificationError();
       } else if (
@@ -440,7 +440,7 @@ export default {
         user.value.landlinePhone != ""
       ) {
         messageAction.value = {
-          display: ERROR_CORRECT_DATA + "Điện thoại cố định",
+          display: ERROR_CORRECT_DATA + "Điện thoại cố định.",
         };
         handleToggleNotificationError();
       } else if (
@@ -448,7 +448,7 @@ export default {
         user.value.email != ""
       ) {
         messageAction.value = {
-          display: ERROR_CORRECT_DATA + "Email",
+          display: ERROR_CORRECT_DATA + "Email.",
         };
         handleToggleNotificationError();
       } else {
