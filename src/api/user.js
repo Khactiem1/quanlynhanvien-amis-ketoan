@@ -7,7 +7,7 @@ export const getUserList = (filter) => {
 };
 export const createUserApi = (user) => {
   return axiosAPI.post(`/Employees`, user).catch(function (error) {
-    console.log(error.toJSON());
+    console.log(error.response.data);
   });
 };
 export const getUserApi = (id) => {

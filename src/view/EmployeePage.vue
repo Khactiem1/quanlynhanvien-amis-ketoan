@@ -449,17 +449,25 @@ export default {
      * Tham số đầu vào là event để lấy giá trị nhập
      * Khắc Tiềm - 15.09.2022
      */
-    const searchData = (event) =>{
-      keyword.value = event.target.value;
-      recordSelectPaging.value = 0;
-      loadData({
-        offset: recordSelectPaging.value,
-        limit: countRecordPageUser.value,
-        keyword: keyword.value,
-      });
-    }
+    const eventSearchInput = [];
+    const searchData = (event) => {
+      eventSearchInput.forEach((item) => {
+        clearTimeout(item);
+      })
+      eventSearchInput.length = 0;
+      eventSearchInput.push(
+        setTimeout(() => {
+          keyword.value = event.target.value;
+          recordSelectPaging.value = 0;
+          loadData({
+            offset: recordSelectPaging.value,
+            limit: countRecordPageUser.value,
+            keyword: keyword.value,
+          });
+        }, 600)
+      );
+    };
     function handleSearchData(event) {
-      
       searchData(event);
     }
 
