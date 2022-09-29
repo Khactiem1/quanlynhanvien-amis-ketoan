@@ -1,5 +1,5 @@
 <template>
-  <div class="modal">
+  <div class="modal" :class="{ active: isShowModalAnimation }">
     <div class="modal-overlay"></div>
     <div class="modal-body">
       <slot></slot>
@@ -8,7 +8,24 @@
 </template>
 
 <script>
-export default {};
+import { ref, onMounted } from "vue";
+export default {
+  setup() {
+    /**
+     * Biến trạng thái khi mounted modal có hiệu ứng hiện từ từ
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowModalAnimation = ref(false);
+    onMounted(() => {
+      setTimeout(() => {
+        isShowModalAnimation.value = !isShowModalAnimation.value;
+      }, 0);
+    });
+    return {
+      isShowModalAnimation,
+    };
+  },
+};
 </script>
 
 <style>

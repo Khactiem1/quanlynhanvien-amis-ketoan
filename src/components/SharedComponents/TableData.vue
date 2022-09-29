@@ -57,7 +57,7 @@
             col.fractionSize === true
               ? Comma(row[col.field])
               : col.formatDate === true
-              ? formatDate(row[col.field])
+              ? formatDateDDMMYYYY(row[col.field])
               : col.isGender === true
               ? formatGender(row[col.field])
               : row[col.field]
@@ -110,6 +110,7 @@ import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import TableLoader from "../SharedComponents/TableLoader.vue";
 import TableListAction from "../SharedComponents/TableListAction.vue";
 import eNum from "../../utils/eNum";
+import utilEnum from "../../utils/index";
 import { ref } from "vue";
 export default {
   components: {
@@ -144,6 +145,7 @@ export default {
     const rowColumn = ref(null);
     const positionAction = ref({ top: 0, right: 0 });
     const { MALE, FEMALE, OTHER } = eNum;
+    const { formatDateDDMMYYYY } = utilEnum;
     //(Khắc Tiềm - 15.09.2022) Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
     function Comma(number) {
       number = "" + number;
@@ -169,19 +171,6 @@ export default {
       else if(OTHER == gender){
         return "Khác";
       }
-    }
-    //(Khắc Tiềm - 15.09.2022) hàm xử lý hiển thị ngày/tháng/năm
-    function formatDate(date) {
-      const d = new Date(date);
-      let getMonth = d.getMonth() + 1 + '';
-      if(getMonth.length === 1){
-        getMonth = `0${getMonth}`;
-      }
-      let getDate = d.getDate() + '';
-      if(getDate.length === 1){
-        getDate = `0${getDate}`;
-      }
-      return [getDate, getMonth, d.getFullYear()].join("/");
     }
     //(Khắc Tiềm - 15.09.2022) Hàm xử lý ẩn hiện các action
     function handleShowAction(event, row) {
@@ -217,7 +206,7 @@ export default {
     }
     return {
       rowColumn,
-      formatDate,
+      formatDateDDMMYYYY,
       formatGender,
       positionAction,
       Comma,

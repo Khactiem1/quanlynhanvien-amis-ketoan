@@ -15,6 +15,16 @@ const axiosAPI = axios.create({
 //   }
 // );
 
+axiosAPI.interceptors.request.use(
+  function (config) {
+    config.headers.common['Content-Type'] = 'application/json; charset=utf-8';
+    return config;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+
 axiosAPI.interceptors.response.use(
   function (response) {
     return response.data;

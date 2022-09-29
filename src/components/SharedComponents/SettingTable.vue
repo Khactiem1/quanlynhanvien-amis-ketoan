@@ -1,5 +1,8 @@
 <template>
-  <div class="modal modal-setting">
+  <div
+    class="modal modal-setting"
+    :class="{ active: isShowSettingTableAnimation }"
+  >
     <div class="modal-overlay"></div>
     <div class="modal-body modal-setting_container">
       <div class="modal-setting_content">
@@ -41,7 +44,7 @@
 <script>
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import eNum from "../../utils/eNum";
-import { onMounted, onUnmounted, toRefs } from "vue";
+import { onMounted, onUnmounted, toRefs, ref } from "vue";
 export default {
   props: {
     columns: {
@@ -59,6 +62,13 @@ export default {
   },
   setup(props) {
     const { handleShowSettingTable } = toRefs(props);
+
+    /**
+     * Biến chứa trạng thái ẩn hiện setting table
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowSettingTableAnimation = ref(false);
+
     const { ESC } = eNum;
     /**
      * Hàm xử lý đóng mở cài đặt table
@@ -70,9 +80,18 @@ export default {
         handleShowSettingTable.value();
       }
     };
-    onMounted(() => window.addEventListener("keydown", handleEventKey));
-    onUnmounted(() => window.removeEventListener("keydown", handleEventKey));
-    return {};
+    onMounted(() => {
+      window.addEventListener("keydown", handleEventKey);
+      setTimeout(()=>{
+        isShowSettingTableAnimation.value = true;
+      },0)
+    });
+    onUnmounted(() => {
+      window.removeEventListener("keydown", handleEventKey);
+    });
+    return {
+      isShowSettingTableAnimation,
+    };
   },
 };
 </script>

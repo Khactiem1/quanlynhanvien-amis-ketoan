@@ -31,7 +31,16 @@
             />
             <div class="icon-search"></div>
           </div>
-          <div @click="loadData" class="action-render_table reload-table"></div>
+          <div
+            @click="
+              loadData({
+                offset: recordSelectPaging,
+                limit: countRecordPageUser,
+                keyword: keyword,
+              })
+            "
+            class="action-render_table reload-table"
+          ></div>
           <div
             @click="handleShowSettingTable"
             class="action-render_table setting-table"
@@ -79,13 +88,14 @@
             :totalCount="totalCount"
             :countRecordPageUser="countRecordPageUser"
             v-model="recordSelectPaging"
+            :key="countRecordPageUser || keyword"
           ></paging-page>
         </div>
       </div>
     </div>
     <!-- Đưa modal ra nằm trong thẻ #app -->
     <teleport to="#app">
-      <modal-form v-if="isShowModal" :class="{ active: isShowModalAnimation }">
+      <modal-form v-if="isShowModal">
         <form-user
           @handle-click-close-modal="handleCloseModal"
           :userEdit="userEdit"
@@ -102,7 +112,6 @@
         v-if="isShowSettingTable"
         :columns="columnSetting"
         :handleShowSettingTable="handleShowSettingTable"
-        :class="{ active: isShowSettingTableAnimation }"
         :handleClickCheckbox="handleClickToggleSettingTable"
       ></setting-table>
     </teleport>
@@ -176,7 +185,9 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     const checkShowActionSeries = computed(() =>
-      userList.value.filter((value) => value.Check).map((value) => value.id)
+      userList.value
+        .filter((value) => value.Check)
+        .map((value) => value.employeeID)
     );
 
     /**
@@ -232,12 +243,6 @@ export default {
     const isShowModal = ref(false);
 
     /**
-     * Biến trạng thái khi mounted modal có hiệu ứng hiện từ từ
-     * Khắc Tiềm - 15.09.2022
-     */
-    const isShowModalAnimation = ref(false);
-
-    /**
      * biến kích hoạt đóng mở thông báo
      * Khắc Tiềm - 15.09.2022
      */
@@ -256,12 +261,6 @@ export default {
     const isShowSettingTable = ref(false);
 
     /**
-     * Biến chứa trạng thái ẩn hiện setting table
-     * Khắc Tiềm - 15.09.2022
-     */
-    const isShowSettingTableAnimation = ref(false);
-
-    /**
      * lấy ra số lượng bản ghi của page
      * Khắc Tiềm - 15.09.2022
      */
@@ -274,44 +273,44 @@ export default {
     const recordSelectPaging = ref(0);
 
     /**
+     * biến theo dõi từ khoá tìm kiếm, mặc định là chuỗi rỗng
+     * Khắc Tiềm - 15.09.2022
+     */
+    const keyword = ref("");
+
+    /**
      * Kiểm tra sự thay đổi của biến số lượng bản ghi trên 1 trang và thực hiện reload lại dữ liệu đúng số lượng
      * Khắc Tiềm - 15.09.2022
      */
     watch(countRecordPageUser, (newValue) => {
       setCountRecordPageUser(newValue);
-      console.log(
-        "Load lấy bản ghi bắt đầu từ bản ghi số: " +
-          newValue +
-          " và lấy " +
-          countRecordPageUser.value +
-          " bản ghi"
-      );
-      loadData();
+      loadData({
+        offset: recordSelectPaging.value,
+        limit: countRecordPageUser.value,
+        keyword: keyword.value,
+      });
     });
 
     /**
      * Kiểm tra lấy số trang dữ liệu nếu có sự thay đỔi số trag sẽ call api lấy dữ liệu
      * Khắc Tiềm - 15.09.2022
      */
-    watch(recordSelectPaging, (newValue) => {
-      console.log(
-        "Load lấy bản ghi bắt đầu từ bản ghi số: " +
-          newValue +
-          " và lấy " +
-          countRecordPageUser.value +
-          " bản ghi"
-      );
-      loadData();
+    watch(recordSelectPaging, () => {
+      loadData({
+        offset: recordSelectPaging.value,
+        limit: countRecordPageUser.value,
+        keyword: keyword.value,
+      });
     });
 
     /**
      * Hàm Load danh sách người dùng
      * Khắc Tiềm - 15.09.2022
      */
-    async function loadData() {
+    async function loadData(filter) {
       //Kích hoạt hiệu ứng loader table
       isShowLoaderTable.value = true;
-      await store.dispatch("user/getUserListAction");
+      await store.dispatch("user/getUserListAction", filter);
       //Dừng hiệu ứng loader table
       isShowLoaderTable.value = false;
     }
@@ -321,7 +320,11 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     onBeforeMount(() => {
-      loadData();
+      loadData({
+        offset: recordSelectPaging.value,
+        limit: countRecordPageUser.value,
+        keyword: keyword.value,
+      });
     });
 
     /**
@@ -329,12 +332,10 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function DeleteAll() {
-      console.log("Đây là những thằng sẽ bị xoá hehe");
+      console.log("Đây là những thằng sẽ bị xoá");
       console.log(checkShowActionSeries.value);
       handleToggleNotification();
-      console.log(
-        "chưa xoá đâu khi nào có api 1 lần xoá cho tiện chứ giờ xoá k tiện hehe"
-      );
+      console.log("chưa xoá khi nào có api 1 lần xoá");
     }
 
     /**
@@ -361,17 +362,7 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleShowSettingTable() {
-      if (isShowSettingTable.value === false) {
-        isShowSettingTable.value = true;
-        setTimeout(() => {
-          isShowSettingTableAnimation.value = true;
-        }, 0);
-      } else {
-        isShowSettingTableAnimation.value = false;
-        setTimeout(() => {
-          isShowSettingTable.value = false;
-        }, 150);
-      }
+      isShowSettingTable.value = !isShowSettingTable.value;
     }
 
     /**
@@ -458,15 +449,18 @@ export default {
      * Tham số đầu vào là event để lấy giá trị nhập
      * Khắc Tiềm - 15.09.2022
      */
-    async function handleSearchData(event) {
-      setTimeout(() => {
-        console.log(
-          "Key tìm kiếm: " +
-            event.target.value +
-            ", Khi nào có api sẽ call api tìm kiếm sau"
-        );
-        loadData();
-      }, 200);
+    const searchData = (event) =>{
+      keyword.value = event.target.value;
+      recordSelectPaging.value = 0;
+      loadData({
+        offset: recordSelectPaging.value,
+        limit: countRecordPageUser.value,
+        keyword: keyword.value,
+      });
+    }
+    function handleSearchData(event) {
+      
+      searchData(event);
     }
 
     /**
@@ -481,9 +475,6 @@ export default {
       }
       // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
       isShowModal.value = !isShowModal.value;
-      setTimeout(() => {
-        isShowModalAnimation.value = !isShowModalAnimation.value;
-      }, 0);
     }
 
     /**
@@ -491,7 +482,6 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleCloseModal() {
-      isShowModalAnimation.value = !isShowModalAnimation.value;
       isShowModal.value = !isShowModal.value;
     }
     return {
@@ -500,7 +490,6 @@ export default {
       columns,
       actionTable,
       isShowModal,
-      isShowModalAnimation,
       countRecordPageUser,
       userEdit,
       cancelAction,
@@ -511,8 +500,8 @@ export default {
       isShowLoaderTable,
       isShowSettingTable,
       recordSelectPaging,
-      isShowSettingTableAnimation,
       checkShowActionSeries,
+      keyword,
       handleShowSettingTable,
       handleDeleteAll,
       handleClickToggleSettingTable,

@@ -12,31 +12,31 @@ const users = {
       actionTable: {
         actionDefault: "Sửa",
         actionList: ["Nhân bản", "Xoá", "Ngừng sử dụng"],
-        fieldId: "id",
-        fieldCode: "userId",
+        fieldId: "employeeID",
+        fieldCode: "employeeCode",
       },
       columns: [
         {
-          field: "userId",
+          field: "employeeCode",
           isShow: true,
           header: "Mã nhân viên",
           width: "120px",
         },
         {
-          field: "name",
+          field: "employeeName",
           isShow: true,
           header: "Tên nhân viên",
           width: "200px",
         },
         {
-          field: "sex",
+          field: "gender",
           isShow: true,
           header: "Giới tính",
           width: "120px",
           isGender: true,
         },
         {
-          field: "birth",
+          field: "dateOfBirth",
           isShow: true,
           header: "Ngày sinh",
           textAlign: "center",
@@ -50,13 +50,13 @@ const users = {
           width: "200px",
         },
         {
-          field: "cmnd",
+          field: "identityCard",
           isShow: true,
           header: "Số chứng minh",
           width: "200px",
         },
-        { field: "title", isShow: true, header: "Chức danh", width: "120px" },
-        { field: "unit", isShow: true, header: "Tên đơn vị", width: "200px" },
+        { field: "employeeTitle", isShow: true, header: "Chức danh", width: "120px" },
+        { field: "unitName", isShow: true, header: "Tên đơn vị", width: "200px" },
         {
           field: "bankAccount",
           isShow: true,
@@ -70,7 +70,7 @@ const users = {
           width: "180px",
         },
         {
-          field: "dateRange",
+          field: "dayForIdentity",
           isShow: true,
           header: "Ngày cấp chứng minh",
           textAlign: "center",
@@ -78,7 +78,7 @@ const users = {
           formatDate: true,
         },
         {
-          field: "grantAddress",
+          field: "grantAddressIdentity",
           isShow: true,
           header: "Nơi cấp chứng minh",
           width: "230px",
@@ -96,15 +96,20 @@ const users = {
           width: "230px",
         },
         {
-          field: "email",
+          field: "employeeEmail",
           isShow: true,
           header: "Địa chỉ email",
           width: "230px",
         },
-        { field: "address", isShow: true, header: "Địa chỉ", width: "200px" },
+        { field: "employeeAddress", isShow: true, header: "Địa chỉ", width: "200px" },
       ],
       userList: [],
-      totalCount: 100,
+      totalCount: 0,
+      filter: {
+        offset: 0,
+        limit: 0,
+        keyword: '',
+      }
     };
   },
   mutations: {
@@ -118,7 +123,8 @@ const users = {
     },
     //(Khắc Tiềm - 15.09.2022) lấy danh sách user
     setUserListMutation(state, payload) {
-      state.userList = [...payload];
+      state.userList = [...payload.employeeList];
+      state.totalCount = payload.totalCount;
     },
     //(Khắc Tiềm - 15.09.2022)Xét toggle checkbox phần tử được check
     setCheckboxUserMutation(state, payload) {
@@ -140,21 +146,25 @@ const users = {
         }, []);
       }
     },
+    setFilterMutation(state, payload){
+      state.filter = {...payload};
+    }
   },
   actions: {
-    async getUserListAction(context) {
+    async getUserListAction(context, payload) {
+      await context.commit("setFilterMutation",payload);
       context.commit("setEmptyUserMutation");
-      const data = await getUserList();
+      const data = await getUserList(context.state.filter);
       context.commit("setUserListMutation", data);
     },
     async editUserAction(context, payload) {
       await editUserApi(payload);
-      const data = await getUserList();
+      const data = await getUserList(context.state.filter);
       context.commit("setUserListMutation", data);
     },
     async deleteUserAction(context, payload) {
       await deleteUserApi(payload);
-      const data = await getUserList();
+      const data = await getUserList(context.state.filter);
       context.commit("setUserListMutation", data);
     },
     async getUserAction(context, payload) {
@@ -162,7 +172,7 @@ const users = {
     },
     async addUserAction(context, payload) {
       await createUserApi(payload);
-      const data = await getUserList();
+      const data = await getUserList(context.state.filter);
       context.commit("setUserListMutation", data);
     },
     setCheckboxUserAction(context, payload) {

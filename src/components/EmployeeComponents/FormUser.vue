@@ -37,8 +37,8 @@
                 :messageValid="'Mã không được để trống.'"
                 :label="'Mã'"
                 :tab="1"
-                :class="{ 'is-valid': isValid && user.userId == '' }"
-                v-model="user.userId"
+                :class="{ 'is-valid': isValid && user.employeeCode == '' }"
+                v-model="user.employeeCode"
                 ref="inputFocus"
               ></input-default>
             </div>
@@ -49,22 +49,22 @@
                 :messageValid="'Tên không được để trống.'"
                 :label="'Tên'"
                 :tab="2"
-                :class="{ 'is-valid': isValid && user.name == '' }"
-                v-model="user.name"
+                :class="{ 'is-valid': isValid && user.employeeName == '' }"
+                v-model="user.employeeName"
               ></input-default>
             </div>
           </div>
           <div class="form-group">
             <input-combobox
               :options="optionUnit"
-              :value="'value'"
-              :header="'header'"
+              :value="'unitID'"
+              :header="'unitName'"
               :label="'Đơn vị'"
               :required="true"
               :messageValid="'Dữ liệu <đơn vị> không có trong danh mục.'"
               :tab="7"
-              :class="{ 'is-valid': isValid && !user.unit }"
-              v-model="user.unit"
+              :class="{ 'is-valid': isValid && !user.unitID }"
+              v-model="user.unitID"
             ></input-combobox>
           </div>
           <div class="form-group">
@@ -72,7 +72,7 @@
               :type="'text'"
               :label="'Chức danh'"
               :tab="10"
-              v-model="user.title"
+              v-model="user.employeeTitle"
             ></input-default>
           </div>
         </div>
@@ -82,7 +82,7 @@
               <label>Ngày sinh</label>
               <input
                 :tabindex="3"
-                v-model="user.birth"
+                v-model="user.dateOfBirth"
                 class="input"
                 type="date"
               />
@@ -93,19 +93,19 @@
                 <input-radio
                   label="Nam"
                   :value="MALE"
-                  v-model="user.sex"
+                  v-model="user.gender"
                   :tab="4"
                 ></input-radio>
                 <input-radio
                   label="Nữ"
                   :value="FEMALE"
-                  v-model="user.sex"
+                  v-model="user.gender"
                   :tab="5"
                 ></input-radio>
                 <input-radio
                   label="Khác"
                   :value="OTHER"
-                  v-model="user.sex"
+                  v-model="user.gender"
                   :tab="6"
                 ></input-radio>
               </div>
@@ -118,14 +118,14 @@
                 :label="'Số CMND'"
                 :tab="8"
                 :toolTip="'Số chứng minh nhân dân'"
-                v-model="user.cmnd"
+                v-model="user.identityCard"
               ></input-default>
             </div>
             <div class="form-group ms-small">
               <label>Ngày cấp</label>
               <input
                 :tabindex="9"
-                v-model="user.dateRange"
+                v-model="user.dayForIdentity"
                 class="input"
                 type="date"
               />
@@ -136,7 +136,7 @@
               :type="'text'"
               :label="'Nơi cấp'"
               :tab="11"
-              v-model="user.grantAddress"
+              v-model="user.grantAddressIdentity"
             ></input-default>
           </div>
         </div>
@@ -147,7 +147,7 @@
             :type="'text'"
             :label="'Địa chỉ'"
             :tab="12"
-            v-model="user.address"
+            v-model="user.employeeAddress"
           ></input-default>
         </div>
         <div class="form-item flex-center">
@@ -180,7 +180,7 @@
               :tab="15"
               :isEmail="true"
               :messageValid="'Nhập đúng địa chỉ Email.'"
-              v-model="user.email"
+              v-model="user.employeeEmail"
             ></input-default>
           </div>
         </div>
@@ -258,7 +258,14 @@
 </template>
 
 <script>
-import { onMounted, onUnmounted, ref, toRefs, onBeforeMount } from "vue";
+import {
+  onMounted,
+  onUnmounted,
+  ref,
+  toRefs,
+  onBeforeMount,
+  computed,
+} from "vue";
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import InputDefault from "../InputComponents/InputDefault.vue";
 import InputCombobox from "../InputComponents/InputCombobox.vue";
@@ -270,6 +277,8 @@ import { useStore } from "vuex";
 import eNum from "../../utils/eNum.js";
 import notificationMessage from "../../utils/notification.js";
 import validate from "../../utils/validate.js";
+import utilEnum from "../../utils/index";
+import { nextValue } from "../../api/user";
 export default {
   components: {
     InputCheckbox,
@@ -286,6 +295,7 @@ export default {
     },
   },
   setup(props, context) {
+    const { formatDateYYYYMMDD } = utilEnum;
     const { QUESTION_DATA_CHANGE, ERROR_EMPTY_DATA, ERROR_CORRECT_DATA } =
       notificationMessage;
     const inputFocus = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ input phục vụ cho việc dom đến để focus
@@ -303,54 +313,60 @@ export default {
     const { validateEmail, validatePhone } = validate;
     const eventCtrlShiftS = []; //(Khắc Tiềm - 15.09.2022)  lưu lại giá trị các phím bấm tắt không ngắt quãng
     const user = ref({
-      name: "",
-      sex: MALE,
-      birth: "",
-      cmnd: "",
-      title: "",
-      unit: "",
+      employeeName: "",
+      gender: MALE,
+      dateOfBirth: null,
+      identityCard: "",
+      employeeTitle: "",
+      unitID: "",
       bankAccount: "",
       nameBank: "",
       branchBank: "",
-      dateRange: "",
-      grantAddress: "",
+      dayForIdentity: null,
+      grantAddressIdentity: "",
       phoneNumber: "",
       landlinePhone: "",
-      email: "",
-      address: "",
-      userId: "",
+      employeeEmail: "",
+      employeeAddress: "",
+      employeeCode: "",
     });
     const userEditReset = ref(null); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sửa nếu form sửa thì sẽ nhận được thông tin cần sửa
     const userReset = ref({
-      name: "",
-      sex: MALE,
-      birth: "",
-      cmnd: "",
-      title: "",
-      unit: "",
+      employeeName: "",
+      gender: MALE,
+      dateOfBirth: null,
+      identityCard: "",
+      employeeTitle: "",
+      unitID: "",
       bankAccount: "",
       nameBank: "",
       branchBank: "",
-      dateRange: "",
-      grantAddress: "",
+      dayForIdentity: null,
+      grantAddressIdentity: "",
       phoneNumber: "",
       landlinePhone: "",
-      email: "",
-      address: "",
-      userId: "",
+      employeeEmail: "",
+      employeeAddress: "",
+      employeeCode: "",
     }); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sẽ reset sau khi thêm, sửa mà form không đóng
-    const optionUnit = [
-      { value: "Đà Nẵng", header: "Đà Nẵng" },
-      { value: "Hà Nội", header: "Hà Nội" },
-      { value: "Hồ Chí Minh", header: "Hồ Chí Minh" },
-      { value: "Ngoại Giao Đoàn", header: "Ngoại Giao Đoàn" },
-      { value: "Duy Tân", header: "Duy Tân" },
-    ]; //(Khắc Tiềm - 15.09.2022)  danh sách đơn vị
-    onBeforeMount(() => {
+    const optionUnit = computed(() => store.state.unit.unitList); //(Khắc Tiềm - 15.09.2022)  danh sách đơn vị
+    onBeforeMount(async () => {
+      await store.dispatch("unit/getUnitListAction");
       if (userEdit.value) {
-        user.value = { ...userEdit.value }; //(Khắc Tiềm - 15.09.2022)  chuyển đổi props thành data
+        user.value = {
+          ...userEdit.value,
+          dateOfBirth: formatDateYYYYMMDD(userEdit.value.dateOfBirth),
+          dayForIdentity: formatDateYYYYMMDD(userEdit.value.dayForIdentity),
+        }; //(Khắc Tiềm - 15.09.2022)  chuyển đổi props thành data
         stateAddUser.value = false;
-        userEditReset.value = { ...userEdit.value };
+        userEditReset.value = {
+          ...userEdit.value,
+          dateOfBirth: formatDateYYYYMMDD(userEdit.value.dateOfBirth),
+          dayForIdentity: formatDateYYYYMMDD(userEdit.value.dayForIdentity),
+        };
+      }
+      else{
+        user.value.employeeCode = await nextValue();
       }
     });
     //(Khắc Tiềm - 15.09.2022) Hàm xử lý các event nút bấm tắt
@@ -401,26 +417,27 @@ export default {
         display: "Đóng",
         action: handleToggleNotificationError,
       };
-      if (user.value.userId.trim() == "") {
+      if (user.value.employeeCode.trim() == "") {
         messageAction.value = {
           display: ERROR_EMPTY_DATA + "mã nhân viên.",
         };
         isValid.value = true;
         handleToggleNotificationError();
-      } else if (user.value.name.trim() == "") {
+      } else if (user.value.employeeName.trim() == "") {
         messageAction.value = {
           display: ERROR_EMPTY_DATA + "Tên nhân viên.",
         };
         isValid.value = true;
         handleToggleNotificationError();
-      } else if (!user.value.unit) {
+      } else if (!user.value.unitID) {
         messageAction.value = {
           display: ERROR_EMPTY_DATA + "Đơn vị.",
         };
         isValid.value = true;
         handleToggleNotificationError();
       } else if (
-        optionUnit.filter((item) => item.value !== user.value.unit).length === 0
+        optionUnit.value.filter((item) => item.unitID !== user.value.unitID)
+          .length === 0
       ) {
         messageAction.value = {
           display: "Đơn vị không có trong danh mục.",
@@ -429,7 +446,8 @@ export default {
         handleToggleNotificationError();
       } else if (
         validatePhone(user.value.phoneNumber) === false &&
-        user.value.phoneNumber != ""
+        user.value.phoneNumber != "" &&
+        user.value.phoneNumber
       ) {
         messageAction.value = {
           display: ERROR_CORRECT_DATA + "Điện thoại di động.",
@@ -437,15 +455,17 @@ export default {
         handleToggleNotificationError();
       } else if (
         validatePhone(user.value.landlinePhone) === false &&
-        user.value.landlinePhone != ""
+        user.value.landlinePhone != "" &&
+        user.value.landlinePhone
       ) {
         messageAction.value = {
           display: ERROR_CORRECT_DATA + "Điện thoại cố định.",
         };
         handleToggleNotificationError();
       } else if (
-        validateEmail(user.value.email) === false &&
-        user.value.email != ""
+        validateEmail(user.value.employeeEmail) === false &&
+        user.value.employeeEmail != "" &&
+        user.value.employeeEmail
       ) {
         messageAction.value = {
           display: ERROR_CORRECT_DATA + "Email.",
@@ -456,13 +476,23 @@ export default {
           //(Khắc Tiềm - 15.09.2022)  Thêm
           //(Khắc Tiềm - 15.09.2022)  Gọi hàm loading quay quay ở đây
           store.dispatch("config/setToggleShowLoaderAction");
-          await store.dispatch("user/addUserAction", user.value);
+          await store.dispatch("user/addUserAction", {
+            ...user.value,
+            gender: Number(user.value.gender),
+            dateOfBirth: user.value.dateOfBirth === ""  ? null : user.value.dateOfBirth,
+            dayForIdentity: user.value.dayForIdentity === ""  ? null : user.value.dayForIdentity,
+          });
           store.dispatch("config/setToggleShowLoaderAction");
           //(Khắc Tiềm - 15.09.2022)  tắt hàm loading quay quay ở đây
         } else {
           //(Khắc Tiềm - 15.09.2022)  sửa
           store.dispatch("config/setToggleShowLoaderAction");
-          await store.dispatch("user/editUserAction", user.value);
+          await store.dispatch("user/editUserAction", {
+            ...user.value,
+            gender: Number(user.value.gender),
+            dateOfBirth: user.value.dateOfBirth === ""  ? null : user.value.dateOfBirth,
+            dayForIdentity: user.value.dayForIdentity === ""  ? null : user.value.dayForIdentity,
+          });
           store.dispatch("config/setToggleShowLoaderAction");
           stateAddUser.value = true; //(Khắc Tiềm - 15.09.2022)  sau khi sửa xong sửa trạng thái modal thành thêm user
         }
@@ -471,6 +501,7 @@ export default {
         } else {
           isValid.value = false;
           user.value = { ...userReset.value };
+          user.value.employeeCode = await nextValue();
           inputFocus.value.tagInput.focus(); //(Khắc Tiềm - 15.09.2022) Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
         }
       }
