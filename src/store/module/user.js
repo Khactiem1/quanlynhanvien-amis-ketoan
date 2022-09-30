@@ -123,7 +123,7 @@ const users = {
     },
     //(Khắc Tiềm - 15.09.2022) lấy danh sách user
     setUserListMutation(state, payload) {
-      state.userList = [...payload.employeeList];
+      state.userList = [...payload.recordList];
       state.totalCount = payload.totalCount;
     },
     //(Khắc Tiềm - 15.09.2022)Xét toggle checkbox phần tử được check
