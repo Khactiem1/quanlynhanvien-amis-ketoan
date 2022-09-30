@@ -279,6 +279,7 @@ import notificationMessage from "../../utils/notification.js";
 import validate from "../../utils/validate.js";
 import utilEnum from "../../utils/index";
 import { nextValue } from "../../api/user";
+import { createUserApi, editUserApi } from "../../api/user";
 export default {
   components: {
     InputCheckbox,
@@ -296,8 +297,13 @@ export default {
   },
   setup(props, context) {
     const { formatDateYYYYMMDD } = utilEnum;
-    const { QUESTION_DATA_CHANGE, ERROR_EMPTY_DATA, ERROR_CORRECT_DATA } =
-      notificationMessage;
+    const {
+      QUESTION_DATA_CHANGE,
+      ERROR_EMPTY_DATA,
+      ERROR_CORRECT_DATA,
+      DUPLICATE_CODE,
+      INVALID_INPUT,
+    } = notificationMessage;
     const inputFocus = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ input phục vụ cho việc dom đến để focus
     const focusLoop = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ tab phục vụ cho việc xây dựng vòng lặp phím tab
     const stateAddUser = ref(true); //(Khắc Tiềm - 15.09.2022)  Biến kiểm tra trạng thái thêm hay sửa
@@ -309,7 +315,17 @@ export default {
     const isShowNotificationQuestion = ref(false); //(Khắc Tiềm - 15.09.2022)  Biến hiển thị thông báo hỏi
     const isShowNotificationError = ref(false); //(Khắc Tiềm - 15.09.2022)  Biến hiển thị thông báo lỗi
     const store = useStore();
-    const { ESC, CTRL, SHIFT, S, MALE, FEMALE, OTHER } = eNum;
+    const {
+      ESC,
+      CTRL,
+      SHIFT,
+      S,
+      MALE,
+      FEMALE,
+      OTHER,
+      DuplicateCode,
+      InvalidInput,
+    } = eNum;
     const { validateEmail, validatePhone } = validate;
     const eventCtrlShiftS = []; //(Khắc Tiềm - 15.09.2022)  lưu lại giá trị các phím bấm tắt không ngắt quãng
     const user = ref({
@@ -364,9 +380,14 @@ export default {
           dateOfBirth: formatDateYYYYMMDD(userEdit.value.dateOfBirth),
           dayForIdentity: formatDateYYYYMMDD(userEdit.value.dayForIdentity),
         };
-      }
-      else{
-        user.value.employeeCode = await nextValue();
+      } else {
+        await nextValue()
+          .then(function (response) {
+            user.value.employeeCode = response;
+          })
+          .catch(function (error) {
+            console.log(error.response.data);
+          });
       }
     });
     //(Khắc Tiềm - 15.09.2022) Hàm xử lý các event nút bấm tắt
@@ -413,6 +434,7 @@ export default {
     }
     //(Khắc Tiềm - 15.09.2022) Hàm xử lý sự kiện khi bấm nút save
     const handleSaveData = async function (closeModal) {
+      let errorApi = false;
       agreeAction.value = {
         display: "Đóng",
         action: handleToggleNotificationError,
@@ -476,32 +498,80 @@ export default {
           //(Khắc Tiềm - 15.09.2022)  Thêm
           //(Khắc Tiềm - 15.09.2022)  Gọi hàm loading quay quay ở đây
           store.dispatch("config/setToggleShowLoaderAction");
-          await store.dispatch("user/addUserAction", {
+          await createUserApi({
             ...user.value,
             gender: Number(user.value.gender),
-            dateOfBirth: user.value.dateOfBirth === ""  ? null : user.value.dateOfBirth,
-            dayForIdentity: user.value.dayForIdentity === ""  ? null : user.value.dayForIdentity,
-          });
+            dateOfBirth:
+              user.value.dateOfBirth === "" ? null : user.value.dateOfBirth,
+            dayForIdentity:
+              user.value.dayForIdentity === ""
+                ? null
+                : user.value.dayForIdentity,
+          })
+            .then(function () {
+              errorApi = false;
+              store.dispatch("user/getUserListAction");
+            })
+            .catch(function (error) {
+              console.log(error.response.data);
+              errorApi = true;
+              messageAction.value = {
+                display:
+                  error.response.data.errorCode === DuplicateCode
+                    ? `Mã nhân viên <${user.value.employeeCode}> ${DUPLICATE_CODE}`
+                    : error.response.data.errorCode === InvalidInput
+                    ? INVALID_INPUT
+                    : error.response.data.userMsg,
+              };
+              handleToggleNotificationError();
+            });
           store.dispatch("config/setToggleShowLoaderAction");
           //(Khắc Tiềm - 15.09.2022)  tắt hàm loading quay quay ở đây
         } else {
           //(Khắc Tiềm - 15.09.2022)  sửa
           store.dispatch("config/setToggleShowLoaderAction");
-          await store.dispatch("user/editUserAction", {
+          await editUserApi({
             ...user.value,
             gender: Number(user.value.gender),
-            dateOfBirth: user.value.dateOfBirth === ""  ? null : user.value.dateOfBirth,
-            dayForIdentity: user.value.dayForIdentity === ""  ? null : user.value.dayForIdentity,
-          });
+            dateOfBirth:
+              user.value.dateOfBirth === "" ? null : user.value.dateOfBirth,
+            dayForIdentity:
+              user.value.dayForIdentity === ""
+                ? null
+                : user.value.dayForIdentity,
+          })
+            .then(function () {
+              errorApi = false;
+              store.dispatch("user/getUserListAction");
+            })
+            .catch(function (error) {
+              console.log(error.response.data);
+              errorApi = true;
+              messageAction.value = {
+                display:
+                  error.response.data.errorCode === DuplicateCode
+                    ? `Mã nhân viên <${user.value.employeeCode}> ${DUPLICATE_CODE}`
+                    : error.response.data.errorCode === InvalidInput
+                    ? INVALID_INPUT
+                    : error.response.data.userMsg,
+              };
+              handleToggleNotificationError();
+            });
           store.dispatch("config/setToggleShowLoaderAction");
           stateAddUser.value = true; //(Khắc Tiềm - 15.09.2022)  sau khi sửa xong sửa trạng thái modal thành thêm user
         }
-        if (closeModal === true) {
+        if (closeModal === true && errorApi === false) {
           context.emit("handle-click-close-modal");
-        } else {
+        } else if (errorApi === false) {
           isValid.value = false;
           user.value = { ...userReset.value };
-          user.value.employeeCode = await nextValue();
+          await nextValue()
+            .then(function (response) {
+              user.value.employeeCode = response;
+            })
+            .catch(function (error) {
+              console.log(error.response.data);
+            });
           inputFocus.value.tagInput.focus(); //(Khắc Tiềm - 15.09.2022) Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
         }
       }

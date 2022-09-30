@@ -10,4 +10,8 @@ export default {
   MALE: 0, // nam
   FEMALE: 1, // nữ
   OTHER: 2, // khác
+  Exception: 1, // Lỗi phía backend
+  DuplicateCode: 2, // Lỗi trùng mã
+  EmptyCode: 3, // Lỗi để trống mã 
+  InvalidInput: 4, // sai dữ liệu đầu vào
 };

@@ -2,6 +2,7 @@ import axios from "axios";
 import configs from "../configs/index";
 const axiosAPI = axios.create({
   baseURL: configs.baseUrl,
+  timeout: 5000,
 });
 
 //chưa cần đính token vào header

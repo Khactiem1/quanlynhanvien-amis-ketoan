@@ -108,6 +108,12 @@
           :messageAction="messageAction"
         ></notification-wanning>
       </modal-notification>
+      <modal-notification v-if="isShowNotificationError">
+        <notification-error
+          :agreeAction="agreeAction"
+          :messageAction="messageAction"
+        ></notification-error>
+      </modal-notification>
       <setting-table
         v-if="isShowSettingTable"
         :columns="columnSetting"
@@ -122,6 +128,7 @@
 import TableData from "../components/SharedComponents/TableData.vue";
 import ModalNotification from "../components/SharedComponents/ModalNotification.vue";
 import NotificationWanning from "../components/SharedComponents/NotificationWanning.vue";
+import NotificationError from "../components/SharedComponents/NotificationError.vue";
 import PagingPage from "../components/SharedComponents/PagingPage.vue";
 import SettingTable from "../components/SharedComponents/SettingTable.vue";
 import ModalForm from "../components/EmployeeComponents/ModalForm.vue";
@@ -132,6 +139,7 @@ import { useStore } from "vuex";
 import actionTableStore from "../utils/actionTable";
 import notification from "../utils/notification";
 import index from "../utils/index";
+import { getUserApi, deleteUserApi } from "../api/user";
 export default {
   components: {
     TableData,
@@ -142,6 +150,7 @@ export default {
     NotificationWanning,
     SettingTable,
     PagingPage,
+    NotificationError,
   },
   setup() {
     /**
@@ -279,6 +288,12 @@ export default {
     const keyword = ref("");
 
     /**
+     * Biến trạng thái thông báo lỗi
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowNotificationError = ref("");
+
+    /**
      * Kiểm tra sự thay đổi của biến số lượng bản ghi trên 1 trang và thực hiện reload lại dữ liệu đúng số lượng
      * Khắc Tiềm - 15.09.2022
      */
@@ -308,11 +323,15 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     async function loadData(filter) {
-      //Kích hoạt hiệu ứng loader table
-      isShowLoaderTable.value = true;
+      if (filter) {
+        //Kích hoạt hiệu ứng loader table
+        isShowLoaderTable.value = true;
+      }
       await store.dispatch("user/getUserListAction", filter);
-      //Dừng hiệu ứng loader table
-      isShowLoaderTable.value = false;
+      if (filter) {
+        //Dừng hiệu ứng loader table
+        isShowLoaderTable.value = false;
+      }
     }
 
     /**
@@ -391,7 +410,23 @@ export default {
       handleToggleNotification();
       //Loading
       store.dispatch("config/setToggleShowLoaderAction");
-      await store.dispatch("user/deleteUserAction", id);
+      await deleteUserApi(id)
+        .then(function () {
+          loadData();
+        })
+        .catch(function (error) {
+          agreeAction.value = {
+            display: "Đóng",
+            action: () => {
+              isShowNotificationError.value = false;
+            },
+          };
+          messageAction.value = {
+            display: error.response.data.userMsg,
+          };
+          isShowNotificationError.value = true;
+          console.log(error.response.data);
+        });
       store.dispatch("config/setToggleShowLoaderAction");
       //End Loading
     }
@@ -411,9 +446,25 @@ export default {
     ) {
       if (action == EDIT) {
         store.dispatch("config/setToggleShowLoaderAction");
-        userEdit.value = await store.dispatch("user/getUserAction", employeeId);
+        await getUserApi(employeeId)
+          .then(function (response) {
+            userEdit.value = response;
+            handleOpenModal(userEdit.value);
+          })
+          .catch(function (error) {
+            agreeAction.value = {
+              display: "Đóng",
+              action: () => {
+                isShowNotificationError.value = false;
+              },
+            };
+            messageAction.value = {
+              display: error.response.data.userMsg,
+            };
+            isShowNotificationError.value = true;
+            console.log(error.response.data);
+          });
         store.dispatch("config/setToggleShowLoaderAction");
-        handleOpenModal(userEdit.value);
       } else if (action == DELETE) {
         cancelAction.value = {
           display: "Không",
@@ -453,7 +504,7 @@ export default {
     const searchData = (event) => {
       eventSearchInput.forEach((item) => {
         clearTimeout(item);
-      })
+      });
       eventSearchInput.length = 0;
       eventSearchInput.push(
         setTimeout(() => {
@@ -510,6 +561,7 @@ export default {
       recordSelectPaging,
       checkShowActionSeries,
       keyword,
+      isShowNotificationError,
       handleShowSettingTable,
       handleDeleteAll,
       handleClickToggleSettingTable,

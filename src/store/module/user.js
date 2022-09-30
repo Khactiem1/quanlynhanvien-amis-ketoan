@@ -1,9 +1,5 @@
 import {
   getUserList,
-  createUserApi,
-  getUserApi,
-  editUserApi,
-  deleteUserApi,
 } from "../../api/user";
 const users = {
   namespaced: true,
@@ -152,28 +148,16 @@ const users = {
   },
   actions: {
     async getUserListAction(context, payload) {
-      await context.commit("setFilterMutation",payload);
+      if(payload){
+        await context.commit("setFilterMutation",payload);
+      }
       context.commit("setEmptyUserMutation");
-      const data = await getUserList(context.state.filter);
-      context.commit("setUserListMutation", data);
-    },
-    async editUserAction(context, payload) {
-      await editUserApi(payload);
-      const data = await getUserList(context.state.filter);
-      context.commit("setUserListMutation", data);
-    },
-    async deleteUserAction(context, payload) {
-      await deleteUserApi(payload);
-      const data = await getUserList(context.state.filter);
-      context.commit("setUserListMutation", data);
-    },
-    async getUserAction(context, payload) {
-      return await getUserApi(payload);
-    },
-    async addUserAction(context, payload) {
-      await createUserApi(payload);
-      const data = await getUserList(context.state.filter);
-      context.commit("setUserListMutation", data);
+      await getUserList(context.state.filter)
+      .then(function (response){
+        context.commit("setUserListMutation", response);
+      }).catch(function(error){
+        console.log(error.response.data);
+      });
     },
     setCheckboxUserAction(context, payload) {
       context.commit("setCheckboxUserMutation", payload);

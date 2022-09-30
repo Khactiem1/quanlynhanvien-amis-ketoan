@@ -4,4 +4,6 @@ export default {
   ERROR_EMPTY_DATA: "Không được để trống ",
   ERROR_CORRECT_DATA: "Kiểm tra nhập đúng ",
   WANNING_DELETE_ALL: "Bạn có thực sự muốn xoá toàn bộ người dùng được chọn?",
+  DUPLICATE_CODE : "đã tồn tại trong hệ thống, vui lòng kiểm tra lại",
+  INVALID_INPUT : "Sai dữ liệu đầu vào, vui lòng kiểm tra lại",
 };
