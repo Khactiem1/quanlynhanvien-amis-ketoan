@@ -2,7 +2,7 @@
   <div class="form">
     <div class="form-header">
       <div class="modal-title">
-        <h2>Thông tin nhân viên</h2>
+        <h2>{{ titleForm }}</h2>
         <div class="form-header_checkbox">
           <div class="check form-checkbox_item">
             <input-checkbox>
@@ -296,6 +296,7 @@ export default {
     },
   },
   setup(props, context) {
+    const titleForm = ref("");
     const { formatDateYYYYMMDD } = utilEnum;
     const {
       QUESTION_DATA_CHANGE,
@@ -369,6 +370,7 @@ export default {
     onBeforeMount(async () => {
       await store.dispatch("unit/getUnitListAction");
       if (userEdit.value) {
+        titleForm.value = "Sửa thông tin nhân viên";
         user.value = {
           ...userEdit.value,
           dateOfBirth: formatDateYYYYMMDD(userEdit.value.dateOfBirth),
@@ -381,6 +383,7 @@ export default {
           dayForIdentity: formatDateYYYYMMDD(userEdit.value.dayForIdentity),
         };
       } else {
+        titleForm.value = "Thêm thông tin nhân viên";
         await nextValue()
           .then(function (response) {
             user.value.employeeCode = response;
@@ -658,6 +661,7 @@ export default {
       isValid,
       cancelAction,
       focusLoop,
+      titleForm,
       optionUnit,
       agreeAction,
       messageAction,

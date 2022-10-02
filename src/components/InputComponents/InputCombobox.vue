@@ -1,5 +1,5 @@
 <template>
-  <div ref="template" class="data-input" :class="{'is-valid': isValid}">
+  <div ref="template" class="data-input" :class="{ 'is-valid': isValid }">
     <label v-if="label" :class="{ required: required }">{{ label }}</label>
     <!-- Thêm 'active' là sẽ chạy -->
     <div class="combobox-select" :class="{ active: isShow }">
@@ -15,7 +15,7 @@
       <div class="combobox-select_icon" @click="handleClickOpenCombobox">
         <div class="select_icon-combobox"></div>
       </div>
-      <div class="combobox-combobox_select">
+      <div ref="listSelect" class="combobox-combobox_select">
         <div
           class="combobox-combobox_item"
           v-for="(item, index) in options"
@@ -59,8 +59,10 @@ export default {
     messageValid: {},
   },
   setup(props, context) {
-    const { options, header, modelValue, defaultValue, value, required } = toRefs(props);
+    const { options, header, modelValue, defaultValue, value, required } =
+      toRefs(props);
     const { UP, DOWN, ENTER, TAB } = eNum;
+    const listSelect = ref(null);
     const isValid = ref(false);
     const isShow = ref(false); //(Khắc Tiềm - 15.09.2022)   biến thực hiện ẩn mở dropdown
     const template = ref(null); //(Khắc Tiềm - 15.09.2022)   biến bắt lấy thẻ to nhất của component
@@ -68,6 +70,9 @@ export default {
     const valueClick = ref(null); //(Khắc Tiềm - 15.09.2022)   biến lưu dữ liệu value khi được click
     const headerValue = ref(null); //(Khắc Tiềm - 15.09.2022)   biến lưu dữ liệu sẽ hiển thị lên giao diện người dùng được chọn
     //(Khắc Tiềm - 15.09.2022)  nếu có sự thay đổi modelValue từ bên ngoài thì sẽ check render dropdown cho hợp lý
+    const positionListSelect = ref({
+      top: "110%",
+    });
     watch(modelValue, () => {
       let checkModelValueCoincideValue = false;
       options.value.forEach((item) => {
@@ -82,7 +87,7 @@ export default {
         headerValue.value = null;
         valueClick.value = null;
       }
-      if(required.value){
+      if (required.value) {
         isValid.value = false;
       }
     });
@@ -122,13 +127,8 @@ export default {
             }
           }
         }
-      } else if (event.keyCode === ENTER) {
+      } else if (event.keyCode === ENTER || event.keyCode === TAB) {
         //(Khắc Tiềm - 15.09.2022)   xử lý bấm enter
-        context.emit("update:modelValue", valueClick.value);
-        isShow.value = !isShow.value;
-        window.removeEventListener("keydown", handleEnum);
-      } else if (event.keyCode === TAB) {
-        //(Khắc Tiềm - 15.09.2022)   xử lý bấm tab
         context.emit("update:modelValue", valueClick.value);
         isShow.value = !isShow.value;
         window.removeEventListener("keydown", handleEnum);
@@ -144,9 +144,18 @@ export default {
         }
       }
     };
+    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng click vào từng item trong dropdown
+    function handleClickItem(value, index) {
+      context.emit("update:modelValue", value);
+      isShow.value = false;
+      headerValue.value = options.value[index][header.value];
+      valueClick.value = value;
+      window.removeEventListener("keydown", handleEnum);
+    }
     //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng focus vào ô input sẽ hiện dropdown
     function handleFocusInput() {
       if (!isShow.value) {
+        setPositionListSelect();
         isShow.value = true;
         window.addEventListener("keydown", handleEnum);
       }
@@ -154,26 +163,32 @@ export default {
     //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng nhập input sẽ hiện dropdown
     function handleInput() {
       if (!isShow.value) {
+        setPositionListSelect();
         isShow.value = true;
         window.addEventListener("keydown", handleEnum);
       }
     }
-    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng click vào từng item trong dropdown
-    function handleClickItem(value, index) {
-      context.emit("update:modelValue", value);
-      isShow.value = !isShow.value;
-      headerValue.value = options.value[index][header.value];
-      valueClick.value = value;
-      window.removeEventListener("keydown", handleEnum);
-    }
     //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng bấm vào icon mở hoặc đóng dropdown
     function handleClickOpenCombobox() {
+      if (!isShow.value) {
+        setPositionListSelect();
+      }
       isShow.value = !isShow.value;
       if (isShow.value) {
         input.value.focus();
         window.addEventListener("keydown", handleEnum);
       } else {
         window.removeEventListener("keydown", handleEnum);
+      }
+    }
+    function setPositionListSelect() {
+      if (
+        window.innerHeight - (input.value.getBoundingClientRect().bottom + 30) <
+        listSelect.value.getBoundingClientRect().height
+      ) {
+        positionListSelect.value.top = `-${(options.value.length * 100) - 30}%`;
+      } else {
+        positionListSelect.value.top = "110%";
       }
     }
     //(Khắc Tiềm - 15.09.2022)   trước khi mounted thì sẽ set giá trị cho giá trị đc click thông qua v-model hoặc defaultValue
@@ -198,10 +213,12 @@ export default {
       isShow,
       isValid,
       template,
+      headerValue,
+      listSelect,
+      positionListSelect,
+      valueClick,
       handleFocusInput,
       handleClickItem,
-      headerValue,
-      valueClick,
       handleInput,
       handleClickOpenCombobox,
     };
@@ -268,7 +285,7 @@ export default {
 .combobox-select.active .combobox-combobox_select {
   opacity: 1;
   visibility: visible;
-  top: 110%;
+  top: v-bind("positionListSelect.top");
 }
 .combobox-combobox_item {
   white-space: nowrap;

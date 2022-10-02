@@ -601,7 +601,7 @@ export default {
   border: 1px solid #d5d5d5;
 }
 .container-table {
-  padding: 0 16px 16px 16px;
+  padding: 0 16px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;

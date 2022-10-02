@@ -6,7 +6,7 @@
       <router-view></router-view>
     </div>
     <teleport to="#app">
-      <loader-animation v-if="isShowLoader"></loader-animation>
+      <loader-animation v-show="isShowLoader"></loader-animation>
     </teleport>
   </div>
 </template>
