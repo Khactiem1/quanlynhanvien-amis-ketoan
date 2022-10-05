@@ -5,21 +5,26 @@
         <h1>Nhân viên</h1>
       </div>
       <div class="action-table">
-        <button @click="handleOpenModal()" class="btn btn-success btn-add">
+        <button @click="handleOpenModal(true)" class="btn btn-success btn-add">
           Thêm một nhân viên
         </button>
       </div>
     </div>
     <div class="table-content">
       <div class="table-function sticky">
-        <div class="table-function_series">
-          <button
-            v-if="checkShowActionSeries.length > 0"
-            @click="handleDeleteAll"
-            class="btn"
+        <div
+          ref="templateActionAll"
+          @click="handleToggleActionAll"
+          class="table-function_series"
+        >
+          <span>Thực hiện hàng loạt</span>
+          <div class="table-function_series-icon"></div>
+          <div
+            v-show="showActionAll && checkShowActionSeries.length > 0"
+            class="table-list_action"
           >
-            Xoá hàng loạt
-          </button>
+            <div class="list_action-item" @click="handleDeleteAll()">Xoá</div>
+          </div>
         </div>
         <div class="table-function_search">
           <div class="search-table">
@@ -35,12 +40,13 @@
             @click="
               loadData({
                 offset: recordSelectPaging,
-                limit: countRecordPageUser,
+                limit: countRecordPageEmployee,
                 keyword: keyword,
               })
             "
             class="action-render_table reload-table"
           ></div>
+          <div class="action-render_table export-data"></div>
           <div
             @click="handleShowSettingTable"
             class="action-render_table setting-table"
@@ -51,9 +57,9 @@
         <div class="table-container">
           <!-- Table -->
           <table-data
-            :tableList="userList"
+            :tableList="employeeList"
             :checkAllRecord="
-              checkShowActionSeries.length === userList.length &&
+              checkShowActionSeries.length === employeeList.length &&
               checkShowActionSeries.length > 0
             "
             :handleClickCheckbox="handleClickCheckbox"
@@ -82,13 +88,13 @@
             ]"
             :value="'value'"
             :header="'header'"
-            v-model="countRecordPageUser"
+            v-model="countRecordPageEmployee"
           ></input-combobox>
           <paging-page
             :totalCount="totalCount"
-            :countRecordPageUser="countRecordPageUser"
+            :countRecordPageEmployee="countRecordPageEmployee"
             v-model="recordSelectPaging"
-            :key="countRecordPageUser || keyword"
+            :key="countRecordPageEmployee || keyword"
           ></paging-page>
         </div>
       </div>
@@ -96,10 +102,11 @@
     <!-- Đưa modal ra nằm trong thẻ #app -->
     <teleport to="#app">
       <modal-form v-if="isShowModal">
-        <form-user
+        <form-employee
           @handle-click-close-modal="handleCloseModal"
-          :userEdit="userEdit"
-        ></form-user>
+          :employeeEdit="employeeEdit"
+          :employeeAdd="employeeAdd"
+        ></form-employee>
       </modal-form>
       <modal-notification v-if="isShowNotification">
         <notification-wanning
@@ -132,20 +139,25 @@ import NotificationError from "../components/SharedComponents/NotificationError.
 import PagingPage from "../components/SharedComponents/PagingPage.vue";
 import SettingTable from "../components/SharedComponents/SettingTable.vue";
 import ModalForm from "../components/EmployeeComponents/ModalForm.vue";
-import FormUser from "../components/EmployeeComponents/FormUser.vue";
+import FormEmployee from "../components/EmployeeComponents/FormEmployee.vue";
 import InputCombobox from "../components/InputComponents/InputCombobox.vue";
-import { computed, ref, watch, onBeforeMount } from "vue";
+import { computed, ref, watch, onBeforeMount, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import actionTableStore from "../utils/actionTable";
 import notification from "../utils/notification";
 import index from "../utils/index";
-import { getUserApi, deleteUserApi } from "../api/user";
+import {
+  getEmployeeApi,
+  deleteEmployeeApi,
+  deleteMultipleApi,
+  nextValue,
+} from "../api/employee";
 export default {
   components: {
     TableData,
     ModalForm,
     InputCombobox,
-    FormUser,
+    FormEmployee,
     ModalNotification,
     NotificationWanning,
     SettingTable,
@@ -157,13 +169,13 @@ export default {
      * hàm lấy và lưu số lượng bản ghi của page
      * Khắc Tiềm - 15.09.2022
      */
-    const { getCountRecordPageUser, setCountRecordPageUser } = index;
+    const { getCountRecordPageEmployee, setCountRecordPageEmployee } = index;
 
     /**
      * Các hành động của table
      * Khắc Tiềm - 15.09.2022
      */
-    const { EDIT, DELETE } = actionTableStore;
+    const { EDIT, DELETE, REPLICATION } = actionTableStore;
 
     /**
      * Các thông báo của cảnh báo khi xoá bản ghi
@@ -181,20 +193,20 @@ export default {
      * Lấy danh sách ng dùng
      * Khắc Tiềm - 15.09.2022
      */
-    const userList = computed(() => store.state.user.userList);
+    const employeeList = computed(() => store.state.employee.employeeList);
 
     /**
      * Lấy ra tổng số lượng bản ghi
      * Khắc Tiềm - 15.09.2022
      */
-    const totalCount = computed(() => store.state.user.totalCount);
+    const totalCount = computed(() => store.state.employee.totalCount);
 
     /**
      * Lấy danh sách ng dùng được check để thực hiện chức năng như xoá hàng loạt
      * Khắc Tiềm - 15.09.2022
      */
     const checkShowActionSeries = computed(() =>
-      userList.value
+      employeeList.value
         .filter((value) => value.Check)
         .map((value) => value.employeeID)
     );
@@ -204,7 +216,7 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     const columns = computed(() =>
-      store.state.user.columns.filter(function (value) {
+      store.state.employee.columns.filter(function (value) {
         return value.isShow;
       })
     );
@@ -213,13 +225,13 @@ export default {
      * Lấy danh sách columns hiển thị cài đặt
      * Khắc Tiềm - 15.09.2022
      */
-    const columnSetting = computed(() => store.state.user.columns);
+    const columnSetting = computed(() => store.state.employee.columns);
 
     /**
      * Lấy danh sách các chức năng
      * Khắc Tiềm - 15.09.2022
      */
-    const actionTable = computed(() => store.state.user.actionTable);
+    const actionTable = computed(() => store.state.employee.actionTable);
 
     /**
      * hành động đóng notification
@@ -243,7 +255,13 @@ export default {
      * Chứa thông tin người cần sửa
      * Khắc Tiềm - 15.09.2022
      */
-    const userEdit = ref(null);
+    const employeeEdit = ref(null);
+
+    /**
+     * chứa các thông tin người cần nhân bản
+     * Khắc Tiềm - 5.10.2022
+     */
+    const employeeAdd = ref(null);
 
     /**
      * Biến trạng thái ẩn hiện modal thêm sửa
@@ -273,7 +291,7 @@ export default {
      * lấy ra số lượng bản ghi của page
      * Khắc Tiềm - 15.09.2022
      */
-    const countRecordPageUser = ref(getCountRecordPageUser());
+    const countRecordPageEmployee = ref(getCountRecordPageEmployee());
 
     /**
      * biến theo dõi số bản ghi muốn lấy chuyển trang mặc định lấy từ bản ghi số 0
@@ -297,11 +315,11 @@ export default {
      * Kiểm tra sự thay đổi của biến số lượng bản ghi trên 1 trang và thực hiện reload lại dữ liệu đúng số lượng
      * Khắc Tiềm - 15.09.2022
      */
-    watch(countRecordPageUser, (newValue) => {
-      setCountRecordPageUser(newValue);
+    watch(countRecordPageEmployee, (newValue) => {
+      setCountRecordPageEmployee(newValue);
       loadData({
         offset: recordSelectPaging.value,
-        limit: countRecordPageUser.value,
+        limit: countRecordPageEmployee.value,
         keyword: keyword.value,
       });
     });
@@ -313,7 +331,7 @@ export default {
     watch(recordSelectPaging, () => {
       loadData({
         offset: recordSelectPaging.value,
-        limit: countRecordPageUser.value,
+        limit: countRecordPageEmployee.value,
         keyword: keyword.value,
       });
     });
@@ -327,7 +345,7 @@ export default {
         //Kích hoạt hiệu ứng loader table
         isShowLoaderTable.value = true;
       }
-      await store.dispatch("user/getUserListAction", filter);
+      await store.dispatch("employee/getEmployeeListAction", filter);
       if (filter) {
         //Dừng hiệu ứng loader table
         isShowLoaderTable.value = false;
@@ -341,20 +359,26 @@ export default {
     onBeforeMount(() => {
       loadData({
         offset: recordSelectPaging.value,
-        limit: countRecordPageUser.value,
+        limit: countRecordPageEmployee.value,
         keyword: keyword.value,
       });
     });
 
     /**
-     * Hàm xử lý xoá toàn bộ user
+     * Hàm xử lý xoá toàn bộ Employee
      * Khắc Tiềm - 15.09.2022
      */
-    function DeleteAll() {
-      console.log("Đây là những thằng sẽ bị xoá");
-      console.log(checkShowActionSeries.value);
+    async function DeleteAll() {
       handleToggleNotification();
-      console.log("chưa xoá khi nào có api 1 lần xoá");
+      store.dispatch("config/setToggleShowLoaderAction");
+      await deleteMultipleApi(checkShowActionSeries.value)
+        .then(function () {
+          loadData();
+        })
+        .catch(function (error) {
+          showNotificationError(error);
+        });
+      store.dispatch("config/setToggleShowLoaderAction");
     }
 
     /**
@@ -390,7 +414,7 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleClickToggleSettingTable(fieldIndex) {
-      store.dispatch("user/setToggleShowColumnTableAction", fieldIndex);
+      store.dispatch("employee/setToggleShowColumnTableAction", fieldIndex);
     }
 
     /**
@@ -406,26 +430,16 @@ export default {
      * Tham số đầu vào là ID bản ghi cần xoá
      * Khắc Tiềm - 15.09.2022
      */
-    async function deleteUser(id) {
+    async function deleteEmployee(id) {
       handleToggleNotification();
       //Loading
       store.dispatch("config/setToggleShowLoaderAction");
-      await deleteUserApi(id)
+      await deleteEmployeeApi(id)
         .then(function () {
           loadData();
         })
         .catch(function (error) {
-          agreeAction.value = {
-            display: "Đóng",
-            action: () => {
-              isShowNotificationError.value = false;
-            },
-          };
-          messageAction.value = {
-            display: error.response.data.userMsg,
-          };
-          isShowNotificationError.value = true;
-          console.log(error.response.data);
+          showNotificationError(error);
         });
       store.dispatch("config/setToggleShowLoaderAction");
       //End Loading
@@ -446,23 +460,13 @@ export default {
     ) {
       if (action == EDIT) {
         store.dispatch("config/setToggleShowLoaderAction");
-        await getUserApi(employeeId)
+        await getEmployeeApi(employeeId)
           .then(function (response) {
-            userEdit.value = response;
-            handleOpenModal(userEdit.value);
+            employeeEdit.value = response;
+            handleOpenModal(EDIT);
           })
           .catch(function (error) {
-            agreeAction.value = {
-              display: "Đóng",
-              action: () => {
-                isShowNotificationError.value = false;
-              },
-            };
-            messageAction.value = {
-              display: error.response.data.userMsg,
-            };
-            isShowNotificationError.value = true;
-            console.log(error.response.data);
+            showNotificationError(error);
           });
         store.dispatch("config/setToggleShowLoaderAction");
       } else if (action == DELETE) {
@@ -472,14 +476,46 @@ export default {
         };
         agreeAction.value = {
           display: "Có",
-          action: deleteUser,
+          action: deleteEmployee,
         };
         messageAction.value = {
           display: WANNING_DELETE + `<${employeeCode}> không?`,
           id: employeeId,
         };
         handleToggleNotification();
+      } else if (action == REPLICATION) {
+        store.dispatch("config/setToggleShowLoaderAction");
+        await getEmployeeApi(employeeId)
+          .then(function (response) {
+            employeeAdd.value = { ...response };
+          })
+          .catch(function (error) {
+            showNotificationError(error);
+          }),
+          await nextValue()
+            .then(function (response) {
+              employeeAdd.value.employeeCode = response;
+            })
+            .catch(function (error) {
+              showNotificationError(error);
+            }),
+          handleOpenModal(REPLICATION);
+        store.dispatch("config/setToggleShowLoaderAction");
       }
+    }
+
+    function showNotificationError(error) {
+      agreeAction.value = {
+        display: "Đóng",
+        action: () => {
+          isShowNotificationError.value = false;
+        },
+      };
+      messageAction.value = {
+        display: error.response.data.userMsg,
+      };
+      isShowNotificationError.value = true;
+      console.log(error.response.data);
     }
 
     /**
@@ -489,9 +525,9 @@ export default {
      */
     function handleClickCheckbox(value) {
       if (value === true) {
-        store.dispatch("user/setAllCheckboxUserAction");
+        store.dispatch("employee/setAllCheckboxEmployeeAction");
       } else {
-        store.dispatch("user/setCheckboxUserAction", value);
+        store.dispatch("employee/setCheckboxEmployeeAction", value);
       }
     }
 
@@ -512,7 +548,7 @@ export default {
           recordSelectPaging.value = 0;
           loadData({
             offset: recordSelectPaging.value,
-            limit: countRecordPageUser.value,
+            limit: countRecordPageEmployee.value,
             keyword: keyword.value,
           });
         }, 600)
@@ -524,13 +560,20 @@ export default {
 
     /**
      * Hàm xử lý mở modal với state là trạng thái thêm hay sửa
-     * Tham số đầu vào nếu không có user thì sẽ set userEdit = null để mở modal thêm và ngược lại
+     * Tham số đầu vào nếu không có Employee thì sẽ set EmployeeEdit = null để mở modal thêm và ngược lại
      * Khắc Tiềm - 15.09.2022
      */
-    function handleOpenModal(user) {
-      if (!user) {
-        // Nếu tồn tại user cần sửa thì sẽ xoá user cần sửa đi khi mở chức năng thêm
-        userEdit.value = null;
+    function handleOpenModal(stateForm) {
+      if (stateForm === true) {
+        // Nếu tồn tại Employee cần sửa, cần nhân bản thì sẽ xoá đi
+        employeeEdit.value = null;
+        employeeAdd.value = null;
+      } else if (stateForm === EDIT) {
+        // Nếu tồn tại Employee cần nhân bản thì sẽ xoá đi
+        employeeAdd.value = null;
+      } else if (stateForm === REPLICATION) {
+        // Nếu tồn tại Employee cần sửa thì sẽ xoá đi
+        employeeEdit.value = null;
       }
       // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
       isShowModal.value = !isShowModal.value;
@@ -543,14 +586,38 @@ export default {
     function handleCloseModal() {
       isShowModal.value = !isShowModal.value;
     }
+
+    //(Khắc Tiềm - 15.09.2022) Hàm xử lý ẩn action thực hiện hàng loạt
+    const showActionAll = ref(false);
+    const templateActionAll = ref(null);
+    const handleClickActionAll = () => {
+      const isClick = templateActionAll.value.contains(event.target);
+      if (!isClick) {
+        handleToggleActionAll();
+      }
+    };
+    function handleToggleActionAll() {
+      if (!showActionAll.value && checkShowActionSeries.value.length > 0) {
+        showActionAll.value = true;
+        window.addEventListener("click", handleClickActionAll);
+      } else {
+        window.removeEventListener("click", handleClickActionAll);
+        showActionAll.value = false;
+      }
+    }
+    onUnmounted(() =>
+      window.removeEventListener("click", handleClickActionAll)
+    );
     return {
-      userList,
+      employeeList,
       totalCount,
       columns,
       actionTable,
       isShowModal,
-      countRecordPageUser,
-      userEdit,
+      templateActionAll,
+      countRecordPageEmployee,
+      employeeEdit,
+      employeeAdd,
       cancelAction,
       agreeAction,
       isShowNotification,
@@ -562,6 +629,7 @@ export default {
       checkShowActionSeries,
       keyword,
       isShowNotificationError,
+      showActionAll,
       handleShowSettingTable,
       handleDeleteAll,
       handleClickToggleSettingTable,
@@ -570,6 +638,7 @@ export default {
       handleCloseModal,
       handleClickActionColumTable,
       handleSearchData,
+      handleToggleActionAll,
       loadData,
     };
   },
@@ -646,6 +715,63 @@ export default {
   background-color: var(--while__color);
 }
 
+/* Phần thực hiện nhiều chức năng */
+.table-function_series {
+  border: 2px solid #3b3c3f;
+  padding: 0 16px;
+  border-radius: 30px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.table-function_series:hover {
+  background-color: #d2d3d6;
+}
+.table-function_series:active {
+  background-color: #bbbcbc;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+.table-function_series span {
+  font-family: "notosans-semibold";
+  padding-right: 4px;
+}
+.table-function_series-icon {
+  background: var(--url__icon);
+  background-position: -560px -359px;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+}
+.table-list_action {
+  border: solid 1px var(--border__input);
+  background-color: var(--while__color);
+  border-radius: 2px;
+  padding: 3px 0;
+  min-width: 100px;
+  top: calc(100% + 2px);
+  right: 5px;
+  position: absolute;
+  z-index: 5;
+  transition: all ease 0.15s;
+}
+.list_action-item {
+  white-space: nowrap;
+  text-align: left;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: all ease 0.15s;
+  color: inherit;
+}
+.list_action-item:hover {
+  background-color: #f5f5f5;
+  color: var(--primary__color);
+}
+
 /* Phần search */
 .search-table {
   position: relative;
@@ -666,6 +792,8 @@ export default {
   cursor: pointer;
   margin-left: 12px;
   position: relative;
+  width: 24px;
+  height: 24px;
 }
 .action-render_table::before {
   display: none;
@@ -686,8 +814,6 @@ export default {
 }
 .reload-table {
   background-position: -423px -201px;
-  width: 24px;
-  height: 24px;
 }
 .reload-table::before {
   content: "Lấy lại dữ liệu";
@@ -699,13 +825,22 @@ export default {
 }
 .setting-table {
   background-position: -88px -200px;
-  width: 24px;
-  height: 24px;
 }
 .setting-table::before {
   content: "Tuỳ chỉnh giao diện";
   width: 110px;
   left: -98px;
+}
+.export-data:hover {
+  background-position: -704px -256px;
+}
+.export-data {
+  background-position: -704px -200px;
+}
+.export-data::before {
+  content: "Xuất ra Excel";
+  width: 110px;
+  left: -55px;
 }
 
 .table-function_search {

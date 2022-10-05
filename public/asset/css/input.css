@@ -31,19 +31,6 @@
 ::-webkit-inner-spin-button {
   display: none;
 }
-::-webkit-calendar-picker-indicator {
-  background: var(--url__icon);
-  background-position: -120px -306px;
-  width: 12px;
-  padding: 4px 10px;
-  height: 22px;
-}
-::-webkit-calendar-picker-indicator:hover {
-  background-color: #e0e0e0;
-}
-input[type="date"] {
-  padding-right: 0;
-}
 
 .input {
   font-size: 13px;

@@ -19,7 +19,7 @@
       :class="{
         active:
           (currentPage > 1 &&
-            currentPage < Math.ceil(totalCount / countRecordPageUser)) ||
+            currentPage < Math.ceil(totalCount / countRecordPageEmployee)) ||
           propsStartPaging === currentPage,
       }"
       class="show-paging_item show-paging_text"
@@ -36,21 +36,21 @@
       @click="
         lastPage(
           //(Khắc Tiềm - 15.09.2022) thứ tự bản ghi bắt đầu muốn lấy của trang cuối
-          (Math.ceil(totalCount / countRecordPageUser) - 1) *
-            countRecordPageUser
+          (Math.ceil(totalCount / countRecordPageEmployee) - 1) *
+            countRecordPageEmployee
         )
       "
       :class="{
-        active: currentPage === Math.ceil(totalCount / countRecordPageUser),
+        active: currentPage === Math.ceil(totalCount / countRecordPageEmployee),
       }"
       class="show-paging_item show-paging_text"
     >
-      {{ Math.ceil(totalCount / countRecordPageUser) }}
+      {{ Math.ceil(totalCount / countRecordPageEmployee) }}
     </div>
     <div
       @click="nextPage(propsStartPaging)"
       :class="{
-        disabled: currentPage === Math.ceil(totalCount / countRecordPageUser),
+        disabled: currentPage === Math.ceil(totalCount / countRecordPageEmployee),
       }"
       class="show-paging_item"
     >
@@ -62,29 +62,29 @@
 <script>
 import { toRefs, ref } from "vue";
 export default {
-  props: ["modelValue", "totalCount", "countRecordPageUser"],
+  props: ["modelValue", "totalCount", "countRecordPageEmployee"],
   emits: ["update:modelValue"],
   setup(props, context) {
     const currentPage = ref(1);
-    const { countRecordPageUser, totalCount } = toRefs(props);
+    const { countRecordPageEmployee, totalCount } = toRefs(props);
     const propsStartPaging = ref(1); //(Khắc Tiềm - 15.09.2022) tham số đầu vào gọi phân trang cho trang kế tiếp mặc định là trang sô 2
 
     //(Khắc Tiềm - 15.09.2022) Hàm xử lý thay đổi số trang tham số đầu vào là số trang muốn lấy
     function changePage(pageValue) {
       currentPage.value = pageValue;
-      const offset = (pageValue - 1) * countRecordPageUser.value;
+      const offset = (pageValue - 1) * countRecordPageEmployee.value;
       context.emit("update:modelValue", offset);
     }
     //(Khắc Tiềm - 15.09.2022) hàm xử lý next trang
     function nextPage(pageValue) {
       if (
-        Math.ceil(totalCount.value / countRecordPageUser.value) >
+        Math.ceil(totalCount.value / countRecordPageEmployee.value) >
         currentPage.value
       ) {
         //(Khắc Tiềm - 15.09.2022) tăng số trang lên 1
         propsStartPaging.value += 1;
         currentPage.value = pageValue + 1;
-        const offset = pageValue * countRecordPageUser.value;
+        const offset = pageValue * countRecordPageEmployee.value;
         context.emit("update:modelValue", offset);
       }
     }
@@ -94,14 +94,14 @@ export default {
         //(Khắc Tiềm - 15.09.2022) tăng số trang lên 1
         propsStartPaging.value -= 1;
         currentPage.value = pageValue - 1;
-        const offset = (pageValue - 2) * countRecordPageUser.value;
+        const offset = (pageValue - 2) * countRecordPageEmployee.value;
         context.emit("update:modelValue", offset);
       }
     }
     //(Khắc Tiềm - 15.09.2022) hàm lấy trang cuối cùng
     function lastPage(offset) {
       currentPage.value = Math.ceil(
-        totalCount.value / countRecordPageUser.value
+        totalCount.value / countRecordPageEmployee.value
       );
       propsStartPaging.value = currentPage.value;
       context.emit("update:modelValue", offset);

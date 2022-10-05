@@ -1,13 +1,11 @@
-import {
-  getUserList,
-} from "../../api/user";
-const users = {
+import { getEmployeeList } from "../../api/employee";
+const employees = {
   namespaced: true,
   state: () => {
     return {
       actionTable: {
-        actionDefault: "Sửa",
-        actionList: ["Nhân bản", "Xoá", "Ngừng sử dụng"],
+        actionDefault: 'Sửa',
+        actionList: ['Nhân bản', 'Xoá', 'Ngừng sử dụng'],
         fieldId: "employeeID",
         fieldCode: "employeeCode",
       },
@@ -51,8 +49,18 @@ const users = {
           header: "Số chứng minh",
           width: "200px",
         },
-        { field: "employeeTitle", isShow: true, header: "Chức danh", width: "120px" },
-        { field: "unitName", isShow: true, header: "Tên đơn vị", width: "200px" },
+        {
+          field: "employeeTitle",
+          isShow: true,
+          header: "Chức danh",
+          width: "120px",
+        },
+        {
+          field: "unitName",
+          isShow: true,
+          header: "Tên đơn vị",
+          width: "200px",
+        },
         {
           field: "bankAccount",
           isShow: true,
@@ -97,15 +105,20 @@ const users = {
           header: "Địa chỉ email",
           width: "230px",
         },
-        { field: "employeeAddress", isShow: true, header: "Địa chỉ", width: "200px" },
+        {
+          field: "employeeAddress",
+          isShow: true,
+          header: "Địa chỉ",
+          width: "200px",
+        },
       ],
-      userList: [],
+      employeeList: [],
       totalCount: 0,
       filter: {
         offset: 0,
         limit: 0,
-        keyword: '',
-      }
+        keyword: "",
+      },
     };
   },
   mutations: {
@@ -113,57 +126,52 @@ const users = {
     setToggleShowColumnTableMutation(state, payload) {
       state.columns[payload].isShow = !state.columns[payload].isShow;
     },
-    //(Khắc Tiềm - 15.09.2022) Xét trống mảng user
-    setEmptyUserMutation(state) {
-      state.userList = [];
-    },
-    //(Khắc Tiềm - 15.09.2022) lấy danh sách user
-    setUserListMutation(state, payload) {
-      state.userList = [...payload.recordList];
+    //(Khắc Tiềm - 15.09.2022) lấy danh sách Employee
+    setEmployeeListMutation(state, payload) {
+      state.employeeList = [...payload.recordList];
       state.totalCount = payload.totalCount;
     },
     //(Khắc Tiềm - 15.09.2022)Xét toggle checkbox phần tử được check
-    setCheckboxUserMutation(state, payload) {
-      state.userList[payload].Check = !state.userList[payload].Check;
+    setCheckboxEmployeeMutation(state, payload) {
+      state.employeeList[payload].Check = !state.employeeList[payload].Check;
     },
     //(Khắc Tiềm - 15.09.2022)Xét toggle tất cả checkbox được check
-    setAllCheckboxUserMutation(state) {
+    setAllCheckboxEmployeeMutation(state) {
       if (
-        state.userList.filter((value) => value.Check).length ===
-        state.userList.length
+        state.employeeList.filter((value) => value.Check).length ===
+        state.employeeList.length
       ) {
-        state.userList = state.userList.reduce((acc, cur) => {
+        state.employeeList = state.employeeList.reduce((acc, cur) => {
           return [...acc, { ...cur, Check: false }];
         }, []);
-      }
-      else{
-        state.userList = state.userList.reduce((acc, cur) => {
+      } else {
+        state.employeeList = state.employeeList.reduce((acc, cur) => {
           return [...acc, { ...cur, Check: true }];
         }, []);
       }
     },
-    setFilterMutation(state, payload){
-      state.filter = {...payload};
-    }
+    setFilterMutation(state, payload) {
+      state.filter = { ...payload };
+    },
   },
   actions: {
-    async getUserListAction(context, payload) {
-      if(payload){
-        await context.commit("setFilterMutation",payload);
+    async getEmployeeListAction(context, payload) {
+      if (payload) {
+        await context.commit("setFilterMutation", payload);
       }
-      context.commit("setEmptyUserMutation");
-      await getUserList(context.state.filter)
-      .then(function (response){
-        context.commit("setUserListMutation", response);
-      }).catch(function(error){
-        console.log(error.response.data);
-      });
+      await getEmployeeList(context.state.filter)
+        .then(function (response) {
+          context.commit("setEmployeeListMutation", response);
+        })
+        .catch(function (error) {
+          console.log(error.response.data);
+        });
     },
-    setCheckboxUserAction(context, payload) {
-      context.commit("setCheckboxUserMutation", payload);
+    setCheckboxEmployeeAction(context, payload) {
+      context.commit("setCheckboxEmployeeMutation", payload);
     },
-    setAllCheckboxUserAction(context) {
-      context.commit("setAllCheckboxUserMutation");
+    setAllCheckboxEmployeeAction(context) {
+      context.commit("setAllCheckboxEmployeeMutation");
     },
     setToggleShowColumnTableAction(context, payload) {
       context.commit("setToggleShowColumnTableMutation", payload);
@@ -171,4 +179,4 @@ const users = {
   },
 };
 
-export default users;
+export default employees;

@@ -34,11 +34,12 @@
                 :focus="true"
                 :required="true"
                 :type="'text'"
+                :maxLength="20"
                 :messageValid="'Mã không được để trống.'"
                 :label="'Mã'"
                 :tab="1"
-                :class="{ 'is-valid': isValid && user.employeeCode == '' }"
-                v-model="user.employeeCode"
+                :class="{ 'is-valid': isValid && employee.employeeCode == '' }"
+                v-model="employee.employeeCode"
                 ref="inputFocus"
               ></input-default>
             </div>
@@ -46,11 +47,12 @@
               <input-default
                 :required="true"
                 :type="'text'"
+                :maxLength="80"
                 :messageValid="'Tên không được để trống.'"
                 :label="'Tên'"
                 :tab="2"
-                :class="{ 'is-valid': isValid && user.employeeName == '' }"
-                v-model="user.employeeName"
+                :class="{ 'is-valid': isValid && employee.employeeName == '' }"
+                v-model="employee.employeeName"
               ></input-default>
             </div>
           </div>
@@ -63,8 +65,8 @@
               :required="true"
               :messageValid="'Dữ liệu <đơn vị> không có trong danh mục.'"
               :tab="7"
-              :class="{ 'is-valid': isValid && !user.unitID }"
-              v-model="user.unitID"
+              :class="{ 'is-valid': isValid && !employee.unitID }"
+              v-model="employee.unitID"
             ></input-combobox>
           </div>
           <div class="form-group">
@@ -72,20 +74,19 @@
               :type="'text'"
               :label="'Chức danh'"
               :tab="10"
-              v-model="user.employeeTitle"
+              v-model="employee.employeeTitle"
             ></input-default>
           </div>
         </div>
         <div class="form-item">
           <div class="form-item_input">
             <div class="form-group ms-small">
-              <label>Ngày sinh</label>
-              <input
+              <input-calendar
                 :tabindex="3"
-                v-model="user.dateOfBirth"
-                class="input"
-                type="date"
-              />
+                :label="'Ngày sinh'"
+                v-model="employee.dateOfBirth"
+              >
+              </input-calendar>
             </div>
             <div style="padding-left: 16px" class="form-group ms-big">
               <label>Giới tính</label>
@@ -93,19 +94,19 @@
                 <input-radio
                   label="Nam"
                   :value="MALE"
-                  v-model="user.gender"
+                  v-model="employee.gender"
                   :tab="4"
                 ></input-radio>
                 <input-radio
                   label="Nữ"
                   :value="FEMALE"
-                  v-model="user.gender"
+                  v-model="employee.gender"
                   :tab="5"
                 ></input-radio>
                 <input-radio
                   label="Khác"
                   :value="OTHER"
-                  v-model="user.gender"
+                  v-model="employee.gender"
                   :tab="6"
                 ></input-radio>
               </div>
@@ -118,17 +119,16 @@
                 :label="'Số CMND'"
                 :tab="8"
                 :toolTip="'Số chứng minh nhân dân'"
-                v-model="user.identityCard"
+                v-model="employee.identityCard"
               ></input-default>
             </div>
             <div class="form-group ms-small">
-              <label>Ngày cấp</label>
-              <input
+              <input-calendar
                 :tabindex="9"
-                v-model="user.dayForIdentity"
-                class="input"
-                type="date"
-              />
+                :label="'Ngày cấp'"
+                v-model="employee.dayForIdentity"
+              >
+              </input-calendar>
             </div>
           </div>
           <div class="form-group">
@@ -136,7 +136,7 @@
               :type="'text'"
               :label="'Nơi cấp'"
               :tab="11"
-              v-model="user.grantAddressIdentity"
+              v-model="employee.grantAddressIdentity"
             ></input-default>
           </div>
         </div>
@@ -147,7 +147,7 @@
             :type="'text'"
             :label="'Địa chỉ'"
             :tab="12"
-            v-model="user.employeeAddress"
+            v-model="employee.employeeAddress"
           ></input-default>
         </div>
         <div class="form-item flex-center">
@@ -159,7 +159,7 @@
               :tab="13"
               :isPhone="true"
               :messageValid="'Nhập đúng Số điện thoại.'"
-              v-model="user.phoneNumber"
+              v-model="employee.phoneNumber"
             ></input-default>
           </div>
           <div class="form-group">
@@ -170,7 +170,7 @@
               :isPhone="true"
               :toolTip="'Điện thoại cố định'"
               :messageValid="'Nhập đúng Số điện thoại.'"
-              v-model="user.landlinePhone"
+              v-model="employee.landlinePhone"
             ></input-default>
           </div>
           <div class="form-group">
@@ -180,7 +180,7 @@
               :tab="15"
               :isEmail="true"
               :messageValid="'Nhập đúng địa chỉ Email.'"
-              v-model="user.employeeEmail"
+              v-model="employee.employeeEmail"
             ></input-default>
           </div>
         </div>
@@ -190,7 +190,7 @@
               :type="'text'"
               :label="'Tài khoản ngân hàng'"
               :tab="16"
-              v-model="user.bankAccount"
+              v-model="employee.bankAccount"
             ></input-default>
           </div>
           <div class="form-group">
@@ -198,7 +198,7 @@
               :type="'text'"
               :label="'Tên ngân hàng'"
               :tab="17"
-              v-model="user.nameBank"
+              v-model="employee.nameBank"
             ></input-default>
           </div>
           <div class="form-group">
@@ -206,7 +206,7 @@
               :type="'text'"
               :label="'Chi nhánh'"
               :tab="18"
-              v-model="user.branchBank"
+              v-model="employee.branchBank"
             ></input-default>
           </div>
         </div>
@@ -267,6 +267,7 @@ import {
   computed,
 } from "vue";
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
+import InputCalendar from "../InputComponents/InputCalendar.vue";
 import InputDefault from "../InputComponents/InputDefault.vue";
 import InputCombobox from "../InputComponents/InputCombobox.vue";
 import InputRadio from "../InputComponents/InputRadio.vue";
@@ -278,8 +279,8 @@ import eNum from "../../utils/eNum.js";
 import notificationMessage from "../../utils/notification.js";
 import validate from "../../utils/validate.js";
 import utilEnum from "../../utils/index";
-import { nextValue } from "../../api/user";
-import { createUserApi, editUserApi } from "../../api/user";
+import { nextValue } from "../../api/employee";
+import { createEmployeeApi, editEmployeeApi } from "../../api/employee";
 export default {
   components: {
     InputCheckbox,
@@ -289,9 +290,13 @@ export default {
     ModalNotification,
     NotificationQuestion,
     NotificationError,
+    InputCalendar,
   },
   props: {
-    userEdit: {
+    employeeEdit: {
+      type: Object,
+    },
+    employeeAdd: {
       type: Object,
     },
   },
@@ -307,8 +312,8 @@ export default {
     } = notificationMessage;
     const inputFocus = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ input phục vụ cho việc dom đến để focus
     const focusLoop = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ tab phục vụ cho việc xây dựng vòng lặp phím tab
-    const stateAddUser = ref(true); //(Khắc Tiềm - 15.09.2022)  Biến kiểm tra trạng thái thêm hay sửa
-    const { userEdit } = toRefs(props); //(Khắc Tiềm - 15.09.2022)  Biến chứa dữ liệu props nhận vào là một user | employee
+    const stateAddEmployee = ref(true); //(Khắc Tiềm - 15.09.2022)  Biến kiểm tra trạng thái thêm hay sửa
+    const { employeeEdit, employeeAdd } = toRefs(props); //(Khắc Tiềm - 15.09.2022)  Biến chứa dữ liệu props nhận vào là một user | employee
     const cancelAction = ref({}); //(Khắc Tiềm - 15.09.2022)  biến chứa các hành động huỷ thông báo
     const agreeAction = ref({}); //(Khắc Tiềm - 15.09.2022)  Biến chứa các hành động chấp nhận thông báo
     const messageAction = ref({}); //(Khắc Tiềm - 15.09.2022)  Biến chứa thông tin hiển thị thông báo
@@ -326,10 +331,12 @@ export default {
       OTHER,
       DuplicateCode,
       InvalidInput,
+      AddFormEmployee,
+      EditFormEmployee,
     } = eNum;
     const { validateEmail, validatePhone } = validate;
     const eventCtrlShiftS = []; //(Khắc Tiềm - 15.09.2022)  lưu lại giá trị các phím bấm tắt không ngắt quãng
-    const user = ref({
+    const employee = ref({
       employeeName: "",
       gender: MALE,
       dateOfBirth: null,
@@ -347,8 +354,8 @@ export default {
       employeeAddress: "",
       employeeCode: "",
     });
-    const userEditReset = ref(null); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sửa nếu form sửa thì sẽ nhận được thông tin cần sửa
-    const userReset = ref({
+    const employeeEditReset = ref(null); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sửa nếu form sửa thì sẽ nhận được thông tin cần sửa
+    const employeeReset = ref({
       employeeName: "",
       gender: MALE,
       dateOfBirth: null,
@@ -369,24 +376,31 @@ export default {
     const optionUnit = computed(() => store.state.unit.unitList); //(Khắc Tiềm - 15.09.2022)  danh sách đơn vị
     onBeforeMount(async () => {
       await store.dispatch("unit/getUnitListAction");
-      if (userEdit.value) {
-        titleForm.value = "Sửa thông tin nhân viên";
-        user.value = {
-          ...userEdit.value,
-          dateOfBirth: formatDateYYYYMMDD(userEdit.value.dateOfBirth),
-          dayForIdentity: formatDateYYYYMMDD(userEdit.value.dayForIdentity),
+      if (employeeEdit.value) {
+        titleForm.value = EditFormEmployee;
+        employee.value = {
+          ...employeeEdit.value,
+          dateOfBirth: formatDateYYYYMMDD(employeeEdit.value.dateOfBirth),
+          dayForIdentity: formatDateYYYYMMDD(employeeEdit.value.dayForIdentity),
         }; //(Khắc Tiềm - 15.09.2022)  chuyển đổi props thành data
-        stateAddUser.value = false;
-        userEditReset.value = {
-          ...userEdit.value,
-          dateOfBirth: formatDateYYYYMMDD(userEdit.value.dateOfBirth),
-          dayForIdentity: formatDateYYYYMMDD(userEdit.value.dayForIdentity),
+        stateAddEmployee.value = false;
+        employeeEditReset.value = {
+          ...employeeEdit.value,
+          dateOfBirth: formatDateYYYYMMDD(employeeEdit.value.dateOfBirth),
+          dayForIdentity: formatDateYYYYMMDD(employeeEdit.value.dayForIdentity),
         };
       } else {
-        titleForm.value = "Thêm thông tin nhân viên";
+        titleForm.value = AddFormEmployee;
+        if (employeeAdd.value) {
+          employee.value = {
+            ...employeeAdd.value,
+            dateOfBirth: formatDateYYYYMMDD(employeeAdd.value.dateOfBirth),
+            dayForIdentity: formatDateYYYYMMDD(employeeAdd.value.dayForIdentity),
+          }; //(Khắc Tiềm - 15.09.2022)  chuyển đổi props thành data
+        }
         await nextValue()
           .then(function (response) {
-            user.value.employeeCode = response;
+            employee.value.employeeCode = response;
           })
           .catch(function (error) {
             console.log(error.response.data);
@@ -442,26 +456,26 @@ export default {
         display: "Đóng",
         action: handleToggleNotificationError,
       };
-      if (user.value.employeeCode.trim() == "") {
+      if (employee.value.employeeCode.trim() == "") {
         messageAction.value = {
           display: ERROR_EMPTY_DATA + "mã nhân viên.",
         };
         isValid.value = true;
         handleToggleNotificationError();
-      } else if (user.value.employeeName.trim() == "") {
+      } else if (employee.value.employeeName.trim() == "") {
         messageAction.value = {
           display: ERROR_EMPTY_DATA + "Tên nhân viên.",
         };
         isValid.value = true;
         handleToggleNotificationError();
-      } else if (!user.value.unitID) {
+      } else if (!employee.value.unitID) {
         messageAction.value = {
           display: ERROR_EMPTY_DATA + "Đơn vị.",
         };
         isValid.value = true;
         handleToggleNotificationError();
       } else if (
-        optionUnit.value.filter((item) => item.unitID !== user.value.unitID)
+        optionUnit.value.filter((item) => item.unitID !== employee.value.unitID)
           .length === 0
       ) {
         messageAction.value = {
@@ -470,50 +484,50 @@ export default {
         isValid.value = true;
         handleToggleNotificationError();
       } else if (
-        validatePhone(user.value.phoneNumber) === false &&
-        user.value.phoneNumber != "" &&
-        user.value.phoneNumber
+        validatePhone(employee.value.phoneNumber) === false &&
+        employee.value.phoneNumber != "" &&
+        employee.value.phoneNumber
       ) {
         messageAction.value = {
           display: ERROR_CORRECT_DATA + "Điện thoại di động.",
         };
         handleToggleNotificationError();
       } else if (
-        validatePhone(user.value.landlinePhone) === false &&
-        user.value.landlinePhone != "" &&
-        user.value.landlinePhone
+        validatePhone(employee.value.landlinePhone) === false &&
+        employee.value.landlinePhone != "" &&
+        employee.value.landlinePhone
       ) {
         messageAction.value = {
           display: ERROR_CORRECT_DATA + "Điện thoại cố định.",
         };
         handleToggleNotificationError();
       } else if (
-        validateEmail(user.value.employeeEmail) === false &&
-        user.value.employeeEmail != "" &&
-        user.value.employeeEmail
+        validateEmail(employee.value.employeeEmail) === false &&
+        employee.value.employeeEmail != "" &&
+        employee.value.employeeEmail
       ) {
         messageAction.value = {
           display: ERROR_CORRECT_DATA + "Email.",
         };
         handleToggleNotificationError();
       } else {
-        if (stateAddUser.value) {
+        if (stateAddEmployee.value) {
           //(Khắc Tiềm - 15.09.2022)  Thêm
           //(Khắc Tiềm - 15.09.2022)  Gọi hàm loading quay quay ở đây
           store.dispatch("config/setToggleShowLoaderAction");
-          await createUserApi({
-            ...user.value,
-            gender: Number(user.value.gender),
+          await createEmployeeApi({
+            ...employee.value,
+            gender: Number(employee.value.gender),
             dateOfBirth:
-              user.value.dateOfBirth === "" ? null : user.value.dateOfBirth,
+              employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
             dayForIdentity:
-              user.value.dayForIdentity === ""
+              employee.value.dayForIdentity === ""
                 ? null
-                : user.value.dayForIdentity,
+                : employee.value.dayForIdentity,
           })
             .then(function () {
               errorApi = false;
-              store.dispatch("user/getUserListAction");
+              store.dispatch("employee/getEmployeeListAction");
             })
             .catch(function (error) {
               console.log(error.response.data);
@@ -521,7 +535,7 @@ export default {
               messageAction.value = {
                 display:
                   error.response.data.errorCode === DuplicateCode
-                    ? `Mã nhân viên <${user.value.employeeCode}> ${DUPLICATE_CODE}`
+                    ? `Mã nhân viên <${employee.value.employeeCode}> ${DUPLICATE_CODE}`
                     : error.response.data.errorCode === InvalidInput
                     ? INVALID_INPUT
                     : error.response.data.userMsg,
@@ -533,19 +547,19 @@ export default {
         } else {
           //(Khắc Tiềm - 15.09.2022)  sửa
           store.dispatch("config/setToggleShowLoaderAction");
-          await editUserApi({
-            ...user.value,
-            gender: Number(user.value.gender),
+          await editEmployeeApi({
+            ...employee.value,
+            gender: Number(employee.value.gender),
             dateOfBirth:
-              user.value.dateOfBirth === "" ? null : user.value.dateOfBirth,
+              employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
             dayForIdentity:
-              user.value.dayForIdentity === ""
+              employee.value.dayForIdentity === ""
                 ? null
-                : user.value.dayForIdentity,
+                : employee.value.dayForIdentity,
           })
             .then(function () {
               errorApi = false;
-              store.dispatch("user/getUserListAction");
+              store.dispatch("employee/getEmployeeListAction");
             })
             .catch(function (error) {
               console.log(error.response.data);
@@ -553,7 +567,7 @@ export default {
               messageAction.value = {
                 display:
                   error.response.data.errorCode === DuplicateCode
-                    ? `Mã nhân viên <${user.value.employeeCode}> ${DUPLICATE_CODE}`
+                    ? `Mã nhân viên <${employee.value.employeeCode}> ${DUPLICATE_CODE}`
                     : error.response.data.errorCode === InvalidInput
                     ? INVALID_INPUT
                     : error.response.data.userMsg,
@@ -561,16 +575,17 @@ export default {
               handleToggleNotificationError();
             });
           store.dispatch("config/setToggleShowLoaderAction");
-          stateAddUser.value = true; //(Khắc Tiềm - 15.09.2022)  sau khi sửa xong sửa trạng thái modal thành thêm user
+          stateAddEmployee.value = true; //(Khắc Tiềm - 15.09.2022)  sau khi sửa xong sửa trạng thái modal thành thêm user
         }
         if (closeModal === true && errorApi === false) {
           context.emit("handle-click-close-modal");
         } else if (errorApi === false) {
+          titleForm.value = AddFormEmployee;
           isValid.value = false;
-          user.value = { ...userReset.value };
+          employee.value = { ...employeeReset.value };
           await nextValue()
             .then(function (response) {
-              user.value.employeeCode = response;
+              employee.value.employeeCode = response;
             })
             .catch(function (error) {
               console.log(error.response.data);
@@ -611,8 +626,8 @@ export default {
       //(Khắc Tiềm - 15.09.2022) Kiếm tra dữ liệu khi đóng form khác thì hỏi có lưu hay không
       if (closeNow) {
         context.emit("handle-click-close-modal");
-      } else if (stateAddUser.value) {
-        if (JSON.stringify(user.value) != JSON.stringify(userReset.value)) {
+      } else if (stateAddEmployee.value) {
+        if (JSON.stringify(employee.value) != JSON.stringify(employeeReset.value)) {
           cancelAction.value = {
             display: "Huỷ",
             action: handleToggleNotificationQuestion,
@@ -630,8 +645,8 @@ export default {
         } else {
           context.emit("handle-click-close-modal");
         }
-      } else if (stateAddUser.value === false) {
-        if (JSON.stringify(user.value) != JSON.stringify(userEditReset.value)) {
+      } else if (stateAddEmployee.value === false) {
+        if (JSON.stringify(employee.value) != JSON.stringify(employeeEditReset.value)) {
           cancelAction.value = {
             display: "Huỷ",
             action: handleToggleNotificationQuestion,
@@ -654,7 +669,7 @@ export default {
 
     return {
       inputFocus,
-      user,
+      employee,
       MALE,
       FEMALE,
       OTHER,

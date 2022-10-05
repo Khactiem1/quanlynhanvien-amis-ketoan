@@ -1,16 +1,16 @@
 // hàm lấy ra số lượng bản ghi muốn hiển thị
-const getCountRecordPageUser = () => {
-  const countRecordPageUser = localStorage.getItem("countRecordPageUser");
-  if (countRecordPageUser) {
-    return countRecordPageUser;
+const getCountRecordPageEmployee = () => {
+  const countRecordPageEmployee = localStorage.getItem("countRecordPageEmployee");
+  if (countRecordPageEmployee) {
+    return countRecordPageEmployee;
   } else {
     // nếu chưa từng lưu số lượng bản ghi thì 20 là số lượng bản ghi được lấy ra mặc định
-    localStorage.setItem("countRecordPageUser", 20);
+    localStorage.setItem("countRecordPageEmployee", 20);
     return 20;
   }
 };
-const setCountRecordPageUser = (record) => {
-  localStorage.setItem("countRecordPageUser", record);
+const setCountRecordPageEmployee = (record) => {
+  localStorage.setItem("countRecordPageEmployee", record);
 };
 const formatDateDDMMYYYY = (date) => {
   if ((date === null) | (date == "")) {
@@ -45,8 +45,8 @@ const formatDateYYYYMMDD = (date) => {
   }
 };
 export default {
-  getCountRecordPageUser,
-  setCountRecordPageUser,
+  getCountRecordPageEmployee,
+  setCountRecordPageEmployee,
   formatDateDDMMYYYY,
   formatDateYYYYMMDD,
 };

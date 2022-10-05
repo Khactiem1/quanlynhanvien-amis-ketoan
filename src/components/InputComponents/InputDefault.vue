@@ -24,6 +24,7 @@ import validate from "../../utils/validate.js";
 export default {
   props: [
     "modelValue",
+    "maxLength",
     "placeholder",
     "required",
     "type",
@@ -38,7 +39,7 @@ export default {
   emits: ["update:modelValue"],
   setup(props, context) {
     const tagInput = ref(null);
-    const { focus, required, isEmail, isPhone } = toRefs(props);
+    const { focus, required, isEmail, isPhone, maxLength, modelValue } = toRefs(props);
     const isValid = ref(false);
     const isValidEmailPhone = ref(false);
     const { validateEmail, validatePhone } = validate;
@@ -52,13 +53,30 @@ export default {
     });
     //(Khắc Tiềm - 15.09.2022) hàm xử lý nhập input và validate
     function handleInput(event) {
-      context.emit("update:modelValue", event.target.value);
-      isValidEmailPhone.value = false;
-      if (required.value) {
-        if (event.target.value == "") {
-          isValid.value = true;
-        } else {
-          isValid.value = false;
+      if (maxLength.value) {
+        if (event.target.value.length <= maxLength.value) {
+          context.emit("update:modelValue", event.target.value);
+          isValidEmailPhone.value = false;
+          if (required.value) {
+            if (event.target.value == "") {
+              isValid.value = true;
+            } else {
+              isValid.value = false;
+            }
+          }
+        }
+        else{
+          tagInput.value.value = modelValue.value;
+        }
+      } else {
+        context.emit("update:modelValue", event.target.value);
+        isValidEmailPhone.value = false;
+        if (required.value) {
+          if (event.target.value == "") {
+            isValid.value = true;
+          } else {
+            isValid.value = false;
+          }
         }
       }
     }

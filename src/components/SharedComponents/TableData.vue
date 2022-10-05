@@ -25,7 +25,7 @@
         </th>
       </tr>
     </thead>
-    <table-loader v-if="isShowLoaderTable" :columns="columns"></table-loader>
+    <table-loader v-if="isShowLoaderTable" :columns="columns" :lengthList="tableList.length"></table-loader>
     <tbody v-if="!isShowLoaderTable">
       <!-- Vòng lặp các user -->
       <tr

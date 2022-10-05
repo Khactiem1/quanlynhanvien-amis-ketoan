@@ -4,7 +4,7 @@ export default {
     return regex.test(email);
   },
   validatePhone: (sdt) => {
-    var regex = /(03|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/; //eslint-disable-line
+    var regex = /(03|02|05|07|08|09|01[2|6|8|9])+([0-9]{8})\b/; //eslint-disable-line
     return regex.test(sdt);
   },
 };

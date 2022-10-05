@@ -1,40 +1,6 @@
 <template>
   <tbody>
-    <tr>
-      <td>
-        <div class="table-loader">
-          <span></span>
-        </div>
-      </td>
-      <td v-for="(item, index) in columns" :key="index">
-        <div class="table-loader">
-          <span></span>
-        </div>
-      </td>
-      <td>
-        <div class="table-loader">
-          <span></span>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <div class="table-loader">
-          <span></span>
-        </div>
-      </td>
-      <td v-for="(item, index) in columns" :key="index">
-        <div class="table-loader">
-          <span></span>
-        </div>
-      </td>
-      <td>
-        <div class="table-loader">
-          <span></span>
-        </div>
-      </td>
-    </tr>
-    <tr>
+    <tr v-for="(row, indexRow) in lengthList" :key="indexRow">
       <td>
         <div class="table-loader">
           <span></span>
@@ -60,6 +26,7 @@ export default {
     columns: {
       type: Array,
     },
+    lengthList: {},
   },
 };
 </script>
