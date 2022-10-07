@@ -14,7 +14,7 @@
 <script>
 import TheSidebar from "./components/TheSidebar.vue";
 import TheHeader from "./components/TheHeader.vue";
-import LoaderAnimation from "./components/SharedComponents/LoaderAnimation.vue";
+import LoaderAnimation from "./components/TheLoader.vue";
 import { useStore } from "vuex";
 import { ref, computed } from "vue";
 
@@ -64,9 +64,13 @@ export default {
   color: var(--text__color);
   text-align: left;
   font-weight: 400;
-  font-size: 13px;
+  font-size: 14px;
   min-width: 1024px;
   min-height: 768px;
+}
+h1{
+  font-size: 20px;
+  font-family: 'notosans-bold';
 }
 .content {
   flex: 1;

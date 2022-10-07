@@ -15,7 +15,7 @@
       <div class="combobox-select_icon" @click="handleClickOpenCombobox">
         <div class="select_icon-combobox"></div>
       </div>
-      <div ref="listSelect" class="combobox-combobox_select">
+      <div ref="listSelect" v-show="isShow" class="combobox-combobox_select">
         <div
           class="combobox-combobox_item"
           v-for="(item, index) in options"
@@ -186,7 +186,7 @@ export default {
         window.innerHeight - (input.value.getBoundingClientRect().bottom + 30) <
         listSelect.value.getBoundingClientRect().height
       ) {
-        positionListSelect.value.top = `-${(options.value.length * 100) - 30}%`;
+        positionListSelect.value.top = `-${options.value.length * 100 + 30}%`;
       } else {
         positionListSelect.value.top = "110%";
       }
@@ -248,8 +248,8 @@ export default {
   position: relative;
 }
 .combobox-select_icon {
-  width: 32px;
-  height: 30px;
+  width: 36px;
+  height: calc(100% - 2px);
   cursor: pointer;
   right: 1px;
   top: 1px;
@@ -292,7 +292,10 @@ export default {
   text-align: left;
   padding: 5px 10px;
   cursor: pointer;
+  height: var(--primary__button-height);
   color: inherit;
+  display: flex;
+  align-items: center;
 }
 .combobox-combobox_item:hover {
   background-color: #ebedf0;

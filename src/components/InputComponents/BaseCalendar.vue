@@ -184,6 +184,10 @@ export default {
       currentYear.value = newValue
         ? new Date(newValue).getFullYear()
         : new Date().getFullYear();
+      if(!newValue){
+        enteredValue.value = "";
+        doneValue.value = 0;
+      }
       displayData.value = modelValue.value
         ? formatDateDDMMYYYY(new Date(modelValue.value))
         : "";
@@ -274,10 +278,7 @@ export default {
         setTimeout(() => {
           elementInput.value.selectionStart = elementInput.value.selectionEnd = displayData.value.replace(/[^0-9]/g,"").length + doneValue.value;
           if(elementInput.value.selectionStart === 10){
-            console.log(enteredValue.value);
-            console.log(enteredValue.value.split("/")[2], enteredValue.value.split("/")[1], enteredValue.value.split("/")[0]);
             const d = new Date(enteredValue.value.split("/")[2], enteredValue.value.split("/")[1] - 1, enteredValue.value.split("/")[0]);
-            console.log(d);
             context.emit("update:modelValue", formatDateYYYYMMDD(d));
           }
         }, 0);
@@ -334,10 +335,10 @@ export default {
 .form-icon {
   position: absolute;
   background: var(--url__icon);
-  background-position: -120px -306px;
-  width: 32px;
+  background-position: -118px -303px;
+  width: 36px;
   padding: 4px 10px;
-  height: 30px;
+  height: calc(100% - 2px);
   right: 1px;
   top: 1px;
   background-color: #fff;
@@ -462,6 +463,11 @@ export default {
 }
 .btn-handle {
   cursor: pointer;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .calendar-item.calendar-date {

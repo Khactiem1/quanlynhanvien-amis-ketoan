@@ -113,10 +113,10 @@
 </template>
 
 <script>
-import InputCheckbox from "../InputComponents/InputCheckbox.vue";
-import TableLoader from "../SharedComponents/TableLoader.vue";
-import TableEmpty from "../SharedComponents/TableEmpty.vue";
-import TableListAction from "../SharedComponents/TableListAction.vue";
+import InputCheckbox from "../InputComponents/BaseCheckbox.vue";
+import TableLoader from "../TableComponents/BaseTableLoader.vue";
+import TableEmpty from "../TableComponents/BaseTableEmpty.vue";
+import TableListAction from "../TableComponents/BaseTableListAction.vue";
 import eNum from "../../utils/eNum";
 import utilEnum from "../../utils/index";
 import { ref } from "vue";
@@ -233,9 +233,9 @@ table {
 .table .thead-light th {
   border-right: 1px solid #c7c7c7;
   border-bottom: 1px solid #c7c7c7;
-  min-height: 34px;
+  min-height: 48px;
   padding: 0 10px;
-  height: 34px;
+  height: 48px;
   position: sticky;
   top: 66px;
   background-color: #e5e8ec;
@@ -263,8 +263,8 @@ tbody tr.active,
 .table tbody th,
 .table tbody td {
   padding: 0 10px;
-  min-height: 44px;
-  height: 44px;
+  min-height: 48px;
+  height: 48px;
   border-right: 1px dotted #c7c7c7;
   border-bottom: 1px solid #c7c7c7;
 }
@@ -325,8 +325,8 @@ tbody tr.active,
 }
 .table .thead-light th:first-child,
 .table tbody th:first-child {
-  width: 40px;
-  max-width: 40px;
+  width: 48;
+  min-width: 48px;
 }
 /* Nút bấm action */
 .action-colum_table {

@@ -3,12 +3,14 @@
     color: var(--text__color);
     font-family: "notosans-semibold";  
     border: solid 1px #8d9096;;
-    padding: 6px 16px;
+    padding: 8px 19px 9px 19px;
     cursor: pointer;
     outline: none;
+    min-width: 80px;
     border-radius: 3px;
     height: var(--primary__button-height);
     background-color: var(--while__color);
+    font-size: 14px;
 }
 .btn:focus{
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;

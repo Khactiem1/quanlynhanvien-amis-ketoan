@@ -19,7 +19,7 @@ export default {
   left: calc(50vw - 222px);
 }
 .modal-notification_content {
-  padding: 32px;
+  padding: 32px 24px 24px 24px !important;
 }
 .modal-notification_body {
   display: flex;
@@ -55,6 +55,6 @@ export default {
   justify-content: space-between;
 }
 .modal-notification_action-item .btn + .btn {
-  margin-left: 5px;
+  margin-left: 8px !important;
 }
 </style>

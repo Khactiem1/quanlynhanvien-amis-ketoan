@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar">
+  <div class="sidebar" :class="{ small : !showSidebar}">
     <div class="logo-sidebar">
       <a v-if="showSidebar" class="logo-sidebar_home"></a>
       <a v-if="showSidebar" class="logo-sidebar_menu">
@@ -16,6 +16,9 @@
           class="menu-sidebar_icon"
         ></div>
         <div v-if="showSidebar" class="menu-sidebar_text">Tổng quan</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Tổng quan
+        </div>
       </router-link>
       <router-link to="/nhanvien" class="menu-sidebar_item nhanvien-page">
         <div
@@ -23,6 +26,9 @@
           class="menu-sidebar_icon"
         ></div>
         <div v-if="showSidebar" class="menu-sidebar_text">Tiền mặt</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Tiền mặt
+        </div>
       </router-link>
       <a class="menu-sidebar_item">
         <div
@@ -30,6 +36,9 @@
           class="menu-sidebar_icon"
         ></div>
         <div v-if="showSidebar" class="menu-sidebar_text">Tiền gửi</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Tiền gửi
+        </div>
       </a>
       <a class="menu-sidebar_item">
         <div
@@ -37,6 +46,9 @@
           class="menu-sidebar_icon"
         ></div>
         <div v-if="showSidebar" class="menu-sidebar_text">Mua hàng</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Mua hàng
+        </div>
       </a>
       <a class="menu-sidebar_item">
         <div
@@ -44,6 +56,9 @@
           class="menu-sidebar_icon"
         ></div>
         <div v-if="showSidebar" class="menu-sidebar_text">Bán hàng</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Bán hàng
+        </div>
       </a>
       <router-link to="/test404ssssss" class="menu-sidebar_item dashboard-page">
         <div
@@ -51,6 +66,9 @@
           class="menu-sidebar_icon"
         ></div>
         <div v-if="showSidebar" class="menu-sidebar_text">Test trang 404</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Test trang 404
+        </div>
       </router-link>
     </div>
   </div>
@@ -87,6 +105,11 @@ export default {
   height: 100vh;
   top: 0;
   left: 0;
+  width: 200px;
+}
+
+.sidebar.small{
+  width: 73px;
 }
 
 /* Phần logo sidebar */
@@ -95,12 +118,12 @@ export default {
   align-items: center;
   padding: 10px 18px;
   height: var(--height__header);
+  justify-content: center;
 }
 .logo-sidebar_home {
   width: 24px;
   height: 24px;
-  margin-right: 10px;
-  margin-left: 6px;
+  margin-right: 18px;
   background: var(--url__icon) no-repeat -424px -86px;
 }
 .logo-sidebar_menu {
@@ -119,16 +142,50 @@ export default {
   cursor: pointer;
 }
 
+
 /* Phần menu */
 .menu-sidebar {
-  padding-top: 14px;
+  padding: 20px 12px;
 }
 .menu-sidebar_item {
   position: relative;
   display: flex;
   align-items: center;
   color: var(--while__color);
-  height: 42px;
+  border-radius: 4px;
+  height: 44px;
+  margin-bottom: 4px;
+  padding: 0 12px;
+}
+.menu-sidebar_item:hover .menu-sidebar_item-info{
+  opacity: 1;
+  visibility: visible;
+}
+.menu-sidebar_item-info{
+  position: absolute;
+  opacity: 0;
+  visibility: hidden;
+  background-color: #585858;
+  height: 40px;
+  padding: 11px 16px;
+  border-radius: 4px;
+  white-space: nowrap;
+  left: 68px;
+  top: 2;
+  z-index: 10;
+}
+.menu-sidebar_item-info::before{
+  position: absolute;
+  content: '';
+  width:0px;
+  height:0px;
+  border-left:8px solid transparent;
+  border-right:8px solid transparent;
+  border-bottom:8px solid #585858; /* Tam giác phía dưới được đổ màu */
+  transform: rotate(-90deg);
+  top: 50%;
+  margin-top: -4px;
+  left: -8px;
 }
 .menu-sidebar_item.active {
   background-color: var(--menu__color-active);
@@ -143,6 +200,8 @@ export default {
   top: 0;
   width: 6px;
   height: 100%;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
 }
 .menu-sidebar_item.active::before {
   background-color: var(--primary__color);
@@ -151,11 +210,10 @@ export default {
   background: var(--url__icon) no-repeat;
   width: 24px;
   height: 24px;
-  margin-left: 14px;
 }
 .menu-sidebar_text {
   line-height: 42px;
-  margin-left: 7px;
+  margin-left: 12px;
 }
 /* Khi được active thì sẽ dùng icon khác màu trắng */
 .nhanvien-page.active .menu-sidebar_icon {

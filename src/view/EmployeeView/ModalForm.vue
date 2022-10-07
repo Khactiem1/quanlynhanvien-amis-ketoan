@@ -132,13 +132,13 @@ export default {
   padding: 0 32px;
 }
 .form-detail {
-  padding-bottom: 20px;
+  padding-bottom: 12px;
 }
 .form-item {
   width: 50%;
 }
 .form-item + .form-item {
-  padding-left: 26px;
+  padding-left: 12px;
 }
 .form-group {
   padding-bottom: 12px;
@@ -146,7 +146,7 @@ export default {
 }
 .form-group label {
   font-family: "notosans-semibold";
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   display: block;
 }
 .form-group label span {

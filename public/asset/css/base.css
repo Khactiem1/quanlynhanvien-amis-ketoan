@@ -11,9 +11,9 @@
   --border-icon__color: #babec5;
   --border-icon__color-hover: #6b6c72;
   --text__color: #111111;
-  --height__header: 48px;
-  --primary__button-height: 34px;
-  --input__height: 32px;
+  --height__header: 56px;
+  --primary__button-height: 36px;
+  --input__height: 36px;
   --border__input: #babec5;
   --url__icon: url("../logo/Sprites.64af8f61.svg");
   --url__loader: url("../logo/loading.svg");

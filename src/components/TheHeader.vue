@@ -9,11 +9,11 @@
     </div>
     <div class="content-header_info">
       <div class="header-bell_notification"></div>
-      <button class="header-user">
+      <div class="header-user">
         <div class="header-user_avatar"></div>
         <div class="header-user_name">Nguyễn Khắc Tiềm</div>
         <div class="header-user_icon"></div>
-      </button>
+      </div>
     </div>
   </div>
 </template>
@@ -41,8 +41,9 @@ export default {
 /* phần header công ty */
 .header {
   height: var(--height__header);
+  min-height: var(--height__header);
   background-color: var(--while__color);
-  padding: 10px 14px;
+  padding: 10px 24px;
   display: flex;
   justify-content: space-between;
   font-family: "notosans-semibold";
@@ -57,7 +58,7 @@ export default {
   height: 14px;
   background: var(--url__icon) no-repeat -847px -35px;
   cursor: pointer;
-  margin-right: 23px;
+  margin-right: 24px;
 }
 .header-text {
   text-transform: uppercase;
@@ -75,9 +76,9 @@ export default {
 /* Phần header thông báo */
 .header-bell_notification {
   background: var(--url__icon) no-repeat -788px -30px;
-  width: 22px;
-  height: 21px;
-  margin-right: 20px;
+  width: 24px;
+  height: 24px;
+  margin-right: 24px;
   cursor: pointer;
 }
 /* header thao tác người dùng */

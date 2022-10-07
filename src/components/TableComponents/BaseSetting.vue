@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import InputCheckbox from "../InputComponents/InputCheckbox.vue";
+import InputCheckbox from "../InputComponents/BaseCheckbox.vue";
 import eNum from "../../utils/eNum";
 import { onMounted, onUnmounted, toRefs, ref } from "vue";
 export default {

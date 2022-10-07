@@ -64,7 +64,7 @@
               :label="'Đơn vị'"
               :required="true"
               :messageValid="'Dữ liệu <đơn vị> không có trong danh mục.'"
-              :tab="7"
+              :tab="3"
               :class="{ 'is-valid': isValid && !employee.unitID }"
               v-model="employee.unitID"
             ></input-combobox>
@@ -73,7 +73,7 @@
             <input-default
               :type="'text'"
               :label="'Chức danh'"
-              :tab="10"
+              :tab="4"
               v-model="employee.employeeTitle"
             ></input-default>
           </div>
@@ -82,7 +82,7 @@
           <div class="form-item_input">
             <div class="form-group ms-small">
               <input-calendar
-                :tabindex="3"
+                :tabindex="5"
                 :label="'Ngày sinh'"
                 v-model="employee.dateOfBirth"
               >
@@ -95,19 +95,19 @@
                   label="Nam"
                   :value="MALE"
                   v-model.number="employee.gender"
-                  :tab="4"
+                  :tab="6"
                 ></input-radio>
                 <input-radio
                   label="Nữ"
                   :value="FEMALE"
                   v-model.number="employee.gender"
-                  :tab="5"
+                  :tab="7"
                 ></input-radio>
                 <input-radio
                   label="Khác"
                   :value="OTHER"
                   v-model.number="employee.gender"
-                  :tab="6"
+                  :tab="8"
                 ></input-radio>
               </div>
             </div>
@@ -117,14 +117,14 @@
               <input-default
                 :type="'text'"
                 :label="'Số CMND'"
-                :tab="8"
+                :tab="9"
                 :toolTip="'Số chứng minh nhân dân'"
                 v-model="employee.identityCard"
               ></input-default>
             </div>
             <div class="form-group ms-small">
               <input-calendar
-                :tabindex="9"
+                :tabindex="10"
                 :label="'Ngày cấp'"
                 v-model="employee.dayForIdentity"
               >
@@ -266,21 +266,20 @@ import {
   onBeforeMount,
   computed,
 } from "vue";
-import InputCheckbox from "../InputComponents/InputCheckbox.vue";
-import InputCalendar from "../InputComponents/InputCalendar.vue";
-import InputDefault from "../InputComponents/InputDefault.vue";
-import InputCombobox from "../InputComponents/InputCombobox.vue";
-import InputRadio from "../InputComponents/InputRadio.vue";
-import ModalNotification from "../SharedComponents/ModalNotification.vue";
-import NotificationQuestion from "../SharedComponents/NotificationQuestion.vue";
-import NotificationError from "../SharedComponents/NotificationError.vue";
+import InputCheckbox from "../../components/InputComponents/BaseCheckbox.vue";
+import InputCalendar from "../../components/InputComponents/BaseCalendar.vue";
+import InputDefault from "../../components/InputComponents/BaseInput.vue";
+import InputCombobox from "../../components/InputComponents/BaseCombobox.vue";
+import InputRadio from "../../components/InputComponents/BaseRadio.vue";
+import ModalNotification from "../../components/NotificationComponent/NotificationModal.vue";
+import NotificationQuestion from "../../components/NotificationComponent/NotificationQuestion.vue";
+import NotificationError from "../../components/NotificationComponent/NotificationError.vue";
 import { useStore } from "vuex";
 import eNum from "../../utils/eNum.js";
 import notificationMessage from "../../utils/notification.js";
 import validate from "../../utils/validate.js";
-import utilEnum from "../../utils/index";
-import { nextValue } from "../../api/employee";
-import { createEmployeeApi, editEmployeeApi } from "../../api/employee";
+import utilEnum from "../../utils/index.js";
+import { nextValue, createEmployeeApi, editEmployeeApi } from "../../api/employee.js";
 export default {
   components: {
     InputCheckbox,

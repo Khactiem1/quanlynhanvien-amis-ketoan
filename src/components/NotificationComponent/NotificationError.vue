@@ -30,6 +30,6 @@ export default {
 
 <style scoped>
   .modal-notification_action{
-    justify-content: center;
+    justify-content: end;
   }
 </style>

@@ -49,17 +49,33 @@ export default {
     const displayPaging = computed(()=> {
       const arr = [];
       for(let i = 1; i <= Math.ceil(totalCount.value / countRecordPageEmployee.value); i++){
-        if(i === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
-          arr.push(i);
+        if(currentPage.value === Math.ceil(totalCount.value / countRecordPageEmployee.value) - 1 || currentPage.value === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+          if(i === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+            arr.push(i);
+          }
+          else if(i === 3){
+            arr.push("...");
+          }
+          else if(i < 4){
+            arr.push(i);
+          }
+          else if(i === 4){
+            arr.push(pageChangeCLick.value);
+          }
         }
-        else if(i === 3){
-          arr.push(pageChangeCLick.value);
-        }
-        else if(i < 4){
-          arr.push(i);
-        }
-        else if(i === 4){
-          arr.push("...");
+        else{
+          if(i === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+            arr.push(i);
+          }
+          else if(i === 3){
+            arr.push(pageChangeCLick.value);
+          }
+          else if(i < 4){
+            arr.push(i);
+          }
+          else if(i === 4){
+            arr.push("...");
+          }
         }
       }
       return arr;
@@ -72,12 +88,20 @@ export default {
      */
     function handleChangePage(page){
       if(page === "..."){
-        handleNextPage();
+        if(currentPage.value === Math.ceil(totalCount.value / countRecordPageEmployee.value) - 1 || currentPage.value === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+          handlePrevPage();
+        }
+        else{
+          handleNextPage();
+        }
       }
       else{
         currentPage.value = page;
         if(page === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
           pageChangeCLick.value = currentPage.value - 1;
+        }
+        else if(page === Math.ceil(totalCount.value / countRecordPageEmployee.value) - 1){
+          pageChangeCLick.value = currentPage.value;
         }
         else{
           pageChangeCLick.value = 3;

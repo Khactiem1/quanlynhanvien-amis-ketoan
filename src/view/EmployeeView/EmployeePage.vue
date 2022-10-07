@@ -132,27 +132,27 @@
 </template>
 
 <script>
-import TableData from "../components/SharedComponents/TableData.vue";
-import ModalNotification from "../components/SharedComponents/ModalNotification.vue";
-import NotificationWanning from "../components/SharedComponents/NotificationWanning.vue";
-import NotificationError from "../components/SharedComponents/NotificationError.vue";
-import PagingPage from "../components/SharedComponents/PagingPage.vue";
-import SettingTable from "../components/SharedComponents/SettingTable.vue";
-import ModalForm from "../components/EmployeeComponents/ModalForm.vue";
-import FormEmployee from "../components/EmployeeComponents/FormEmployee.vue";
-import InputCombobox from "../components/InputComponents/InputCombobox.vue";
+import TableData from "../../components/TableComponents/BaseTable.vue";
+import ModalNotification from "../../components/NotificationComponent/NotificationModal.vue";
+import NotificationWanning from "../../components/NotificationComponent/NotificationWanning.vue";
+import NotificationError from "../../components/NotificationComponent/NotificationError.vue";
+import PagingPage from "../../components/TableComponents/BasePaging.vue";
+import SettingTable from "../../components/TableComponents/BaseSetting.vue";
+import ModalForm from "./ModalForm.vue";
+import FormEmployee from "./FormEmployee.vue";
+import InputCombobox from "../../components/InputComponents/BaseCombobox.vue";
 import { computed, ref, watch, onBeforeMount, onUnmounted } from "vue";
 import { useStore } from "vuex";
-import actionTableStore from "../utils/actionTable";
-import notification from "../utils/notification";
-import index from "../utils/index";
+import actionTableStore from "../../utils/actionTable";
+import notification from "../../utils/notification";
+import index from "../../utils/index";
 import {
   getEmployeeApi,
   deleteEmployeeApi,
   deleteMultipleApi,
   nextValue,
   exportDataApi,
-} from "../api/employee";
+} from "../../api/employee";
 export default {
   components: {
     TableData,
@@ -659,7 +659,10 @@ export default {
 
 ::-webkit-scrollbar-track {
   border-radius: 0;
-  background: #eeeeee;
+  background: #fff;
+  margin-top: 65px;
+  margin-bottom: 55px;
+  direction: rtl;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -673,10 +676,9 @@ export default {
 ::-webkit-scrollbar {
   height: 10px; /* height of horizontal scrollbar ← You're missing this */
   width: 8px;
-  border: 1px solid #d5d5d5;
 }
 .container-table {
-  padding: 0 16px;
+  padding: 0 24px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -689,7 +691,7 @@ export default {
 .container-table_header {
   display: flex;
   justify-content: space-between;
-  padding: 20px 0;
+  padding: 24px 0 20px 0px;
 }
 /* Phần table */
 .table-content {
@@ -697,6 +699,9 @@ export default {
   overflow: auto;
   scroll-behavior: smooth;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--while__color);
 }
 .table-scroll {
   display: table;
@@ -868,7 +873,8 @@ export default {
   padding: 12px 51px 12px 16px;
   background-color: var(--while__color);
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
+  flex-grow: 1;
 }
 </style>
