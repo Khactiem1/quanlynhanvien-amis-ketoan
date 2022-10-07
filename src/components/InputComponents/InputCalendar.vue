@@ -3,6 +3,7 @@
     <label v-if="label">{{ label }}</label>
     <div class="form-input">
       <input
+        @keypress="isNumber($event)"
         ref="elementInput"
         type="text"
         :tabindex="tabindex"
@@ -160,7 +161,6 @@ export default {
     const showSelectYear = ref(false);
     const showSelectMonth = ref(false);
     const dateNow = ref(new Date());
-    const dateInput = ref(formatDateDDMMYYYY(dateNow.value));
     const { modelValue } = toRefs(props);
     const displayData = ref("");
     const dataInput = ref("__/__/____");
@@ -259,14 +259,41 @@ export default {
       }
       showCalendar.value = !showCalendar.value;
     }
+    const enteredValue = ref("");
+    const doneValue = ref(0);
     function handleInput(event) {
-      console.log(event.target.value);
-      console.log(dateInput.value);
-      displayData.value = dataInput.value;
-      console.log(elementInput.value.selectionStart);
-      setTimeout(() => {
-        elementInput.value.selectionStart = elementInput.value.selectionEnd = 0;
-      }, 0);
+      if(event.data && elementInput.value.selectionStart <= 10){
+        if(elementInput.value.selectionStart === 3 || elementInput.value.selectionStart === 6){
+          enteredValue.value +=  '/' + event.data;
+          doneValue.value++;
+        }
+        else{
+          enteredValue.value += event.data;
+        }
+        displayData.value = enteredValue.value + dataInput.value.slice(elementInput.value.selectionStart, dataInput.value.length);
+        setTimeout(() => {
+          elementInput.value.selectionStart = elementInput.value.selectionEnd = displayData.value.replace(/[^0-9]/g,"").length + doneValue.value;
+          if(elementInput.value.selectionStart === 10){
+            console.log(enteredValue.value);
+            console.log(enteredValue.value.split("/")[2], enteredValue.value.split("/")[1], enteredValue.value.split("/")[0]);
+            const d = new Date(enteredValue.value.split("/")[2], enteredValue.value.split("/")[1] - 1, enteredValue.value.split("/")[0]);
+            console.log(d);
+            context.emit("update:modelValue", formatDateYYYYMMDD(d));
+          }
+        }, 0);
+      }
+      else{
+        displayData.value = enteredValue.value;
+      }
+    }
+    function isNumber(evt) {
+      evt = (evt) ? evt : window.event;
+      var charCode = (evt.which) ? evt.which : evt.keyCode;
+      if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+        evt.preventDefault();
+      } else {
+        return true;
+      }
     }
     return {
       currentMonth,
@@ -284,6 +311,7 @@ export default {
       elementSelectYear,
       elementInput,
       showCalendar,
+      isNumber,
       handleNextMonth,
       handlePrevMonth,
       handleSelectYear,

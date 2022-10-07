@@ -21,3 +21,6 @@ export const nextValue = () => {
 export const deleteMultipleApi = (listID) => {
   return axiosAPI.post(`/Employees/bulk_delete`, listID);
 };
+export const exportDataApi = () => {
+  return axiosAPI.get(`/Employees/export_data`);
+};

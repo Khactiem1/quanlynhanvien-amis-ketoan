@@ -94,19 +94,19 @@
                 <input-radio
                   label="Nam"
                   :value="MALE"
-                  v-model="employee.gender"
+                  v-model.number="employee.gender"
                   :tab="4"
                 ></input-radio>
                 <input-radio
                   label="Nữ"
                   :value="FEMALE"
-                  v-model="employee.gender"
+                  v-model.number="employee.gender"
                   :tab="5"
                 ></input-radio>
                 <input-radio
                   label="Khác"
                   :value="OTHER"
-                  v-model="employee.gender"
+                  v-model.number="employee.gender"
                   :tab="6"
                 ></input-radio>
               </div>
@@ -517,7 +517,6 @@ export default {
           store.dispatch("config/setToggleShowLoaderAction");
           await createEmployeeApi({
             ...employee.value,
-            gender: Number(employee.value.gender),
             dateOfBirth:
               employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
             dayForIdentity:
@@ -549,7 +548,6 @@ export default {
           store.dispatch("config/setToggleShowLoaderAction");
           await editEmployeeApi({
             ...employee.value,
-            gender: Number(employee.value.gender),
             dateOfBirth:
               employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
             dayForIdentity:

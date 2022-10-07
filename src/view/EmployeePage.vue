@@ -46,7 +46,7 @@
             "
             class="action-render_table reload-table"
           ></div>
-          <div class="action-render_table export-data"></div>
+          <div @click="handleExportData()" class="action-render_table export-data"></div>
           <div
             @click="handleShowSettingTable"
             class="action-render_table setting-table"
@@ -72,7 +72,7 @@
           <!-- End Table -->
         </div>
       </div>
-      <div class="paging-container sticky">
+      <div v-if="employeeList.length !== 0" class="paging-container sticky">
         <div class="total-record">
           Tổng số: <strong>{{ totalCount }}</strong> bản ghi
         </div>
@@ -151,6 +151,7 @@ import {
   deleteEmployeeApi,
   deleteMultipleApi,
   nextValue,
+  exportDataApi,
 } from "../api/employee";
 export default {
   components: {
@@ -608,6 +609,10 @@ export default {
     onUnmounted(() =>
       window.removeEventListener("click", handleClickActionAll)
     );
+
+    function handleExportData(){
+      exportDataApi();
+    }
     return {
       employeeList,
       totalCount,
@@ -639,6 +644,7 @@ export default {
       handleClickActionColumTable,
       handleSearchData,
       handleToggleActionAll,
+      handleExportData,
       loadData,
     };
   },

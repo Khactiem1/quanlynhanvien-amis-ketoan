@@ -45,7 +45,7 @@
         ></div>
         <div v-if="showSidebar" class="menu-sidebar_text">Bán hàng</div>
       </a>
-      <router-link to="/test404" class="menu-sidebar_item dashboard-page">
+      <router-link to="/test404ssssss" class="menu-sidebar_item dashboard-page">
         <div
           style="background-position: -30px -1628px"
           class="menu-sidebar_icon"

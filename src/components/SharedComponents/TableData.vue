@@ -25,7 +25,14 @@
         </th>
       </tr>
     </thead>
-    <table-loader v-if="isShowLoaderTable" :columns="columns" :lengthList="tableList.length"></table-loader>
+    <table-loader
+      v-if="isShowLoaderTable"
+      :columns="columns"
+      :lengthList="tableList.length"
+    ></table-loader>
+    <table-empty
+      v-if="!isShowLoaderTable && tableList.length === 0"
+    ></table-empty>
     <tbody v-if="!isShowLoaderTable">
       <!-- Vòng lặp các user -->
       <tr
@@ -66,17 +73,17 @@
         <td class="text-center">
           <div class="action-colum_table">
             <!-- Phần render action mặc định -->
-            <button class="action-table action-table_left">
-              <div
-                class="action-default"
-                @click="
-                  handleCloseAction;
-                  handleClickActionColumTable(
-                    actionTable.actionDefault,
-                    row[actionTable.fieldId]
-                  );
-                "
-              >
+            <button
+              @click="
+                handleCloseAction;
+                handleClickActionColumTable(
+                  actionTable.actionDefault,
+                  row[actionTable.fieldId]
+                );
+              "
+              class="action-table action-table_left"
+            >
+              <div class="action-default">
                 {{ actionTable.actionDefault }}
               </div>
             </button>
@@ -108,6 +115,7 @@
 <script>
 import InputCheckbox from "../InputComponents/InputCheckbox.vue";
 import TableLoader from "../SharedComponents/TableLoader.vue";
+import TableEmpty from "../SharedComponents/TableEmpty.vue";
 import TableListAction from "../SharedComponents/TableListAction.vue";
 import eNum from "../../utils/eNum";
 import utilEnum from "../../utils/index";
@@ -116,6 +124,7 @@ export default {
   components: {
     InputCheckbox,
     TableLoader,
+    TableEmpty,
     TableListAction,
   },
   props: {
@@ -162,13 +171,11 @@ export default {
     }
     //(Khắc Tiềm - 15.09.2022) hàm xử lý hiển thị giới tính dựa trên enum
     function formatGender(gender) {
-      if(MALE == gender){
+      if (MALE == gender) {
         return "Nam";
-      }
-      else if(FEMALE == gender){
+      } else if (FEMALE == gender) {
         return "Nữ";
-      }
-      else if(OTHER == gender){
+      } else if (OTHER == gender) {
         return "Khác";
       }
     }

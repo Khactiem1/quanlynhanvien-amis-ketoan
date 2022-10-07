@@ -1,58 +1,20 @@
 <template>
   <div class="show-paging">
-    <div
-      @click="previousPage(propsStartPaging)"
-      :class="{ disabled: currentPage === 1 }"
-      class="show-paging_item"
-    >
-      Trước
-    </div>
-    <div
-      @click="firstPage(0)"
-      :class="{ active: currentPage === 1 }"
+    <div class="show-paging_item" 
+      @click="handlePrevPage()"
+      :class="{ disabled : currentPage === 1 }">Trước</div>
+    <div 
+      v-for="(item, index) in displayPaging" 
+      :key="index"
+      @click="handleChangePage(item)"
       class="show-paging_item show-paging_text"
+      :class="{active : currentPage === item}"
     >
-      1
+      {{ item }}
     </div>
-    <div
-      @click="changePage(propsStartPaging)"
-      :class="{
-        active:
-          (currentPage > 1 &&
-            currentPage < Math.ceil(totalCount / countRecordPageEmployee)) ||
-          propsStartPaging === currentPage,
-      }"
-      class="show-paging_item show-paging_text"
-    >
-      {{ propsStartPaging }}
-    </div>
-    <div
-      @click="nextPage(propsStartPaging)"
-      class="show-paging_item show-paging_text"
-    >
-      ...
-    </div>
-    <div
-      @click="
-        lastPage(
-          //(Khắc Tiềm - 15.09.2022) thứ tự bản ghi bắt đầu muốn lấy của trang cuối
-          (Math.ceil(totalCount / countRecordPageEmployee) - 1) *
-            countRecordPageEmployee
-        )
-      "
-      :class="{
-        active: currentPage === Math.ceil(totalCount / countRecordPageEmployee),
-      }"
-      class="show-paging_item show-paging_text"
-    >
-      {{ Math.ceil(totalCount / countRecordPageEmployee) }}
-    </div>
-    <div
-      @click="nextPage(propsStartPaging)"
-      :class="{
-        disabled: currentPage === Math.ceil(totalCount / countRecordPageEmployee),
-      }"
-      class="show-paging_item"
+    <div class="show-paging_item" 
+      @click="handleNextPage()"
+      :class="{ disabled : currentPage === Math.ceil(totalCount / countRecordPageEmployee) }"
     >
       Sau
     </div>
@@ -60,66 +22,101 @@
 </template>
 
 <script>
-import { toRefs, ref } from "vue";
+import { toRefs, ref, computed } from "vue";
 export default {
   props: ["modelValue", "totalCount", "countRecordPageEmployee"],
   emits: ["update:modelValue"],
   setup(props, context) {
+    /**
+     * Trang hiện tại đứng
+     * NK Tiềm 7/10/2022
+     */
     const currentPage = ref(1);
+    /**
+     * Trang hiển thị thay đổi
+     * 
+     */
+    const pageChangeCLick = ref(3);
+    /**
+     * props truyền vào là lượng muốn lấy và số tổng danh sách
+     * NK Tiềm 7/10/2022
+     */
     const { countRecordPageEmployee, totalCount } = toRefs(props);
-    const propsStartPaging = ref(1); //(Khắc Tiềm - 15.09.2022) tham số đầu vào gọi phân trang cho trang kế tiếp mặc định là trang sô 2
+    /**
+     * Danh sách mảng hiển thị lên giao diện
+     * NK Tiềm 7/10/2022
+     */
+    const displayPaging = computed(()=> {
+      const arr = [];
+      for(let i = 1; i <= Math.ceil(totalCount.value / countRecordPageEmployee.value); i++){
+        if(i === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+          arr.push(i);
+        }
+        else if(i === 3){
+          arr.push(pageChangeCLick.value);
+        }
+        else if(i < 4){
+          arr.push(i);
+        }
+        else if(i === 4){
+          arr.push("...");
+        }
+      }
+      return arr;
+    });
 
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý thay đổi số trang tham số đầu vào là số trang muốn lấy
-    function changePage(pageValue) {
-      currentPage.value = pageValue;
-      const offset = (pageValue - 1) * countRecordPageEmployee.value;
-      context.emit("update:modelValue", offset);
-    }
-    //(Khắc Tiềm - 15.09.2022) hàm xử lý next trang
-    function nextPage(pageValue) {
-      if (
-        Math.ceil(totalCount.value / countRecordPageEmployee.value) >
-        currentPage.value
-      ) {
-        //(Khắc Tiềm - 15.09.2022) tăng số trang lên 1
-        propsStartPaging.value += 1;
-        currentPage.value = pageValue + 1;
-        const offset = pageValue * countRecordPageEmployee.value;
-        context.emit("update:modelValue", offset);
+    /**
+     * Hàm xử lý chọn trang
+     * NK Tiềm 7/10/2022
+     * @param {Biến nhận vào là trang muốn lấy} page 
+     */
+    function handleChangePage(page){
+      if(page === "..."){
+        handleNextPage();
+      }
+      else{
+        currentPage.value = page;
+        if(page === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+          pageChangeCLick.value = currentPage.value - 1;
+        }
+        else{
+          pageChangeCLick.value = 3;
+        }
+        context.emit("update:modelValue", (countRecordPageEmployee.value ) * (page - 1));
       }
     }
-    //(Khắc Tiềm - 15.09.2022) hàm xử lý quay lại trang
-    function previousPage(pageValue) {
-      if (currentPage.value > 1) {
-        //(Khắc Tiềm - 15.09.2022) tăng số trang lên 1
-        propsStartPaging.value -= 1;
-        currentPage.value = pageValue - 1;
-        const offset = (pageValue - 2) * countRecordPageEmployee.value;
-        context.emit("update:modelValue", offset);
+    /**
+     * Hàm xử lý quay lại trang
+     * NK Tiềm 7/10/2022
+     */
+    function handlePrevPage(){
+      if(currentPage.value > 1){
+        if(currentPage.value > 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+          pageChangeCLick.value = currentPage.value - 1;
+        }
+        currentPage.value -= 1;
+        context.emit("update:modelValue", (countRecordPageEmployee.value ) * (currentPage.value - 1));
       }
     }
-    //(Khắc Tiềm - 15.09.2022) hàm lấy trang cuối cùng
-    function lastPage(offset) {
-      currentPage.value = Math.ceil(
-        totalCount.value / countRecordPageEmployee.value
-      );
-      propsStartPaging.value = currentPage.value;
-      context.emit("update:modelValue", offset);
-    }
-    //(Khắc Tiềm - 15.09.2022) hàm lấy trang đầu
-    function firstPage(offset) {
-      currentPage.value = 1;
-      propsStartPaging.value = 1;
-      context.emit("update:modelValue", offset);
+    /**
+     * Hàm xử lý next trang
+     * NK Tiềm 7/10/2022
+     */
+    function handleNextPage(){
+      if(currentPage.value < Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+        if(currentPage.value >= 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageEmployee.value) - 1){
+          pageChangeCLick.value = currentPage.value + 1;
+        }
+        currentPage.value += 1;
+        context.emit("update:modelValue", (countRecordPageEmployee.value ) * (currentPage.value - 1));
+      }
     }
     return {
-      propsStartPaging,
-      changePage,
-      lastPage,
       currentPage,
-      firstPage,
-      previousPage,
-      nextPage,
+      displayPaging,
+      handleChangePage,
+      handlePrevPage,
+      handleNextPage,
     };
   },
 };
