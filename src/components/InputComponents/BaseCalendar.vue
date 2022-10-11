@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import { ref, toRefs, computed, watch } from "vue";
+import { ref, toRefs, computed, watch, onUnmounted } from "vue";
 import utilEnum from "../../utils/index";
 export default {
   props: {
@@ -263,6 +263,9 @@ export default {
         handleShowCalendar();
       }
     };
+    onUnmounted(()=> {
+      window.removeEventListener("click", handleClickTemplate);
+    });
     function handleShowCalendar() {
       if (showCalendar.value) {
         showSelectYear.value = false;
