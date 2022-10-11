@@ -1,9 +1,10 @@
 <template>
   <div class="calendar-container">
     <label v-if="label">{{ label }}</label>
-    <div class="form-input">
+    <div class="form-input" :class="{ 'is-valid': new Date(modelValue) > maxDate }">
       <input
         @keypress="isNumber($event)"
+        @blur="handleSave()"
         ref="elementInput"
         type="text"
         :tabindex="tabindex"
@@ -12,6 +13,7 @@
         v-model="displayData"
         @input="handleInput"
       />
+      <span class="message-valid">{{ messageValid }}</span>
       <div
         ref="elementIcon"
         @click="handleShowCalendar()"
@@ -148,6 +150,8 @@ export default {
     modelValue: { default: null },
     tabindex: {},
     label: {},
+    messageValid: {},
+    maxDate: {},
   },
 
   setup(props, context) {
@@ -188,7 +192,13 @@ export default {
         enteredValue.value = "";
         doneValue.value = 0;
       }
+      else{
+        doneValue.value = 2;
+      }
       displayData.value = modelValue.value
+        ? formatDateDDMMYYYY(new Date(modelValue.value))
+        : "";
+      enteredValue.value = modelValue.value
         ? formatDateDDMMYYYY(new Date(modelValue.value))
         : "";
     });
@@ -267,24 +277,52 @@ export default {
     const doneValue = ref(0);
     function handleInput(event) {
       if(event.data && elementInput.value.selectionStart <= 10){
-        if(elementInput.value.selectionStart === 3 || elementInput.value.selectionStart === 6){
-          enteredValue.value +=  '/' + event.data;
-          doneValue.value++;
-        }
-        else{
-          enteredValue.value += event.data;
-        }
-        displayData.value = enteredValue.value + dataInput.value.slice(elementInput.value.selectionStart, dataInput.value.length);
-        setTimeout(() => {
-          elementInput.value.selectionStart = elementInput.value.selectionEnd = displayData.value.replace(/[^0-9]/g,"").length + doneValue.value;
-          if(elementInput.value.selectionStart === 10){
-            const d = new Date(enteredValue.value.split("/")[2], enteredValue.value.split("/")[1] - 1, enteredValue.value.split("/")[0]);
-            context.emit("update:modelValue", formatDateYYYYMMDD(d));
+        if(elementInput.value.selectionStart > enteredValue.value.length){
+          if(elementInput.value.selectionStart === 3 || elementInput.value.selectionStart === 6){
+            enteredValue.value +=  '/' + event.data;
+            doneValue.value++;
           }
-        }, 0);
+          else{
+            enteredValue.value += event.data;
+          }
+          displayData.value = enteredValue.value + dataInput.value.slice(elementInput.value.selectionStart, dataInput.value.length);
+          setTimeout(() => {
+            elementInput.value.selectionStart = elementInput.value.selectionEnd = displayData.value.replace(/[^0-9]/g,"").length + doneValue.value;
+            if(elementInput.value.selectionStart === 10){
+              const d = new Date(enteredValue.value.split("/")[2], enteredValue.value.split("/")[1] - 1, enteredValue.value.split("/")[0]);
+              context.emit("update:modelValue", formatDateYYYYMMDD(d));
+            }
+          }, 0);
+        }
+      }
+      else if(!event.data){
+        if(elementInput.value.selectionStart === 3 || elementInput.value.selectionStart === 6){
+          enteredValue.value = enteredValue.value.substring(0, enteredValue.value.length - 1);
+          displayData.value = displayData.value.substring(0, displayData.value.length - 1);
+          doneValue.value--;
+        }
+        enteredValue.value = enteredValue.value.substring(0, enteredValue.value.length - 1);
       }
       else{
         displayData.value = enteredValue.value;
+      }
+    }
+    function handleSave(){
+      if(displayData.value === ""){
+        context.emit("update:modelValue", "");
+      }
+      displayData.value = modelValue.value
+        ? formatDateDDMMYYYY(new Date(modelValue.value))
+        : "";
+      enteredValue.value = modelValue.value
+        ? formatDateDDMMYYYY(new Date(modelValue.value))
+        : "";
+      if(!modelValue.value){
+        enteredValue.value = "";
+        doneValue.value = 0;
+      }
+      else{
+        doneValue.value = 2;
       }
     }
     function isNumber(evt) {
@@ -313,6 +351,7 @@ export default {
       elementInput,
       showCalendar,
       isNumber,
+      handleSave,
       handleNextMonth,
       handlePrevMonth,
       handleSelectYear,
@@ -342,6 +381,8 @@ export default {
   right: 1px;
   top: 1px;
   background-color: #fff;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 .form-icon:hover {
   background-color: #e0e0e0;
@@ -355,7 +396,6 @@ export default {
 .calendar {
   width: 300px;
   background-color: #fff;
-  border-radius: 4px;
   position: absolute;
   z-index: 4;
   right: 0;
@@ -403,6 +443,7 @@ export default {
   align-items: center;
   justify-content: center;
   font-family: "notosans-bold";
+  border-radius: 4px;
 }
 .calendar-select_item span {
   padding: 8px 4px;
@@ -474,13 +515,16 @@ export default {
   border: 1px solid #ccc;
   padding: 0 12px;
   z-index: 1;
+  border-radius: 4px;
 }
 .calendar-item.calendar-month {
   z-index: 2;
+  border-radius: 4px;
   background-color: #fff;
 }
 .calendar-item.calendar-year {
   z-index: 3;
+  border-radius: 4px;
   background-color: #fff;
 }
 
@@ -548,5 +592,8 @@ export default {
 .day.date-now {
   color: var(--primary__color);
   font-family: "notosans-semibold";
+}
+.message-valid {
+  top: 118%;
 }
 </style>

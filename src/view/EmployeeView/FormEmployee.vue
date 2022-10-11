@@ -35,7 +35,7 @@
                 :required="true"
                 :type="'text'"
                 :maxLength="20"
-                :messageValid="'Mã không được để trống.'"
+                :messageValid="employeeNotification.validateCode"
                 :label="'Mã'"
                 :tab="1"
                 :class="{ 'is-valid': isValid && employee.employeeCode == '' }"
@@ -48,7 +48,7 @@
                 :required="true"
                 :type="'text'"
                 :maxLength="80"
-                :messageValid="'Tên không được để trống.'"
+                :messageValid="employeeNotification.validateName"
                 :label="'Tên'"
                 :tab="2"
                 :class="{ 'is-valid': isValid && employee.employeeName == '' }"
@@ -63,7 +63,7 @@
               :header="'unitName'"
               :label="'Đơn vị'"
               :required="true"
-              :messageValid="'Dữ liệu <đơn vị> không có trong danh mục.'"
+              :messageValid="employeeNotification.validateUnit"
               :tab="3"
               :class="{ 'is-valid': isValid && !employee.unitID }"
               v-model="employee.unitID"
@@ -84,6 +84,8 @@
               <input-calendar
                 :tabindex="5"
                 :label="'Ngày sinh'"
+                :maxDate="new Date()"
+                :messageValid="employeeNotification.validateDateOfBirth"
                 v-model="employee.dateOfBirth"
               >
               </input-calendar>
@@ -126,6 +128,8 @@
               <input-calendar
                 :tabindex="10"
                 :label="'Ngày cấp'"
+                :maxDate="new Date()"
+                :messageValid="employeeNotification.validateDayForIdentity"
                 v-model="employee.dayForIdentity"
               >
               </input-calendar>
@@ -158,7 +162,7 @@
               :toolTip="'Điện thoại di động'"
               :tab="13"
               :isPhone="true"
-              :messageValid="'Nhập đúng Số điện thoại.'"
+              :messageValid="employeeNotification.validatePhoneNumber"
               v-model="employee.phoneNumber"
             ></input-default>
           </div>
@@ -169,7 +173,7 @@
               :tab="14"
               :isPhone="true"
               :toolTip="'Điện thoại cố định'"
-              :messageValid="'Nhập đúng Số điện thoại.'"
+              :messageValid="employeeNotification.validateLandlinePhone"
               v-model="employee.landlinePhone"
             ></input-default>
           </div>
@@ -179,7 +183,7 @@
               :label="'Email'"
               :tab="15"
               :isEmail="true"
-              :messageValid="'Nhập đúng địa chỉ Email.'"
+              :messageValid="employeeNotification.validateEmail"
               v-model="employee.employeeEmail"
             ></input-default>
           </div>
@@ -190,6 +194,7 @@
               :type="'text'"
               :label="'Tài khoản ngân hàng'"
               :tab="16"
+              :isNumber="true"
               v-model="employee.bankAccount"
             ></input-default>
           </div>
@@ -279,7 +284,11 @@ import eNum from "../../utils/eNum.js";
 import notificationMessage from "../../utils/notification.js";
 import validate from "../../utils/validate.js";
 import utilEnum from "../../utils/index.js";
-import { nextValue, createEmployeeApi, editEmployeeApi } from "../../api/employee.js";
+import {
+  nextValue,
+  createEmployeeApi,
+  editEmployeeApi,
+} from "../../api/employee.js";
 export default {
   components: {
     InputCheckbox,
@@ -304,10 +313,9 @@ export default {
     const { formatDateYYYYMMDD } = utilEnum;
     const {
       QUESTION_DATA_CHANGE,
-      ERROR_EMPTY_DATA,
-      ERROR_CORRECT_DATA,
       DUPLICATE_CODE,
       INVALID_INPUT,
+      employeeNotification,
     } = notificationMessage;
     const inputFocus = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ input phục vụ cho việc dom đến để focus
     const focusLoop = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ tab phục vụ cho việc xây dựng vòng lặp phím tab
@@ -374,6 +382,7 @@ export default {
     }); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sẽ reset sau khi thêm, sửa mà form không đóng
     const optionUnit = computed(() => store.state.unit.unitList); //(Khắc Tiềm - 15.09.2022)  danh sách đơn vị
     onBeforeMount(async () => {
+      titleForm.value = AddFormEmployee;
       await store.dispatch("unit/getUnitListAction");
       if (employeeEdit.value) {
         titleForm.value = EditFormEmployee;
@@ -394,7 +403,9 @@ export default {
           employee.value = {
             ...employeeAdd.value,
             dateOfBirth: formatDateYYYYMMDD(employeeAdd.value.dateOfBirth),
-            dayForIdentity: formatDateYYYYMMDD(employeeAdd.value.dayForIdentity),
+            dayForIdentity: formatDateYYYYMMDD(
+              employeeAdd.value.dayForIdentity
+            ),
           }; //(Khắc Tiềm - 15.09.2022)  chuyển đổi props thành data
         }
         await nextValue()
@@ -406,6 +417,21 @@ export default {
           });
       }
     });
+    
+    //(Khắc Tiềm - 15.09.2022)  hàm xử lý lặp focus
+    const handleLoopFocus = function () {
+      inputFocus.value.tagInput.focus();
+    };
+    //(Khắc Tiềm - 15.09.2022) Khi mounted component thì sẽ lắng nghe sự kiện các phím tắ
+    onMounted(() => window.addEventListener("keydown", handleEvent));
+    onMounted(() => focusLoop.value.addEventListener("focus", handleLoopFocus));
+    onMounted(() => window.addEventListener("keyup", handleEventInterrupt));
+    //(Khắc Tiềm - 15.09.2022)  Khi unMounted thì sẽ xoá bỏ các sự kiện khỏi bộ nhớ
+    onUnmounted(() => window.removeEventListener("keydown", handleEvent));
+    onUnmounted(() => window.removeEventListener("focus", handleLoopFocus));
+    onUnmounted(() =>
+      window.removeEventListener("keyup", handleEventInterrupt)
+    );
     //(Khắc Tiềm - 15.09.2022) Hàm xử lý các event nút bấm tắt
     const handleEvent = function (event) {
       if (event.keyCode === ESC) {
@@ -448,135 +474,107 @@ export default {
     function handleToggleNotificationError() {
       isShowNotificationError.value = !isShowNotificationError.value;
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý sự kiện khi bấm nút save
-    const handleSaveData = async function (closeModal) {
-      let errorApi = false;
-      agreeAction.value = {
-        display: "Đóng",
-        action: handleToggleNotificationError,
-      };
-      if (employee.value.employeeCode.trim() == "") {
-        messageAction.value = {
-          display: ERROR_EMPTY_DATA + "mã nhân viên.",
-        };
-        isValid.value = true;
-        handleToggleNotificationError();
-      } else if (employee.value.employeeName.trim() == "") {
-        messageAction.value = {
-          display: ERROR_EMPTY_DATA + "Tên nhân viên.",
-        };
-        isValid.value = true;
-        handleToggleNotificationError();
-      } else if (!employee.value.unitID) {
-        messageAction.value = {
-          display: ERROR_EMPTY_DATA + "Đơn vị.",
-        };
-        isValid.value = true;
-        handleToggleNotificationError();
-      } else if (
-        optionUnit.value.filter((item) => item.unitID !== employee.value.unitID)
-          .length === 0
-      ) {
-        messageAction.value = {
-          display: "Đơn vị không có trong danh mục.",
-        };
-        isValid.value = true;
-        handleToggleNotificationError();
-      } else if (
+    function validateInput() {
+      return [
+        employee.value.employeeCode.trim() === ""
+          ? employeeNotification.validateCode
+          : null,
+        employee.value.employeeName.trim() === ""
+          ? employeeNotification.validateName
+          : null,
+        !employee.value.unitID ? employeeNotification.validateUnit : null,
+        employee.value.dateOfBirth
+          ? new Date(employee.value.dateOfBirth) > new Date()
+            ? employeeNotification.validateDateOfBirth
+            : null
+          : null,
+        employee.value.dayForIdentity
+          ? new Date(employee.value.dayForIdentity) > new Date()
+            ? employeeNotification.validateDayForIdentity
+            : null
+          : null,
         validatePhone(employee.value.phoneNumber) === false &&
         employee.value.phoneNumber != "" &&
         employee.value.phoneNumber
-      ) {
-        messageAction.value = {
-          display: ERROR_CORRECT_DATA + "Điện thoại di động.",
-        };
-        handleToggleNotificationError();
-      } else if (
+          ? employeeNotification.validatePhoneNumber
+          : null,
         validatePhone(employee.value.landlinePhone) === false &&
         employee.value.landlinePhone != "" &&
         employee.value.landlinePhone
-      ) {
-        messageAction.value = {
-          display: ERROR_CORRECT_DATA + "Điện thoại cố định.",
-        };
-        handleToggleNotificationError();
-      } else if (
+          ? employeeNotification.validateLandlinePhone
+          : null,
         validateEmail(employee.value.employeeEmail) === false &&
         employee.value.employeeEmail != "" &&
         employee.value.employeeEmail
-      ) {
-        messageAction.value = {
-          display: ERROR_CORRECT_DATA + "Email.",
+          ? employeeNotification.validateEmail
+          : null,
+      ].reduce((acc, cur) => {
+        return (acc += cur ? "- " + cur + "<br>" : "");
+      }, "");
+    }
+
+    const errorApi = ref(false);
+    async function callApi(Api) {
+      store.dispatch("config/setToggleShowLoaderAction");
+      await Api({
+        ...employee.value,
+        dateOfBirth:
+          employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
+        dayForIdentity:
+          employee.value.dayForIdentity === ""
+            ? null
+            : employee.value.dayForIdentity,
+      })
+        .then(function () {
+          errorApi.value = false;
+          store.dispatch("employee/getEmployeeListAction");
+          if(!stateAddEmployee.value){
+            stateAddEmployee.value = true; //(Khắc Tiềm - 15.09.2022)  sau khi sửa xong sửa trạng thái modal thành thêm user
+          }
+        })
+        .catch(function (error) {
+          console.log(error.response.data);
+          errorApi.value = true;
+          messageAction.value = {
+            display:
+              error.response.data.errorCode === DuplicateCode
+                ? `${employeeNotification.nameDuplicateCode} < ${employee.value.employeeCode} > ${DUPLICATE_CODE}`
+                : error.response.data.errorCode === InvalidInput
+                ? INVALID_INPUT
+                : error.response.data.userMsg,
+          };
+          agreeAction.value = {
+            display: "Đóng",
+            action: handleToggleNotificationError,
+          };
+          handleToggleNotificationError();
+        });
+      store.dispatch("config/setToggleShowLoaderAction");
+    }
+    //(Khắc Tiềm - 15.09.2022) Hàm xử lý sự kiện khi bấm nút save
+    const handleSaveData = async function (closeModal) {
+      const messValid = validateInput();
+      if (messValid != "") {
+        agreeAction.value = {
+          display: "Đóng",
+          action: handleToggleNotificationError,
         };
+        messageAction.value = {
+          display: messValid,
+        };
+        isValid.value = true;
         handleToggleNotificationError();
       } else {
         if (stateAddEmployee.value) {
-          //(Khắc Tiềm - 15.09.2022)  Thêm
-          //(Khắc Tiềm - 15.09.2022)  Gọi hàm loading quay quay ở đây
-          store.dispatch("config/setToggleShowLoaderAction");
-          await createEmployeeApi({
-            ...employee.value,
-            dateOfBirth:
-              employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
-            dayForIdentity:
-              employee.value.dayForIdentity === ""
-                ? null
-                : employee.value.dayForIdentity,
-          })
-            .then(function () {
-              errorApi = false;
-              store.dispatch("employee/getEmployeeListAction");
-            })
-            .catch(function (error) {
-              console.log(error.response.data);
-              errorApi = true;
-              messageAction.value = {
-                display:
-                  error.response.data.errorCode === DuplicateCode
-                    ? `Mã nhân viên <${employee.value.employeeCode}> ${DUPLICATE_CODE}`
-                    : error.response.data.errorCode === InvalidInput
-                    ? INVALID_INPUT
-                    : error.response.data.userMsg,
-              };
-              handleToggleNotificationError();
-            });
-          store.dispatch("config/setToggleShowLoaderAction");
-          //(Khắc Tiềm - 15.09.2022)  tắt hàm loading quay quay ở đây
+          //Thêm
+          await callApi(createEmployeeApi);
         } else {
           //(Khắc Tiềm - 15.09.2022)  sửa
-          store.dispatch("config/setToggleShowLoaderAction");
-          await editEmployeeApi({
-            ...employee.value,
-            dateOfBirth:
-              employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
-            dayForIdentity:
-              employee.value.dayForIdentity === ""
-                ? null
-                : employee.value.dayForIdentity,
-          })
-            .then(function () {
-              errorApi = false;
-              store.dispatch("employee/getEmployeeListAction");
-            })
-            .catch(function (error) {
-              console.log(error.response.data);
-              errorApi = true;
-              messageAction.value = {
-                display:
-                  error.response.data.errorCode === DuplicateCode
-                    ? `Mã nhân viên <${employee.value.employeeCode}> ${DUPLICATE_CODE}`
-                    : error.response.data.errorCode === InvalidInput
-                    ? INVALID_INPUT
-                    : error.response.data.userMsg,
-              };
-              handleToggleNotificationError();
-            });
-          store.dispatch("config/setToggleShowLoaderAction");
-          stateAddEmployee.value = true; //(Khắc Tiềm - 15.09.2022)  sau khi sửa xong sửa trạng thái modal thành thêm user
+          await callApi(editEmployeeApi);
         }
-        if (closeModal === true && errorApi === false) {
+        if (closeModal === true && errorApi.value === false) {
           context.emit("handle-click-close-modal");
-        } else if (errorApi === false) {
+        } else if (errorApi.value === false) {
           titleForm.value = AddFormEmployee;
           isValid.value = false;
           employee.value = { ...employeeReset.value };
@@ -591,20 +589,6 @@ export default {
         }
       }
     };
-    //(Khắc Tiềm - 15.09.2022)  hàm xử lý lặp focus
-    const handleLoopFocus = function () {
-      inputFocus.value.tagInput.focus();
-    };
-    //(Khắc Tiềm - 15.09.2022) Khi mounted component thì sẽ lắng nghe sự kiện các phím tắ
-    onMounted(() => window.addEventListener("keydown", handleEvent));
-    onMounted(() => focusLoop.value.addEventListener("focus", handleLoopFocus));
-    onMounted(() => window.addEventListener("keyup", handleEventInterrupt));
-    //(Khắc Tiềm - 15.09.2022)  Khi unMounted thì sẽ xoá bỏ các sự kiện khỏi bộ nhớ
-    onUnmounted(() => window.removeEventListener("keydown", handleEvent));
-    onUnmounted(() => window.removeEventListener("focus", handleLoopFocus));
-    onUnmounted(() =>
-      window.removeEventListener("keyup", handleEventInterrupt)
-    );
     //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng mở thông báo
     function handleToggleNotificationQuestion() {
       isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
@@ -624,49 +608,45 @@ export default {
       if (closeNow) {
         context.emit("handle-click-close-modal");
       } else if (stateAddEmployee.value) {
-        if (JSON.stringify(employee.value) != JSON.stringify(employeeReset.value)) {
-          cancelAction.value = {
-            display: "Huỷ",
-            action: handleToggleNotificationQuestion,
-          };
-          agreeAction.value = {
-            display: "Có",
-            refuseActionDisplay: "Không",
-            refuseAction: handleCloseNotificationAndCloseModal,
-            action: handleSaveDataAndCloseNotificationAndCloseModal,
-          };
-          messageAction.value = {
-            display: QUESTION_DATA_CHANGE,
-          };
-          isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
+        if (
+          JSON.stringify(employee.value) != JSON.stringify(employeeReset.value)
+        ) {
+          saveDataWhenCloseModal();
         } else {
           context.emit("handle-click-close-modal");
         }
       } else if (stateAddEmployee.value === false) {
-        if (JSON.stringify(employee.value) != JSON.stringify(employeeEditReset.value)) {
-          cancelAction.value = {
-            display: "Huỷ",
-            action: handleToggleNotificationQuestion,
-          };
-          agreeAction.value = {
-            display: "Có",
-            refuseActionDisplay: "Không",
-            refuseAction: handleCloseNotificationAndCloseModal,
-            action: handleSaveDataAndCloseNotificationAndCloseModal,
-          };
-          messageAction.value = {
-            display: QUESTION_DATA_CHANGE,
-          };
-          isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
+        if (
+          JSON.stringify(employee.value) !=
+          JSON.stringify(employeeEditReset.value)
+        ) {
+          saveDataWhenCloseModal();
         } else {
           context.emit("handle-click-close-modal");
         }
       }
     }
+    function saveDataWhenCloseModal() {
+      cancelAction.value = {
+        display: "Huỷ",
+        action: handleToggleNotificationQuestion,
+      };
+      agreeAction.value = {
+        display: "Có",
+        refuseActionDisplay: "Không",
+        refuseAction: handleCloseNotificationAndCloseModal,
+        action: handleSaveDataAndCloseNotificationAndCloseModal,
+      };
+      messageAction.value = {
+        display: QUESTION_DATA_CHANGE,
+      };
+      isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
+    }
 
     return {
       inputFocus,
       employee,
+      employeeNotification,
       MALE,
       FEMALE,
       OTHER,

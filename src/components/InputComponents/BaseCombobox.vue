@@ -2,7 +2,10 @@
   <div ref="template" class="data-input" :class="{ 'is-valid': isValid }">
     <label v-if="label" :class="{ required: required }">{{ label }}</label>
     <!-- Thêm 'active' là sẽ chạy -->
-    <div class="combobox-select" :class="{ active: isShow }">
+    <div
+      class="combobox-select"
+      :class="{ active: noAnimation ? isShow : isShowAnimation }"
+    >
       <input
         ref="input"
         @focus="handleFocusInput"
@@ -57,14 +60,23 @@ export default {
     required: {},
     tab: {},
     messageValid: {},
+    noAnimation: {},
   },
   setup(props, context) {
-    const { options, header, modelValue, defaultValue, value, required } =
-      toRefs(props);
+    const {
+      options,
+      header,
+      modelValue,
+      defaultValue,
+      value,
+      noAnimation,
+      required,
+    } = toRefs(props);
     const { UP, DOWN, ENTER, TAB } = eNum;
     const listSelect = ref(null);
     const isValid = ref(false);
     const isShow = ref(false); //(Khắc Tiềm - 15.09.2022)   biến thực hiện ẩn mở dropdown
+    const isShowAnimation = ref(false);
     const template = ref(null); //(Khắc Tiềm - 15.09.2022)   biến bắt lấy thẻ to nhất của component
     const input = ref(null); //(Khắc Tiềm - 15.09.2022)   biến bắt thẻ input
     const valueClick = ref(null); //(Khắc Tiềm - 15.09.2022)   biến lưu dữ liệu value khi được click
@@ -130,8 +142,7 @@ export default {
       } else if (event.keyCode === ENTER || event.keyCode === TAB) {
         //(Khắc Tiềm - 15.09.2022)   xử lý bấm enter
         context.emit("update:modelValue", valueClick.value);
-        isShow.value = !isShow.value;
-        window.removeEventListener("keydown", handleEnum);
+        toggleListSelect();
       }
     };
     //(Khắc Tiềm - 15.09.2022)   hàm xử lý ẩn dropdown khi click không trúng vào component
@@ -139,33 +150,29 @@ export default {
       const isClick = template.value.contains(event.target);
       if (!isClick) {
         if (isShow.value) {
-          isShow.value = false;
-          window.removeEventListener("keydown", handleEnum);
+          toggleListSelect();
         }
       }
     };
     //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng click vào từng item trong dropdown
     function handleClickItem(value, index) {
       context.emit("update:modelValue", value);
-      isShow.value = false;
       headerValue.value = options.value[index][header.value];
       valueClick.value = value;
-      window.removeEventListener("keydown", handleEnum);
+      toggleListSelect();
     }
     //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng focus vào ô input sẽ hiện dropdown
     function handleFocusInput() {
       if (!isShow.value) {
         setPositionListSelect();
-        isShow.value = true;
-        window.addEventListener("keydown", handleEnum);
+        toggleListSelect();
       }
     }
     //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng nhập input sẽ hiện dropdown
     function handleInput() {
       if (!isShow.value) {
         setPositionListSelect();
-        isShow.value = true;
-        window.addEventListener("keydown", handleEnum);
+        toggleListSelect();
       }
     }
     //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng bấm vào icon mở hoặc đóng dropdown
@@ -173,12 +180,9 @@ export default {
       if (!isShow.value) {
         setPositionListSelect();
       }
-      isShow.value = !isShow.value;
+      toggleListSelect();
       if (isShow.value) {
         input.value.focus();
-        window.addEventListener("keydown", handleEnum);
-      } else {
-        window.removeEventListener("keydown", handleEnum);
       }
     }
     function setPositionListSelect() {
@@ -189,6 +193,19 @@ export default {
         positionListSelect.value.top = `-${options.value.length * 100 + 30}%`;
       } else {
         positionListSelect.value.top = "110%";
+      }
+    }
+    function toggleListSelect() {
+      isShow.value = !isShow.value;
+      if (!noAnimation.value) {
+        setTimeout(() => {
+          isShowAnimation.value = !isShowAnimation.value;
+        }, 0);
+      }
+      if (isShow.value) {
+        window.addEventListener("keydown", handleEnum);
+      } else {
+        window.removeEventListener("keydown", handleEnum);
       }
     }
     //(Khắc Tiềm - 15.09.2022)   trước khi mounted thì sẽ set giá trị cho giá trị đc click thông qua v-model hoặc defaultValue
@@ -211,6 +228,7 @@ export default {
     return {
       input,
       isShow,
+      isShowAnimation,
       isValid,
       template,
       headerValue,
@@ -224,20 +242,6 @@ export default {
     };
   },
 };
-//(Khắc Tiềm - 15.09.2022)   <custom-combobox
-//(Khắc Tiềm - 15.09.2022)       :options="[
-//(Khắc Tiềm - 15.09.2022)         { name: 'Khắc Tiềm', age: 21 },
-//(Khắc Tiềm - 15.09.2022)         { name: 'Đỗ Mạnh', age: 20 },
-//(Khắc Tiềm - 15.09.2022)         { name: 'Lê Tú', age: 19 },
-//(Khắc Tiềm - 15.09.2022)         { name: 'Quách Tỉnh', age: 18 },
-//(Khắc Tiềm - 15.09.2022)       ]"
-//(Khắc Tiềm - 15.09.2022)       :header="'name'"
-//(Khắc Tiềm - 15.09.2022)       :value="'age'"
-//(Khắc Tiềm - 15.09.2022)       :label="'Đơn vị'"
-//(Khắc Tiềm - 15.09.2022)       v-model="combobox"
-//(Khắc Tiềm - 15.09.2022)     >
-//(Khắc Tiềm - 15.09.2022)     </custom-combobox>
-//(Khắc Tiềm - 15.09.2022)        :defaultValue="combobox"
 </script>
 
 <style scoped>
@@ -257,6 +261,8 @@ export default {
   align-items: center;
   justify-content: center;
   position: absolute;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
 }
 .combobox-select_icon:hover {
   background-color: #e0e0e0;
@@ -280,6 +286,7 @@ export default {
   opacity: 0;
   visibility: hidden;
   z-index: 1;
+  border-radius: 4px;
   transition: all 0.1s ease;
 }
 .combobox-select.active .combobox-combobox_select {

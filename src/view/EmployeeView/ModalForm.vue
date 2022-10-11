@@ -138,7 +138,7 @@ export default {
   width: 50%;
 }
 .form-item + .form-item {
-  padding-left: 12px;
+  padding-left: 16px;
 }
 .form-group {
   padding-bottom: 12px;

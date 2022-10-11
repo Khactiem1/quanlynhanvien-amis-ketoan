@@ -204,7 +204,7 @@ export default {
             const rect = item.getBoundingClientRect();
             positionAction.value.top = rect.top + window.scrollY + 32;
             positionAction.value.right =
-              rect.right + window.scrollX - rect.left + window.scrollX - 55;
+              rect.right + window.scrollX - rect.left + window.scrollX - 45;
           }
         } catch {
           return;
@@ -327,6 +327,7 @@ tbody tr.active,
 .table tbody th:first-child {
   width: 48;
   min-width: 48px;
+  max-width: 48px;
 }
 /* Nút bấm action */
 .action-colum_table {

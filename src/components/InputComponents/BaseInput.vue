@@ -5,6 +5,7 @@
       {{ toolTip }}
     </span>
     <input
+      @keypress="isInputNumber($event)"
       ref="tagInput"
       class="input"
       :type="type"
@@ -35,11 +36,12 @@ export default {
     "toolTip",
     "isPhone",
     "isEmail",
+    "isNumber",
   ],
   emits: ["update:modelValue"],
   setup(props, context) {
     const tagInput = ref(null);
-    const { focus, required, isEmail, isPhone, maxLength, modelValue } = toRefs(props);
+    const { focus, required, isEmail, isPhone, maxLength, modelValue, isNumber } = toRefs(props);
     const isValid = ref(false);
     const isValidEmailPhone = ref(false);
     const { validateEmail, validatePhone } = validate;
@@ -98,11 +100,22 @@ export default {
         }
       }
     }
-
+    function isInputNumber(evt) {
+      if(isNumber.value){
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+          evt.preventDefault();
+        } else {
+          return true;
+        }
+      }
+    }
     return {
       tagInput,
       isValid,
       isValidEmailPhone,
+      isInputNumber,
       handleCheckEmailPhone,
       handleInput,
     };
@@ -119,7 +132,7 @@ export default {
   left: 18px;
   top: 202x;
   background-color: #505050;
-  border-radius: 2px;
+  border-radius: 4px;
   padding: 2px 4px;
   z-index: 3;
   text-align: center;

@@ -7,7 +7,7 @@
     cursor: pointer;
     outline: none;
     min-width: 80px;
-    border-radius: 3px;
+    border-radius: 4px;
     height: var(--primary__button-height);
     background-color: var(--while__color);
     font-size: 14px;

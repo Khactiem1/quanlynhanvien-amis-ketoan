@@ -1,6 +1,6 @@
 <template>
   <tbody>
-    <tr v-for="(row, indexRow) in lengthList" :key="indexRow">
+    <tr v-for="(row, indexRow) in lengthList === 0 ? 3 : lengthList" :key="indexRow">
       <td>
         <div class="table-loader">
           <span></span>

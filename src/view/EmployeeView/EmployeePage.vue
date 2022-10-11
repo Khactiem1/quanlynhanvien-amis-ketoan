@@ -46,7 +46,7 @@
             "
             class="action-render_table reload-table"
           ></div>
-          <div @click="handleExportData()" class="action-render_table export-data"></div>
+          <a target="_blank" :href="configs.baseUrl + '/Employees/export_data?keyword=' + keyword" class="action-render_table export-data"></a>
           <div
             @click="handleShowSettingTable"
             class="action-render_table setting-table"
@@ -88,6 +88,7 @@
             ]"
             :value="'value'"
             :header="'header'"
+            :noAnimation="true"
             v-model="countRecordPageEmployee"
           ></input-combobox>
           <paging-page
@@ -146,6 +147,7 @@ import { useStore } from "vuex";
 import actionTableStore from "../../utils/actionTable";
 import notification from "../../utils/notification";
 import index from "../../utils/index";
+import configs from "../../configs/index";
 import {
   getEmployeeApi,
   deleteEmployeeApi,
@@ -633,6 +635,7 @@ export default {
       recordSelectPaging,
       checkShowActionSeries,
       keyword,
+      configs,
       isShowNotificationError,
       showActionAll,
       handleShowSettingTable,
@@ -660,7 +663,7 @@ export default {
 ::-webkit-scrollbar-track {
   border-radius: 0;
   background: #fff;
-  margin-top: 65px;
+  margin-top: 113px;
   margin-bottom: 55px;
   direction: rtl;
 }
@@ -668,14 +671,17 @@ export default {
 ::-webkit-scrollbar-thumb {
   border-radius: 0;
   background: #b0b0b0;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   border-radius: 0;
   background: #808080;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar {
   height: 10px; /* height of horizontal scrollbar ← You're missing this */
   width: 8px;
+  border-radius: 4px;
 }
 .container-table {
   padding: 0 24px;

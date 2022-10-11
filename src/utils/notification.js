@@ -4,6 +4,17 @@ export default {
   ERROR_EMPTY_DATA: "Không được để trống ",
   ERROR_CORRECT_DATA: "Kiểm tra nhập đúng ",
   WANNING_DELETE_ALL: "Bạn có thực sự muốn xoá toàn bộ nhân viên được chọn?",
-  DUPLICATE_CODE : "đã tồn tại trong hệ thống, vui lòng kiểm tra lại",
+  DUPLICATE_CODE : "đã tồn tại trong hệ thống, vui lòng kiểm tra lại.",
   INVALID_INPUT : "Sai dữ liệu đầu vào, vui lòng kiểm tra lại",
+  employeeNotification:{
+    validateCode: 'Mã nhân viên không được để trống.',
+    validateName: 'Tên nhân viên không được để trống.',
+    validateUnit: 'Dữ liệu <đơn vị> không có trong danh mục.',
+    validatePhoneNumber: 'Không đúng định dạng số điện thoại di động.',
+    validateLandlinePhone: 'Không đúng định dạng số điện thoại cố định.',
+    validateEmail: 'Không đúng định dạng Email.',
+    validateDateOfBirth : 'Ngày sinh phải nhỏ hơn ngày hiện tại.',
+    validateDayForIdentity : 'Ngày cấp phải nhỏ hơn ngày hiện tại.',
+    nameDuplicateCode: 'Mã nhân viên',
+  },
 };

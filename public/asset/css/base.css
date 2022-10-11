@@ -99,4 +99,5 @@ a {
   box-shadow: 0 5px 20px 0 rgb(0, 0, 0, 10%);
   min-height: 100px;
   transition: all ease 0.15s;
+  border-radius: 4px;
 }

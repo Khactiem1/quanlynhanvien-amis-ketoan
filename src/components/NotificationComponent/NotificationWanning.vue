@@ -7,12 +7,19 @@
     <div class="mess-line_notification"></div>
     <div class="modal-notification_action">
       <div class="modal-notification_action-item">
-        <button v-if="cancelAction" @click="cancelAction.action" class="btn">
+        <button
+          v-if="cancelAction"
+          ref="elmAgree"
+          @click="cancelAction.action"
+          tabindex="1"
+          class="btn"
+        >
           {{ cancelAction.display }}
         </button>
       </div>
       <div class="modal-notification_action-item">
         <button
+          tabindex="2"
           @click="agreeAction.action(messageAction.id)"
           class="btn btn-success"
         >
@@ -24,6 +31,7 @@
 </template>
 
 <script>
+import { onMounted, ref } from "vue";
 export default {
   props: {
     cancelAction: {
@@ -35,6 +43,15 @@ export default {
     messageAction: {
       type: Object,
     },
+  },
+  setup() {
+    const elmAgree = ref(null);
+    onMounted(() => {
+      elmAgree.value.focus();
+    });
+    return {
+      elmAgree,
+    };
   },
 };
 </script>
