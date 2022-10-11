@@ -21,6 +21,10 @@ export default {
     tab: {},
   },
   computed: {
+    /**
+     * Khi check thì sẽ cập nhật giá trị model
+     * Khắc Tiềm - 15.09.2022
+     */
     isChecked() {
       return this.modelValue == this.value;
     },

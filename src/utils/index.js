@@ -1,4 +1,8 @@
-// hàm lấy ra số lượng bản ghi muốn hiển thị
+/**
+ * hàm lấy ra số lượng bản ghi muốn hiển thị
+ * @returns Số lượng bản ghi lưu trong local trước đó
+ * Khắc Tiềm - 15.09.2022
+ */
 const getCountRecordPageEmployee = () => {
   const countRecordPageEmployee = localStorage.getItem("countRecordPageEmployee");
   if (countRecordPageEmployee) {
@@ -9,9 +13,22 @@ const getCountRecordPageEmployee = () => {
     return 20;
   }
 };
+
+/**
+ * hàm lưu số lượng bản ghi muốn hiển thị vào local
+ * @param {Số lượng bản ghi} record 
+ * Khắc Tiềm - 15.09.2022
+ */
 const setCountRecordPageEmployee = (record) => {
   localStorage.setItem("countRecordPageEmployee", record);
 };
+
+/**
+ * Hàm định dạng ngày theo kiểu dd/MM/YYYY
+ * @param {Ngày cần định dạng} date 
+ * @returns Dữ liệu đã định dạng
+ * Khắc Tiềm - 15.09.2022
+ */
 const formatDateDDMMYYYY = (date) => {
   if ((date === null) | (date == "")) {
     return null;
@@ -28,6 +45,13 @@ const formatDateDDMMYYYY = (date) => {
     return [getDate, getMonth, d.getFullYear()].join("/");
   }
 };
+
+/**
+ * Hàm định dạng ngày theo kiểu YYYY/MM/dd
+ * @param {Ngày cần định dạng} date 
+ * @returns Dữ liệu đã định dạng
+ * Khắc Tiềm - 15.09.2022
+ */
 const formatDateYYYYMMDD = (date) => {
   if ((date === null) | (date == "")) {
     return null;

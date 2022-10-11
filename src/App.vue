@@ -26,8 +26,22 @@ export default {
     LoaderAnimation,
   },
   setup() {
+    /**
+     * Biến store trong vuex
+     * Khắc Tiềm - 15.09.2022
+     */
     const store = useStore();
+
+    /**
+     * Biến lưu trạng thái loader 
+     * Khắc Tiềm - 15.09.2022
+     */
     let isShowLoader = ref(false);
+
+    /**
+     * Lấy ra trạng thái loader 
+     * Khắc Tiềm - 15.09.2022
+     */
     isShowLoader = computed(() => store.state.config.isShowLoader);
     return {
       isShowLoader,

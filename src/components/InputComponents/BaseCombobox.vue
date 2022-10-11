@@ -41,19 +41,18 @@ import { ref, toRefs, onMounted, onUnmounted, onBeforeMount, watch } from "vue";
 import eNum from "../../utils/eNum";
 export default {
   props: {
-    modelValue: {}, //(Khắc Tiềm - 15.09.2022)  v-model
+    modelValue: {},
     value: {
-      type: String, //(Khắc Tiềm - 15.09.2022)   key được lấy làm value trong object
+      type: String,
     },
     header: {
-      type: String, //(Khắc Tiềm - 15.09.2022)   key được hiển thị lên cho người dùng
+      type: String,
     },
-    defaultValue: {}, //(Khắc Tiềm - 15.09.2022)   key mặc định
+    defaultValue: {},
     label: {
-      type: String, //(Khắc Tiềm - 15.09.2022)   label bổ nghĩa cho combo box
+      type: String,
     },
     options: {
-      //(Khắc Tiềm - 15.09.2022)   mảng dữ liệu bên trong là các object dữ liệu
       type: Array,
       default: () => [],
     },
@@ -63,6 +62,16 @@ export default {
     noAnimation: {},
   },
   setup(props, context) {
+    /**
+     * options: Dữ liệu lặp để hiển thị
+     * header: trường hiển thị
+     * modelValue: giá trị được chọn
+     * value: giá trị binding cùng dữ liệu hiển thị
+     * defaultValue: giá trị mặc định
+     * noAnimation: có hiệu ứng hay không
+     * required: có bắt buộc hay không
+     * Khắc Tiềm - 15.09.2022
+     */
     const {
       options,
       header,
@@ -72,19 +81,73 @@ export default {
       noAnimation,
       required,
     } = toRefs(props);
+
+    /**
+     * lấy ra các mã phím khi bấm
+     * Khắc Tiềm - 15.09.2022
+     */
     const { UP, DOWN, ENTER, TAB } = eNum;
+
+    /**
+     * Element chứa danh sách select
+     * Khắc Tiềm - 15.09.2022
+     */
     const listSelect = ref(null);
+
+    /**
+     * Trạng thái hiển thị validate
+     * Khắc Tiềm - 15.09.2022
+     */
     const isValid = ref(false);
-    const isShow = ref(false); //(Khắc Tiềm - 15.09.2022)   biến thực hiện ẩn mở dropdown
+
+    /**
+     * biến thực hiện ẩn mở dropdown
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShow = ref(false);
+
+    /**
+     * biến bắt lưu trạng thái animation
+     * Khắc Tiềm - 15.09.2022
+     */
     const isShowAnimation = ref(false);
-    const template = ref(null); //(Khắc Tiềm - 15.09.2022)   biến bắt lấy thẻ to nhất của component
-    const input = ref(null); //(Khắc Tiềm - 15.09.2022)   biến bắt thẻ input
-    const valueClick = ref(null); //(Khắc Tiềm - 15.09.2022)   biến lưu dữ liệu value khi được click
-    const headerValue = ref(null); //(Khắc Tiềm - 15.09.2022)   biến lưu dữ liệu sẽ hiển thị lên giao diện người dùng được chọn
-    //(Khắc Tiềm - 15.09.2022)  nếu có sự thay đổi modelValue từ bên ngoài thì sẽ check render dropdown cho hợp lý
+
+    /**
+     * biến bắt lấy thẻ to nhất của component
+     * Khắc Tiềm - 15.09.2022
+     */
+    const template = ref(null); //(Khắc Tiềm - 15.09.2022)   
+
+    /**
+     * biến bắt lấy thẻ input
+     * Khắc Tiềm - 15.09.2022
+     */
+    const input = ref(null);
+
+    /**
+     * biến lưu dữ liệu value khi được click
+     * Khắc Tiềm - 15.09.2022
+     */
+    const valueClick = ref(null);
+
+    /**
+     * biến lưu dữ liệu sẽ hiển thị lên giao diện người dùng được chọn
+     * Khắc Tiềm - 15.09.2022
+     */
+    const headerValue = ref(null); 
+
+    /**
+     * Set vị trí list select hiển thị
+     * Khắc Tiềm - 15.09.2022
+     */
     const positionListSelect = ref({
       top: "110%",
     });
+
+    /**
+     * nếu có sự thay đổi modelValue từ bên ngoài thì sẽ check render dropdown cho hợp lý
+     * Khắc Tiềm - 15.09.2022
+     */
     watch(modelValue, () => {
       let checkModelValueCoincideValue = false;
       options.value.forEach((item) => {
@@ -103,10 +166,14 @@ export default {
         isValid.value = false;
       }
     });
-    //(Khắc Tiềm - 15.09.2022)  hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
+
+    /**
+     * hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
+     * Khắc Tiềm - 15.09.2022
+     */
     const handleEnum = function (event) {
       if (event.keyCode === UP) {
-        //(Khắc Tiềm - 15.09.2022)   xử lý bấm lên
+        // xử lý bấm lên
         if (!valueClick.value && options.value) {
           valueClick.value = options.value[0][value.value];
           headerValue.value = options.value[0][header.value];
@@ -123,7 +190,7 @@ export default {
           }
         }
       } else if (event.keyCode === DOWN) {
-        //(Khắc Tiềm - 15.09.2022)   xử lý bấm xuống
+        // xử lý bấm xuống
         if (!valueClick.value && options.value) {
           valueClick.value = options.value[0][value.value];
           headerValue.value = options.value[0][header.value];
@@ -140,12 +207,16 @@ export default {
           }
         }
       } else if (event.keyCode === ENTER || event.keyCode === TAB) {
-        //(Khắc Tiềm - 15.09.2022)   xử lý bấm enter
+        // xử lý bấm enter
         context.emit("update:modelValue", valueClick.value);
         toggleListSelect();
       }
     };
-    //(Khắc Tiềm - 15.09.2022)   hàm xử lý ẩn dropdown khi click không trúng vào component
+
+    /**
+     * hàm xử lý ẩn dropdown khi click không trúng vào component
+     * Khắc Tiềm - 15.09.2022
+     */
     const handleClickTemplate = function () {
       const isClick = template.value.contains(event.target);
       if (!isClick) {
@@ -154,28 +225,46 @@ export default {
         }
       }
     };
-    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng click vào từng item trong dropdown
+
+    /**
+     * hàm xử lý khi người dùng click vào từng item trong dropdown
+     * @param {Giá trị được chọn} value 
+     * @param {Giá } index 
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleClickItem(value, index) {
       context.emit("update:modelValue", value);
       headerValue.value = options.value[index][header.value];
       valueClick.value = value;
       toggleListSelect();
     }
-    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng focus vào ô input sẽ hiện dropdown
+
+    /**
+     * hàm xử lý khi người dùng focus vào ô input sẽ hiện dropdown
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleFocusInput() {
       if (!isShow.value) {
         setPositionListSelect();
         toggleListSelect();
       }
     }
-    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng nhập input sẽ hiện dropdown
+
+    /**
+     * hàm xử lý khi người dùng nhập input sẽ hiện dropdown
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleInput() {
       if (!isShow.value) {
         setPositionListSelect();
         toggleListSelect();
       }
     }
-    //(Khắc Tiềm - 15.09.2022)   hàm xử lý khi người dùng bấm vào icon mở hoặc đóng dropdown
+
+    /**
+     * hàm xử lý khi người dùng bấm vào icon mở hoặc đóng dropdown
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleClickOpenCombobox() {
       if (!isShow.value) {
         setPositionListSelect();
@@ -185,6 +274,11 @@ export default {
         input.value.focus();
       }
     }
+
+    /**
+     * Set vị trí list select hiển thị
+     * Khắc Tiềm - 15.09.2022
+     */
     function setPositionListSelect() {
       if (
         window.innerHeight - (input.value.getBoundingClientRect().bottom + 30) <
@@ -195,6 +289,11 @@ export default {
         positionListSelect.value.top = "110%";
       }
     }
+
+    /**
+     * hàm xử lý hiển thị list select
+     * Khắc Tiềm - 15.09.2022
+     */
     function toggleListSelect() {
       isShow.value = !isShow.value;
       if (!noAnimation.value) {
@@ -208,7 +307,11 @@ export default {
         window.removeEventListener("keydown", handleEnum);
       }
     }
-    //(Khắc Tiềm - 15.09.2022)   trước khi mounted thì sẽ set giá trị cho giá trị đc click thông qua v-model hoặc defaultValue
+
+    /**
+     * trước khi mounted thì sẽ set giá trị cho giá trị đc click thông qua v-model hoặc defaultValue
+     * Khắc Tiềm - 15.09.2022
+     */
     onBeforeMount(() => {
       options.value.forEach((item) => {
         if (
@@ -221,9 +324,17 @@ export default {
         }
       });
     });
-    //(Khắc Tiềm - 15.09.2022)   lắng nghe sự kiện click component
+
+    /**
+     * lắng nghe sự kiện click component
+     * Khắc Tiềm - 15.09.2022
+     */
     onMounted(() => window.addEventListener("click", handleClickTemplate));
-    //(Khắc Tiềm - 15.09.2022)   xoá bỏ sự kiện lắng nghe
+
+    /**
+     * xoá bỏ sự kiện lắng nghe
+     * Khắc Tiềm - 15.09.2022
+     */
     onUnmounted(() => window.removeEventListener("click", handleClickTemplate));
     return {
       input,

@@ -1,8 +1,5 @@
 <template>
-  <!-- @click="handleClickCheckbox" -->
   <label class="check">
-    <!-- Thêm active vào đây -->
-    <!-- :class="{ active: checkbox }" -->
     <input
       class="checkbox"
       type="checkbox"
@@ -26,11 +23,35 @@ import { defineComponent, computed } from "vue";
 export default defineComponent({
   name: "InputCheckbox",
   props: [
-    "modelValue", //(Khắc Tiềm - 15.09.2022)  v-model
-    "value", //(Khắc Tiềm - 15.09.2022)  Giá trị của ô checkbox
-    "trueValue", //(Khắc Tiềm - 15.09.2022)  Dữ liệu khi được check
-    "falseValue", //(Khắc Tiềm - 15.09.2022)  Dữu liệu khi không được check
-    "checked", //(Khắc Tiềm - 15.09.2022)  Có được check hay không khi k sử dụng đến v-model
+    /**
+     * v-model
+     * Khắc Tiềm - 15.09.2022
+     */
+    "modelValue", 
+    
+    /**
+     * Giá trị của ô checkbox
+     * Khắc Tiềm - 15.09.2022
+     */
+    "value", 
+    
+    /**
+     * Dữ liệu khi được check
+     * Khắc Tiềm - 15.09.2022
+     */
+    "trueValue", 
+    
+    /**
+     * Dữ liệu khi không được check
+     * Khắc Tiềm - 15.09.2022
+     */
+    "falseValue", 
+
+    /**
+     * Có được check hay không khi k sử dụng đến v-model
+     * Khắc Tiềm - 15.09.2022
+     */
+    "checked",
     "id",
     "name",
     "round",
@@ -43,14 +64,20 @@ export default defineComponent({
     "custom-handle-click-checkbox-with-value",
   ],
   setup: (props, { emit }) => {
+    /**
+     * Sự kiện bắn dữ liệu cập nhật cho component cha
+     * Khắc Tiềm - 15.09.2022
+     */
     const computedValue = computed({
       get() {
         return props.modelValue;
       },
       set(value) {
         emit("update:modelValue", value);
-        emit("custom-handle-click-checkbox"); //(Khắc Tiềm - 15.09.2022)  custom sự kiện check không có value
-        emit("custom-handle-click-checkbox-with-value", value); //(Khắc Tiềm - 15.09.2022)  custom sự kiện check có value truyền vào
+        //custom sự kiện check không có value
+        emit("custom-handle-click-checkbox"); 
+        //custom sự kiện check có value truyền vào
+        emit("custom-handle-click-checkbox-with-value", value); 
       },
     });
     return { computedValue };

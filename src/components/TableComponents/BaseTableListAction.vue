@@ -45,8 +45,16 @@ export default {
     },
   },
   setup(props) {
-    const template = ref(null); //(Khắc Tiềm - 15.09.2022) biến bắt lấy thẻ to nhất của component
-    //(Khắc Tiềm - 15.09.2022) khi không click trúng component thì sẽ unmount component
+    /**
+     * biến bắt lấy thẻ to nhất của component
+     * Khắc Tiềm - 15.09.2022
+     */
+    const template = ref(null);
+
+    /**
+     *  khi không click trúng component thì sẽ unmount component
+     * khắc Tiềm - 15.09.2022
+     */
     const handleClickTemplate = function () {
       try {
         const isClick = template.value.contains(event.target);
@@ -57,11 +65,19 @@ export default {
         return;
       }
     };
-    //(Khắc Tiềm - 15.09.2022) lắng nghe sự kiện click component
+    
+    /**
+     * lắng nghe sự kiện click component
+     * Khắc Tiềm - 15.09.2022
+     */
     setTimeout(() => {
       window.addEventListener("click", handleClickTemplate);
     }, 100);
-    //(Khắc Tiềm - 15.09.2022) xoá bỏ sự kiện lắng nghe
+
+    /**
+     * xoá bỏ sự kiện lắng nghe
+     * Khắc Tiềm - 15.09.2022
+     */ 
     onUnmounted(() => window.removeEventListener("click", handleClickTemplate));
 
     return {

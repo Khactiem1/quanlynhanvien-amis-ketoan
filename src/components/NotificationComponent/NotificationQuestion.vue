@@ -48,7 +48,16 @@ export default {
     },
   },
   setup() {
+    /**
+     * Biến chứa element nút bấm 
+     * Khắc Tiềm - 15.09.2022
+     */
     const elmAgree = ref(null);
+
+    /**
+     * Khi mounted thì sẽ focus vào một nút chỉ định
+     * Khắc Tiềm - 15.09.2022
+     */
     onMounted(() => {
       elmAgree.value.focus();
     });

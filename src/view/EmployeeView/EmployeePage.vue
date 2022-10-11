@@ -153,7 +153,6 @@ import {
   deleteEmployeeApi,
   deleteMultipleApi,
   nextValue,
-  exportDataApi,
 } from "../../api/employee";
 export default {
   components: {
@@ -414,6 +413,7 @@ export default {
     /**
      * Hàm xử lý toggle hiển thị các trường dữ liệu của bảng
      * Tham số đầu vào là vị trí cột cần ẩn hiện
+     * @param {vị trí muốn ẩn hiện header column table} fieldIndex 
      * Khắc Tiềm - 15.09.2022
      */
     function handleClickToggleSettingTable(fieldIndex) {
@@ -430,7 +430,7 @@ export default {
 
     /**
      * Hàm xử lý xoá một bản ghi
-     * Tham số đầu vào là ID bản ghi cần xoá
+     * @param {ID bản ghi cần xoá} id 
      * Khắc Tiềm - 15.09.2022
      */
     async function deleteEmployee(id) {
@@ -450,10 +450,9 @@ export default {
 
     /**
      * Hàm xử lý khi click vào các hành động của từng cột dữ liệu table
-     * Tham số đầu vào là
-     * action: Hành động VD: Nhân bản, sửa, xoá
-     * employeeId: ID record sẽ thay đổi dữ liệu sau khi thực hiện record
-     * employeeCode: Mã nhân viên
+     * @param {Hành động VD: Nhân bản, sửa, xoá} action 
+     * @param {ID record sẽ thay đổi dữ liệu sau khi thực hiện record} employeeId 
+     * @param {Mã nhân viên} employeeCode 
      * Khắc Tiềm - 15.09.2022
      */
     async function handleClickActionColumTable(
@@ -462,7 +461,21 @@ export default {
       employeeCode
     ) {
       if (action == EDIT) {
-        store.dispatch("config/setToggleShowLoaderAction");
+        employeeEditApi(employeeId);
+      } else if (action == DELETE) {
+        employeeDeleteApi(employeeId, employeeCode)
+      } else if (action == REPLICATION) {
+        employeeReplicationApi(employeeId)
+      }
+    }
+
+    /**
+     * Hàm thực hiện call api lấy chi tiết nhân viên với trạng thái sửa
+     * @param {ID nhân viên cần sửa} employeeId 
+     * Khắc Tiềm - 15.09.2022
+     */
+    async function employeeEditApi(employeeId){
+      store.dispatch("config/setToggleShowLoaderAction");
         await getEmployeeApi(employeeId)
           .then(function (response) {
             employeeEdit.value = response;
@@ -472,8 +485,16 @@ export default {
             showNotificationError(error);
           });
         store.dispatch("config/setToggleShowLoaderAction");
-      } else if (action == DELETE) {
-        cancelAction.value = {
+    }
+
+    /**
+     * Hàm thực hiện hỏi xoá nhân viên
+     * @param {ID nhân viên cần xoá} employeeId 
+     * @param {mã nhân viên cần xoá} employeeCode 
+     * Khắc Tiềm - 15.09.2022
+     */
+    async function employeeDeleteApi(employeeId, employeeCode){
+      cancelAction.value = {
           display: "Không",
           action: handleToggleNotification,
         };
@@ -486,8 +507,15 @@ export default {
           id: employeeId,
         };
         handleToggleNotification();
-      } else if (action == REPLICATION) {
-        store.dispatch("config/setToggleShowLoaderAction");
+    }
+
+    /**
+     * Hàm thực hiện call api lấy chi tiết nhân viên với trạng thái thêm để nhân bản
+     * @param {ID nhân viên} employeeId 
+     * Khắc Tiềm - 15.09.2022
+     */
+    async function employeeReplicationApi(employeeId){
+      store.dispatch("config/setToggleShowLoaderAction");
         await getEmployeeApi(employeeId)
           .then(function (response) {
             employeeAdd.value = { ...response };
@@ -504,9 +532,13 @@ export default {
             }),
           handleOpenModal(REPLICATION);
         store.dispatch("config/setToggleShowLoaderAction");
-      }
     }
 
+    /**
+     * Hàm xử lý hiển thị thông báo lỗi khi call api bị lỗi
+     * @param {Lỗi từ sever trả về } error 
+     * Khắc Tiềm - 15.09.2022
+     */
     function showNotificationError(error) {
       agreeAction.value = {
         display: "Đóng",
@@ -523,7 +555,7 @@ export default {
 
     /**
      * Hàm xử lý checkbox value true thì là check ô tất cả check, value là 0,1,2 là xử lý các phần tử được check
-     * Tham số đầu vào là vị trí record cần check true là check tất cả
+     * @param {vị trí record cần check true là check tất cả} value 
      * Khắc Tiềm - 15.09.2022
      */
     function handleClickCheckbox(value) {
@@ -535,12 +567,16 @@ export default {
     }
 
     /**
-     * Hàm xử lý tìm kiếm dữ liệu
-     * Tham số đầu vào là event để lấy giá trị nhập
-     * Khắc Tiềm - 15.09.2022
+     * Chứa hàm setTimeOut sẽ thực hiện tìm kiếm khi tìm kiếm
      */
     const eventSearchInput = [];
-    const searchData = (event) => {
+
+    /**
+     * Hàm xử lý tìm kiếm dữ liệu
+     * @param {event để lấy giá trị nhập} event 
+     * Khắc Tiềm - 15.09.2022
+     */
+    const handleSearchData = (event) => {
       eventSearchInput.forEach((item) => {
         clearTimeout(item);
       });
@@ -557,13 +593,10 @@ export default {
         }, 600)
       );
     };
-    function handleSearchData(event) {
-      searchData(event);
-    }
 
     /**
      * Hàm xử lý mở modal với state là trạng thái thêm hay sửa
-     * Tham số đầu vào nếu không có Employee thì sẽ set EmployeeEdit = null để mở modal thêm và ngược lại
+     * @param {Tham số đầu vào nếu không có Employee thì sẽ set EmployeeEdit = null để mở modal thêm và ngược lại} stateForm 
      * Khắc Tiềm - 15.09.2022
      */
     function handleOpenModal(stateForm) {
@@ -590,15 +623,33 @@ export default {
       isShowModal.value = !isShowModal.value;
     }
 
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý ẩn action thực hiện hàng loạt
+    /**
+     * Biến lưu trạng thái ẩn hiện hành động hàng loạt
+     * Khắc Tiềm - 15.09.2022
+     */
     const showActionAll = ref(false);
+
+    /**
+     * Biến chứa template thực hiện hành động hàng loạt
+     * Khắc Tiềm - 15.09.2022
+     */
     const templateActionAll = ref(null);
+
+    /**
+     * Hàm xử lý sự kiện click không trúng templateActionAll thì sẽ ẩn hành động hàng loạt
+     * Khắc Tiềm - 15.09.2022
+     */
     const handleClickActionAll = () => {
       const isClick = templateActionAll.value.contains(event.target);
       if (!isClick) {
         handleToggleActionAll();
       }
     };
+
+    /**
+     * Hàm xử lý ẩn hành động thực hiện hàng loạt
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleToggleActionAll() {
       if (!showActionAll.value && checkShowActionSeries.value.length > 0) {
         showActionAll.value = true;
@@ -608,13 +659,13 @@ export default {
         showActionAll.value = false;
       }
     }
+
+    /**
+     * khi unmounted thì sẽ xoá bỏ sự kiện lắng nghe xử lý ẩn hành động thực hiện hàng loạt
+     */
     onUnmounted(() =>
       window.removeEventListener("click", handleClickActionAll)
     );
-
-    function handleExportData(){
-      exportDataApi();
-    }
     return {
       employeeList,
       totalCount,
@@ -647,7 +698,6 @@ export default {
       handleClickActionColumTable,
       handleSearchData,
       handleToggleActionAll,
-      handleExportData,
       loadData,
     };
   },

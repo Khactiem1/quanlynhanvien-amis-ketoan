@@ -16,6 +16,11 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     const isShowModalAnimation = ref(false);
+
+    /**
+     * Khi mounted xong thì thêm class active để có hiệu ứng mở lên từ từ
+     * Khắc Tiềm - 15.09.2022
+     */
     onMounted(() => {
       setTimeout(() => {
         isShowModalAnimation.value = !isShowModalAnimation.value;

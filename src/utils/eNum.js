@@ -1,19 +1,52 @@
 export default {
-  ESC: 27, // phím ESC
-  CTRL: 17,
-  SHIFT: 16,
+  // phím ESC
+  ESC: 27, 
+
+  // phím CTRL
+  CTRL: 17, 
+
+  // phím SHIFT
+  SHIFT: 16, 
+
+  // phím S
   S: 83,
-  UP: 38,
-  DOWN: 40,
-  ENTER: 13,
-  TAB: 9, // phím TAB
-  MALE: 0, // nam
-  FEMALE: 1, // nữ
-  OTHER: 2, // khác 
-  Exception: 1, // Lỗi phía backend
-  DuplicateCode: 2, // Lỗi trùng mã
-  EmptyCode: 3, // Lỗi để trống mã 
-  InvalidInput: 4, // sai dữ liệu đầu vào
+
+  // phím UP
+  UP: 38, 
+
+  // phím DOWN
+  DOWN: 40, 
+
+  // phím ENTER
+  ENTER: 13, 
+
+  // phím TAB
+  TAB: 9, 
+
+  // nam
+  MALE: 0, 
+
+  // nữ
+  FEMALE: 1, 
+
+  // khác 
+  OTHER: 2, 
+
+  // Lỗi phía backend
+  Exception: 1, 
+
+  // Lỗi trùng mã
+  DuplicateCode: 2, 
+
+  // Lỗi để trống mã 
+  EmptyCode: 3, 
+
+  // sai dữ liệu đầu vào
+  InvalidInput: 4, 
+
+  // from header hiển thị thêm mới nhân viên
   AddFormEmployee: "Thêm thông tin nhân viên",
+
+  // from header hiển thị sửa nhân viên
   EditFormEmployee: "Sửa thông tin nhân viên",
 };

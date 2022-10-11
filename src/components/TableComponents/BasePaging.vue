@@ -32,16 +32,19 @@ export default {
      * NK Tiềm 7/10/2022
      */
     const currentPage = ref(1);
+
     /**
      * Trang hiển thị thay đổi
-     * 
+     * NK Tiềm 7/10/2022
      */
     const pageChangeCLick = ref(3);
+
     /**
      * props truyền vào là lượng muốn lấy và số tổng danh sách
      * NK Tiềm 7/10/2022
      */
     const { countRecordPageEmployee, totalCount } = toRefs(props);
+
     /**
      * Danh sách mảng hiển thị lên giao diện
      * NK Tiềm 7/10/2022
@@ -109,6 +112,7 @@ export default {
         context.emit("update:modelValue", (countRecordPageEmployee.value ) * (page - 1));
       }
     }
+
     /**
      * Hàm xử lý quay lại trang
      * NK Tiềm 7/10/2022
@@ -122,6 +126,7 @@ export default {
         context.emit("update:modelValue", (countRecordPageEmployee.value ) * (currentPage.value - 1));
       }
     }
+    
     /**
      * Hàm xử lý next trang
      * NK Tiềm 7/10/2022

@@ -3,12 +3,21 @@ const employees = {
   namespaced: true,
   state: () => {
     return {
+      /**
+       * Các hành động của table
+       * Khắc Tiềm - 15.09.2022
+       */
       actionTable: {
         actionDefault: 'Sửa',
         actionList: ['Nhân bản', 'Xoá', 'Ngừng sử dụng'],
         fieldId: "employeeID",
         fieldCode: "employeeCode",
       },
+
+      /**
+       * Các column của table
+       * Khắc Tiềm - 15.09.2022
+       */
       columns: [
         {
           field: "employeeCode",
@@ -112,8 +121,23 @@ const employees = {
           width: "200px",
         },
       ],
+
+      /**
+       * Các Danh sách
+       * Khắc Tiềm - 15.09.2022
+       */
       employeeList: [],
+
+      /**
+       * Tổng số lượng bản ghi
+       * Khắc Tiềm - 15.09.2022
+       */
       totalCount: 0,
+
+      /**
+       * Mặc định tìm kiếm và phân trang với key hiện tại
+       * Khắc Tiềm - 15.09.2022
+       */
       filter: {
         offset: 0,
         limit: 0,
@@ -122,20 +146,38 @@ const employees = {
     };
   },
   mutations: {
-    //(Khắc Tiềm - 15.09.2022) Xét toggle các trường được hiển thị lên giao diện table
+    /**
+     * Xét toggle các trường được hiển thị lên giao diện table
+     * @param {index được toggle} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
     setToggleShowColumnTableMutation(state, payload) {
       state.columns[payload].isShow = !state.columns[payload].isShow;
     },
-    //(Khắc Tiềm - 15.09.2022) lấy danh sách Employee
+
+    /**
+     * Set danh sách Employee
+     * @param {danh sách} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
     setEmployeeListMutation(state, payload) {
       state.employeeList = [...payload.recordList];
       state.totalCount = payload.totalCount;
     },
-    //(Khắc Tiềm - 15.09.2022)Xét toggle checkbox phần tử được check
+
+    /**
+     * Xét toggle checkbox phần tử được check
+     * @param {index các nhân viên được toggle} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
     setCheckboxEmployeeMutation(state, payload) {
       state.employeeList[payload].Check = !state.employeeList[payload].Check;
     },
-    //(Khắc Tiềm - 15.09.2022)Xét toggle tất cả checkbox được check
+
+    /**
+     * Xét toggle tất cả checkbox được check
+     * Khắc Tiềm - 15.09.2022
+     */
     setAllCheckboxEmployeeMutation(state) {
       if (
         state.employeeList.filter((value) => value.Check).length ===
@@ -150,11 +192,22 @@ const employees = {
         }, []);
       }
     },
+
+    /**
+     * Set các giá trị tìm kiếm và phân trang khi call apie
+     * @param {giá trị set} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
     setFilterMutation(state, payload) {
       state.filter = { ...payload };
     },
   },
   actions: {
+    /**
+     * Lấy ra dánh sách nhân viên
+     * @param {Giá trị set filter} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
     async getEmployeeListAction(context, payload) {
       if (payload) {
         await context.commit("setFilterMutation", payload);
@@ -167,12 +220,29 @@ const employees = {
           console.log(error.response.data);
         });
     },
+
+    /**
+     * Xét toggle checkbox phần tử được check
+     * @param {index các nhân viên được toggle} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
     setCheckboxEmployeeAction(context, payload) {
       context.commit("setCheckboxEmployeeMutation", payload);
     },
+
+    /**
+     * Xét toggle tất cả checkbox được check
+     * Khắc Tiềm - 15.09.2022
+     */
     setAllCheckboxEmployeeAction(context) {
       context.commit("setAllCheckboxEmployeeMutation");
     },
+
+    /**
+     * Xét toggle các trường được hiển thị lên giao diện table
+     * @param {index được toggle} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
     setToggleShowColumnTableAction(context, payload) {
       context.commit("setToggleShowColumnTableMutation", payload);
     },

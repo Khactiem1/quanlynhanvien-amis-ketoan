@@ -61,6 +61,10 @@ export default {
     InputCheckbox,
   },
   setup(props) {
+    /**
+     * Hàm xử lý ẩn hiện setting table
+     * Khắc Tiềm - 15.09.2022
+     */
     const { handleShowSettingTable } = toRefs(props);
 
     /**
@@ -69,7 +73,12 @@ export default {
      */
     const isShowSettingTableAnimation = ref(false);
 
+    /**
+     * Phím ESC
+     * Khắc Tiềm - 15.09.2022
+     */
     const { ESC } = eNum;
+
     /**
      * Hàm xử lý đóng mở cài đặt table
      * Khắc Tiềm 19.09.2022
@@ -80,12 +89,22 @@ export default {
         handleShowSettingTable.value();
       }
     };
+
+    /**
+     * Khi mounted thì sẽ lắng nghe sự kiện nhấn phím
+     * Khắc Tiềm - 15.09.2022
+     */
     onMounted(() => {
       window.addEventListener("keydown", handleEventKey);
       setTimeout(()=>{
         isShowSettingTableAnimation.value = true;
       },0)
     });
+
+    /**
+     * Khi onUnmounted thì sẽ xoá bỏ sự kiện nhấn phím
+     * Khắc Tiềm - 15.09.2022
+     */
     onUnmounted(() => {
       window.removeEventListener("keydown", handleEventKey);
     });

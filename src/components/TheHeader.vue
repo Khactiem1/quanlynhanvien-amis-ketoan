@@ -23,9 +23,22 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 export default {
   setup() {
+    /**
+     * Biến store vuex
+     * Khắc Tiềm - 15.09.2022
+     */
     const store = useStore();
+
+    /**
+     * Lấy ra trạng thái show sidebar
+     * Khắc Tiềm - 15.09.2022
+     */
     const showSidebar = computed(() => store.state.config.showSidebar);
-    //(Khắc Tiềm - 15.09.2022)Hàm sử lý sự kiện toggle sidebar
+    
+    /**
+     * Hàm sử lý sự kiện toggle sidebar
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleToggleSidebar() {
       store.dispatch("config/setToggleShowSidebarAction");
     }

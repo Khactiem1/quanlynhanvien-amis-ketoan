@@ -155,32 +155,116 @@ export default {
   },
 
   setup(props, context) {
+    /**
+     * Lấy ra hàm format date dạng dd/MM/YYYY và YYYY/MM/dd
+     * Khắc Tiềm - 15.09.2022
+     */
     const { formatDateDDMMYYYY, formatDateYYYYMMDD } = utilEnum;
+
+    /**
+     * Element calendar chọn ngày, tháng, năm
+     * Khắc Tiềm - 15.09.2022
+     */
     const elementCalendar = ref(null);
+
+    /**
+     * Element icon toggle ẩn hiện calendar
+     * Khắc Tiềm - 15.09.2022
+     */
     const elementIcon = ref(null);
+
+    /**
+     * Element chọn tháng
+     * Khắc Tiềm - 15.09.2022
+     */
     const elementSelectMonth = ref(null);
+
+    /**
+     * Element chọn năm
+     * Khắc Tiềm - 15.09.2022
+     */
     const elementSelectYear = ref(null);
+
+    /**
+     * Element thẻ input
+     * Khắc Tiềm - 15.09.2022
+     */
     const elementInput = ref(null);
+
+    /**
+     * Trạng thái show calendar
+     * Khắc Tiềm - 15.09.2022
+     */
     const showCalendar = ref(false);
+
+    /**
+     * Trạng thái show năm
+     * Khắc Tiềm - 15.09.2022
+     */
     const showSelectYear = ref(false);
+
+    /**
+     * Trạng thái show tháng
+     * Khắc Tiềm - 15.09.2022
+     */
     const showSelectMonth = ref(false);
+
+    /**
+     * Biến lưu ngày hiện tại
+     * Khắc Tiềm - 15.09.2022
+     */
     const dateNow = ref(new Date());
+
+    /**
+     * Model value truyền từ props
+     * Khắc Tiềm - 15.09.2022
+     */
     const { modelValue } = toRefs(props);
+
+    /**
+     * Dữ liệu hiển thị lên ui
+     * Khắc Tiềm - 15.09.2022
+     */
     const displayData = ref("");
+
+    /**
+     * Dữ liệu hiển thị lên ui khi đang nhập
+     * Khắc Tiềm - 15.09.2022
+     */
     const dataInput = ref("__/__/____");
+
+    /**
+     * Biến lưu ngày được chọn
+     * Khắc Tiềm - 15.09.2022
+     */
     const currentDate = computed(() =>
       modelValue.value ? new Date(modelValue.value).getDate() : null
     );
+
+    /**
+     * Biến lưu tháng được chọn
+     * Khắc Tiềm - 15.09.2022
+     */
     const currentMonth = ref(
       modelValue.value
         ? new Date(modelValue.value).getMonth()
         : new Date().getMonth()
     );
+
+    /**
+     * Biến lưu năm được chọn
+     * Khắc Tiềm - 15.09.2022
+     */
     const currentYear = ref(
       modelValue.value
         ? new Date(modelValue.value).getFullYear()
         : new Date().getFullYear()
     );
+
+    /**
+     * Kiểm tra nếu có sự thay đổi của model value thì render lại giao diện
+     * Khắc Tiềm - 15.09.2022
+     */
     watch(modelValue, (newValue) => {
       currentMonth.value = newValue
         ? new Date(newValue).getMonth()
@@ -202,12 +286,27 @@ export default {
         ? formatDateDDMMYYYY(new Date(modelValue.value))
         : "";
     });
+
+    /**
+     * Tháng bắt đầu render
+     * Khắc Tiềm - 15.09.2022
+     */
     const daysInMonth = computed(() =>
       new Date(currentYear.value, currentMonth.value + 1, 0).getDate()
     );
+
+    /**
+     * Ngày bắt đầu render
+     * Khắc Tiềm - 15.09.2022
+     */
     const startDay = computed(() =>
       new Date(currentYear.value, currentMonth.value, 0).getDay()
     );
+
+    /**
+     * Hàm xử lý quay lại tháng
+     * Khắc Tiềm - 15.09.2022
+     */
     function handlePrevMonth() {
       if (currentMonth.value == 0) {
         currentMonth.value = 11;
@@ -216,6 +315,11 @@ export default {
         currentMonth.value--;
       }
     }
+
+    /**
+     * Hàm xử lý next tháng
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleNextMonth() {
       if (currentMonth.value === 11) {
         currentMonth.value = 0;
@@ -224,15 +328,30 @@ export default {
         currentMonth.value++;
       }
     }
+
+    /**
+     * Hàm xử lý chọn năm
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleSelectYear(year) {
       currentYear.value = year;
       showSelectYear.value = false;
       showSelectMonth.value = true;
     }
+
+    /**
+     * Hàm xử lý chọn tháng
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleSelectMonth(month) {
       currentMonth.value = month - 1;
       showSelectMonth.value = false;
     }
+
+    /**
+     * Hàm xử lý chọn ngày
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleSelectDate(dateSelect) {
       let d;
       if (dateSelect === true) {
@@ -243,6 +362,11 @@ export default {
       context.emit("update:modelValue", formatDateYYYYMMDD(d));
       handleShowCalendar();
     }
+
+    /**
+     * Hàm xử lý ẩn calendar khi click ra ngoài calendar
+     * Khắc Tiềm - 15.09.2022
+     */
     const handleClickTemplate = () => {
       const isClickElementCalendar = elementCalendar.value.contains(
         event.target
@@ -263,9 +387,19 @@ export default {
         handleShowCalendar();
       }
     };
+
+    /**
+     * Khi Unmounted thì sẽ xoá bỏ sự kiện xử lý ẩn calendar khi click ra ngoài calendar
+     * Khắc Tiềm - 15.09.2022
+     */
     onUnmounted(()=> {
       window.removeEventListener("click", handleClickTemplate);
     });
+
+    /**
+     * Hàm xử lý ẩn hiện calendar
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleShowCalendar() {
       if (showCalendar.value) {
         showSelectYear.value = false;
@@ -276,8 +410,23 @@ export default {
       }
       showCalendar.value = !showCalendar.value;
     }
+
+    /**
+     * Biến chứa thông tin ngày đã nhập
+     * Khắc Tiềm - 15.09.2022
+     */
     const enteredValue = ref("");
+
+    /**
+     * Biến chứa trạng thái nhập ngày, tháng, năm
+     * Khắc Tiềm - 15.09.2022
+     */
     const doneValue = ref(0);
+
+    /**
+     * Hàm xử lý sự kiện khi nhập vào ô input ngày
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleInput(event) {
       if(event.data && elementInput.value.selectionStart <= 10){
         if(elementInput.value.selectionStart > enteredValue.value.length){
@@ -310,6 +459,11 @@ export default {
         displayData.value = enteredValue.value;
       }
     }
+
+    /**
+     * Hàm xử lý lưu dữ liệu khi nhập tay
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleSave(){
       if(displayData.value === ""){
         context.emit("update:modelValue", "");
@@ -328,6 +482,11 @@ export default {
         doneValue.value = 2;
       }
     }
+
+    /**
+     * Hàm xử lý chỉ cho phép nhập số
+     * Khắc Tiềm - 15.09.2022
+     */
     function isNumber(evt) {
       evt = (evt) ? evt : window.event;
       var charCode = (evt.which) ? evt.which : evt.keyCode;

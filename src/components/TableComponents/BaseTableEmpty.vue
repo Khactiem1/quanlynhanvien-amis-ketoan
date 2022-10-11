@@ -1,7 +1,7 @@
 <template>
   <div class="table-empty sticky">
     <img
-      src="https://actappg2.misacdn.net/img/bg_report_nodata.76e50bd8.svg"
+      src="../../../public/asset/logo/bg_report_nodata.76e50bd8.svg"
       class="table-empty_icon"
       alt=""
     />

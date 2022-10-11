@@ -309,25 +309,99 @@ export default {
     },
   },
   setup(props, context) {
+    /**
+     * Biến chứa nội dung title from thêm mới, sửa
+     * NK Tiềm 28/10/2022
+     */
     const titleForm = ref("");
+
+    /**
+     * Hàm xử ý format date gửi về cho sever
+     * NK Tiềm 28/10/2022
+     */
     const { formatDateYYYYMMDD } = utilEnum;
+
+    /**
+     * Lấy ra các thông báo khi hiện thông báo
+     * NK Tiềm 28/10/2022
+     */
     const {
       QUESTION_DATA_CHANGE,
       DUPLICATE_CODE,
       INVALID_INPUT,
       employeeNotification,
     } = notificationMessage;
-    const inputFocus = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ input phục vụ cho việc dom đến để focus
-    const focusLoop = ref(null); //(Khắc Tiềm - 15.09.2022)  Biến lưu thẻ tab phục vụ cho việc xây dựng vòng lặp phím tab
-    const stateAddEmployee = ref(true); //(Khắc Tiềm - 15.09.2022)  Biến kiểm tra trạng thái thêm hay sửa
-    const { employeeEdit, employeeAdd } = toRefs(props); //(Khắc Tiềm - 15.09.2022)  Biến chứa dữ liệu props nhận vào là một user | employee
-    const cancelAction = ref({}); //(Khắc Tiềm - 15.09.2022)  biến chứa các hành động huỷ thông báo
-    const agreeAction = ref({}); //(Khắc Tiềm - 15.09.2022)  Biến chứa các hành động chấp nhận thông báo
-    const messageAction = ref({}); //(Khắc Tiềm - 15.09.2022)  Biến chứa thông tin hiển thị thông báo
-    const isValid = ref(false); //(Khắc Tiềm - 15.09.2022)  Biến điều kiện hiển thị các ô nhập sẽ validate
-    const isShowNotificationQuestion = ref(false); //(Khắc Tiềm - 15.09.2022)  Biến hiển thị thông báo hỏi
-    const isShowNotificationError = ref(false); //(Khắc Tiềm - 15.09.2022)  Biến hiển thị thông báo lỗi
+    
+    /**
+     * Element input focus vào khi mở from
+     * NK Tiềm 28/10/2022
+     */
+    const inputFocus = ref(null);
+
+    /**
+     * Element chứa vị trí tab đến sẽ quay lại tab ban đầu tạo thành vòng lặp
+     * NK Tiềm 28/10/2022
+     */
+    const focusLoop = ref(null); 
+
+    /**
+     * Lưu trạng thái from đang thêm hay đang sửa
+     * NK Tiềm 28/10/2022
+     */
+    const stateAddEmployee = ref(true); 
+
+    /**
+     * Lấy ra employee sửa và nhân bản truyền qua từ props
+     * NK Tiềm 28/10/2022
+     */
+    const { employeeEdit, employeeAdd } = toRefs(props);
+
+    /**
+     * Chứa các hiển thị và handle của hành động nhấn bỏ qua thông báo
+     * NK Tiềm 28/10/2022
+     */
+    const cancelAction = ref({}); 
+
+    /**
+     * Chứa các hiển thị và handle của hành động nhấn chấp nhận thông báo
+     * NK Tiềm 28/10/2022
+     */
+    const agreeAction = ref({});
+
+    /**
+     * Chứa các nội dung thông báo
+     * NK Tiềm 28/10/2022
+     */
+    const messageAction = ref({});
+
+    /**
+     * Lưu trạng thái hiển thị validate
+     * NK Tiềm 28/10/2022
+     */
+    const isValid = ref(false);
+
+    /**
+     * Trạng thái hiển thị thông báo hỏi
+     * NK Tiềm 28/10/2022
+     */
+    const isShowNotificationQuestion = ref(false);
+
+    /**
+     * Trạng thái hiển thị thông báo lỗi
+     * NK Tiềm 28/10/2022
+     */
+    const isShowNotificationError = ref(false);
+
+    /**
+     * Biến store vuex
+     * NK Tiềm 28/10/2022
+     */
     const store = useStore();
+
+    /**
+     * Lấy ra các enum gồm mã phím và mã lỗi có thể nhận được khi call api
+     * NK Tiềm 28/10/2022
+     */
     const {
       ESC,
       CTRL,
@@ -341,8 +415,23 @@ export default {
       AddFormEmployee,
       EditFormEmployee,
     } = eNum;
+
+    /**
+     * Lấy ra hàm validate email và validate phone
+     * NK Tiềm 28/10/2022
+     */
     const { validateEmail, validatePhone } = validate;
-    const eventCtrlShiftS = []; //(Khắc Tiềm - 15.09.2022)  lưu lại giá trị các phím bấm tắt không ngắt quãng
+
+    /**
+     * lưu lại giá trị các phím bấm tắt không ngắt quãng
+     * NK Tiềm 28/10/2022
+     */
+    const eventCtrlShiftS = [];
+
+    /**
+     * Biến employee v-model và gửi lên sever khi thêm sửa xoá
+     * NK Tiềm 28/10/2022
+     */
     const employee = ref({
       employeeName: "",
       gender: MALE,
@@ -361,7 +450,17 @@ export default {
       employeeAddress: "",
       employeeCode: "",
     });
-    const employeeEditReset = ref(null); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sửa nếu form sửa thì sẽ nhận được thông tin cần sửa
+
+    /**
+     * thông tin employee sửa nếu form sửa thì sẽ nhận được thông tin cần sửa
+     * NK Tiềm 28/10/2022
+     */
+    const employeeEditReset = ref(null);
+
+    /**
+     * Thông tin nhân viên cần reset về rỗng khi ở lại from thêm tiếp không đóng from
+     * NK Tiềm 28/10/2022
+     */
     const employeeReset = ref({
       employeeName: "",
       gender: MALE,
@@ -379,10 +478,24 @@ export default {
       employeeEmail: "",
       employeeAddress: "",
       employeeCode: "",
-    }); //(Khắc Tiềm - 15.09.2022)  thông tin người dùng sẽ reset sau khi thêm, sửa mà form không đóng
-    const optionUnit = computed(() => store.state.unit.unitList); //(Khắc Tiềm - 15.09.2022)  danh sách đơn vị
+    });
+
+    /**
+     * lưu danh sách đơn vị
+     * NK Tiềm 28/10/2022
+     */
+    const optionUnit = computed(() => store.state.unit.unitList);
+
+    /**
+     * Thực hiện chuyển đổi props thành data trước khi mounted
+     * NK Tiềm 28/10/2022
+     */
     onBeforeMount(async () => {
       titleForm.value = AddFormEmployee;
+      /**
+       * Lấy danh sách đơn vị
+       * NK Tiềm 28/10/2022
+       */
       await store.dispatch("unit/getUnitListAction");
       if (employeeEdit.value) {
         titleForm.value = EditFormEmployee;
@@ -390,7 +503,7 @@ export default {
           ...employeeEdit.value,
           dateOfBirth: formatDateYYYYMMDD(employeeEdit.value.dateOfBirth),
           dayForIdentity: formatDateYYYYMMDD(employeeEdit.value.dayForIdentity),
-        }; //(Khắc Tiềm - 15.09.2022)  chuyển đổi props thành data
+        }; 
         stateAddEmployee.value = false;
         employeeEditReset.value = {
           ...employeeEdit.value,
@@ -406,8 +519,13 @@ export default {
             dayForIdentity: formatDateYYYYMMDD(
               employeeAdd.value.dayForIdentity
             ),
-          }; //(Khắc Tiềm - 15.09.2022)  chuyển đổi props thành data
+          };
         }
+
+        /**
+         * Lấy mã mới khi thêm 
+         * NK Tiềm 28/10/2022
+         */
         await nextValue()
           .then(function (response) {
             employee.value.employeeCode = response;
@@ -418,21 +536,36 @@ export default {
       }
     });
     
-    //(Khắc Tiềm - 15.09.2022)  hàm xử lý lặp focus
+    /**
+     * Hàm xử lý lặp khi tab focus
+     * NK Tiềm 28/10/2022
+     */
     const handleLoopFocus = function () {
       inputFocus.value.tagInput.focus();
     };
-    //(Khắc Tiềm - 15.09.2022) Khi mounted component thì sẽ lắng nghe sự kiện các phím tắ
+
+    /**
+     * Khi mounted component thì sẽ lắng nghe sự kiện các phím tắt
+     * NK Tiềm 28/10/2022
+     */
     onMounted(() => window.addEventListener("keydown", handleEvent));
     onMounted(() => focusLoop.value.addEventListener("focus", handleLoopFocus));
     onMounted(() => window.addEventListener("keyup", handleEventInterrupt));
-    //(Khắc Tiềm - 15.09.2022)  Khi unMounted thì sẽ xoá bỏ các sự kiện khỏi bộ nhớ
+
+    /**
+     * Khi unMounted thì sẽ xoá bỏ các sự kiện khỏi bộ nhớ
+     * NK Tiềm 28/10/2022
+     */
     onUnmounted(() => window.removeEventListener("keydown", handleEvent));
     onUnmounted(() => window.removeEventListener("focus", handleLoopFocus));
     onUnmounted(() =>
       window.removeEventListener("keyup", handleEventInterrupt)
     );
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý các event nút bấm tắt
+
+    /**
+     * Hàm xử lý các event nút bấm tắt
+     * NK Tiềm 28/10/2022
+     */
     const handleEvent = function (event) {
       if (event.keyCode === ESC) {
         handleCloseModal();
@@ -444,13 +577,14 @@ export default {
         if (!eventCtrlShiftS.includes(event.keyCode)) {
           eventCtrlShiftS.push(event.keyCode);
           if (eventCtrlShiftS.length === 3) {
-            //(Khắc Tiềm - 15.09.2022) Khi bấm đủ 3 phím sẽ kích hoạt hành động nhấn
+            // Khi bấm đủ 3 phím sẽ kích hoạt hành động nhấn
             eventCtrlShiftS.length = 0;
             handleSaveData(false);
           } else if (eventCtrlShiftS.length === 2) {
-            //(Khắc Tiềm - 15.09.2022) Nếu số lượng nút bấm mà === 2 trong đó k có nút shift thì sẽ là chức năng khác
+            // Nếu số lượng nút bấm mà === 2 trong đó k có nút shift thì sẽ là chức năng khác
             if (!eventCtrlShiftS.includes(SHIFT)) {
-              event.preventDefault(); //(Khắc Tiềm - 15.09.2022) Không cho trình duyệt mở save as khi bấm ctrl + s
+              //Không cho trình duyệt mở save as khi bấm ctrl + s
+              event.preventDefault(); 
               eventCtrlShiftS.length = 0;
               handleSaveData(true);
             }
@@ -458,7 +592,11 @@ export default {
         }
       }
     };
-    //(Khắc Tiềm - 15.09.2022)  Hàm xử lý khi các phím tắt bấm bị ngắt quãng thì hành động sẽ k đc thực hiện
+
+    /**
+     * Hàm xử lý khi các phím tắt bấm bị ngắt quãng thì hành động sẽ k đc thực hiện
+     * NK Tiềm 28/10/2022
+     */
     const handleEventInterrupt = function (event) {
       if (
         event.keyCode === CTRL ||
@@ -470,10 +608,19 @@ export default {
         }
       }
     };
-    //(Khắc Tiềm - 15.09.2022) Hàm đóng mở thông báo nhập sai dữ liệu
+
+    /**
+     * Hàm đóng mở thông báo nhập sai dữ liệu
+     * NK Tiềm 28/10/2022
+     */
     function handleToggleNotificationError() {
       isShowNotificationError.value = !isShowNotificationError.value;
     }
+
+    /**
+     * Hàm xử lý validate các trường
+     * NK Tiềm 28/10/2022
+     */
     function validateInput() {
       return [
         employee.value.employeeCode.trim() === ""
@@ -513,7 +660,17 @@ export default {
       }, "");
     }
 
+    /**
+     * Biến lưu trạng thái khi call api lỗi hay không lỗi
+     * NK Tiềm 28/10/2022
+     */
     const errorApi = ref(false);
+
+    /**
+     * Hàm xử lý call api
+     * NK Tiềm 28/10/2022
+     * @param {api truyền vào thêm hoặc sửa} Api 
+     */
     async function callApi(Api) {
       store.dispatch("config/setToggleShowLoaderAction");
       await Api({
@@ -529,7 +686,8 @@ export default {
           errorApi.value = false;
           store.dispatch("employee/getEmployeeListAction");
           if(!stateAddEmployee.value){
-            stateAddEmployee.value = true; //(Khắc Tiềm - 15.09.2022)  sau khi sửa xong sửa trạng thái modal thành thêm user
+            //sau khi sửa xong sửa trạng thái modal thành thêm user
+            stateAddEmployee.value = true; 
           }
         })
         .catch(function (error) {
@@ -551,7 +709,12 @@ export default {
         });
       store.dispatch("config/setToggleShowLoaderAction");
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý sự kiện khi bấm nút save
+
+    /**
+     * Hàm xử lý sự kiện khi bấm nút save
+     * @param {Biến trạng thái có đóng modal hay là không} closeModal 
+     * NK Tiềm 28/10/2022
+     */
     const handleSaveData = async function (closeModal) {
       const messValid = validateInput();
       if (messValid != "") {
@@ -566,10 +729,10 @@ export default {
         handleToggleNotificationError();
       } else {
         if (stateAddEmployee.value) {
-          //Thêm
+          // Trạng thái thêm thì sẽ truyền api thêm
           await callApi(createEmployeeApi);
         } else {
-          //(Khắc Tiềm - 15.09.2022)  sửa
+          // Trạng thái sửa thì sẽ truyền api sửa
           await callApi(editEmployeeApi);
         }
         if (closeModal === true && errorApi.value === false) {
@@ -585,26 +748,46 @@ export default {
             .catch(function (error) {
               console.log(error.response.data);
             });
-          inputFocus.value.tagInput.focus(); //(Khắc Tiềm - 15.09.2022) Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
+          // Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
+          inputFocus.value.tagInput.focus(); 
         }
       }
     };
-    //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng mở thông báo
+
+    /**
+     * Hàm xử lý đóng mở thông báo
+     * NK Tiềm 28/10/2022
+     */
     function handleToggleNotificationQuestion() {
       isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
     }
-    //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng thông báo và đóng modal
+
+    /**
+     * Hàm xử lý đóng thông báo và đóng modal
+     * NK Tiềm 28/10/2022
+     */
     function handleCloseNotificationAndCloseModal() {
       isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
       context.emit("handle-click-close-modal");
     }
     //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng thông báo và modal và thêm dữ liệu
+
+    /**
+     * Hàm đóng modal và lưu dữ liệu
+     * NK Tiềm 28/10/2022
+     */
     function handleSaveDataAndCloseNotificationAndCloseModal() {
       isShowNotificationQuestion.value = !isShowNotificationQuestion.value;
       handleSaveData(true);
     }
+
+    /**
+     * Hàm xử lý đóng modal khi thực hiện nhấn nút đóng modal
+     * @param {Nếu nhấn vào nút huỷ thì sẽ đóng ngay ngược lại sẽ hỏi lưu} closeNow 
+     * NK Tiềm 28/10/2022
+     */
     function handleCloseModal(closeNow) {
-      //(Khắc Tiềm - 15.09.2022) Kiếm tra dữ liệu khi đóng form khác thì hỏi có lưu hay không
+      //Kiếm tra dữ liệu khi đóng form khác thì hỏi có lưu hay không
       if (closeNow) {
         context.emit("handle-click-close-modal");
       } else if (stateAddEmployee.value) {
@@ -626,6 +809,11 @@ export default {
         }
       }
     }
+
+    /**
+     * Hàm hiển thị thông báo khi nhấn đóng modal
+     * NK Tiềm 28/10/2022
+     */
     function saveDataWhenCloseModal() {
       cancelAction.value = {
         display: "Huỷ",

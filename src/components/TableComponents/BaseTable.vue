@@ -151,11 +151,35 @@ export default {
     },
   },
   setup() {
+    /**
+     * Lưu đối tượng được click các hành động như xoá , nhân bản, ...
+     * Khắc Tiềm - 15.09.2022
+     */
     const rowColumn = ref(null);
+
+    /**
+     * Biến chứa vị trí set ẩn hiện action
+     * Khắc Tiềm - 15.09.2022
+     */
     const positionAction = ref({ top: 0, right: 0 });
+
+    /**
+     * Lấy ra mã giới tính
+     * Khắc Tiềm - 15.09.2022
+     */
     const { MALE, FEMALE, OTHER } = eNum;
+
+    /**
+     * Lấy ra hàm format date dd/MM/YYYY
+     * Khắc Tiềm - 15.09.2022
+     */
     const { formatDateDDMMYYYY } = utilEnum;
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
+    
+    /**
+     * Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
+     * @param {Số cần format} number 
+     * Khắc Tiềm - 15.09.2022
+     */
     function Comma(number) {
       number = "" + number;
       if (number.length > 3) {
@@ -169,7 +193,12 @@ export default {
         return output;
       } else return number;
     }
-    //(Khắc Tiềm - 15.09.2022) hàm xử lý hiển thị giới tính dựa trên enum
+
+    /**
+     * hàm xử lý hiển thị giới tính dựa trên enum
+     * @param {Giới tính} gender 
+     * Khắc Tiềm - 15.09.2022
+     */
     function formatGender(gender) {
       if (MALE == gender) {
         return "Nam";
@@ -179,7 +208,12 @@ export default {
         return "Khác";
       }
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý ẩn hiện các action
+
+    /**
+     * Hàm xử lý ẩn hiện các action
+     * @param {Thông tin đỐi tượng được click} row 
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleShowAction(event, row) {
       if (JSON.stringify(rowColumn.value) === JSON.stringify(row)) {
         rowColumn.value = null;
@@ -192,11 +226,19 @@ export default {
         }
       }
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý ẩn action
+
+    /**
+     * Hàm xử lý ẩn action
+     * Khắc Tiềm - 15.09.2022
+     */
     function handleCloseAction() {
       rowColumn.value = null;
     }
-    //(Khắc Tiềm - 15.09.2022) Hàm xử lý vị trí ẩn hiện các action
+    
+    /**
+     * Hàm xử lý vị trí ẩn hiện các action
+     * Khắc Tiềm - 15.09.2022
+     */
     function setPositionActionTable(event) {
       event.path.forEach((item) => {
         try {
