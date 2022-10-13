@@ -65,11 +65,71 @@
           style="background-position: -30px -1628px"
           class="menu-sidebar_icon"
         ></div>
-        <div v-if="showSidebar" class="menu-sidebar_text">Test trang 404</div>
+        <div v-if="showSidebar" class="menu-sidebar_text">Quản lý hoá đơn</div>
         <div v-if="!showSidebar" class="menu-sidebar_item-info">
-          Test trang 404
+          Quản lý hoá đơn
         </div>
       </router-link>
+      <a class="menu-sidebar_item dashboard-page">
+        <div
+          style="background-position: -30px -1628px"
+          class="menu-sidebar_icon"
+        ></div>
+        <div v-if="showSidebar" class="menu-sidebar_text">Kho</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Kho
+        </div>
+      </a>
+      <a class="menu-sidebar_item nhanvien-page">
+        <div
+          style="background-position: -73px -1628px"
+          class="menu-sidebar_icon"
+        ></div>
+        <div v-if="showSidebar" class="menu-sidebar_text">Công cụ dụng cụ</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Công cụ dụng cụ
+        </div>
+      </a>
+      <a class="menu-sidebar_item">
+        <div
+          style="background-position: -117px -1628px"
+          class="menu-sidebar_icon"
+        ></div>
+        <div v-if="showSidebar" class="menu-sidebar_text">Tài sản cố định</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Tài sản cố định
+        </div>
+      </a>
+      <a class="menu-sidebar_item">
+        <div
+          style="background-position: -161px -1628px"
+          class="menu-sidebar_icon"
+        ></div>
+        <div v-if="showSidebar" class="menu-sidebar_text">Tiền lương</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Tiền lương
+        </div>
+      </a>
+      <a class="menu-sidebar_item">
+        <div
+          style="background-position: -204px -1628px"
+          class="menu-sidebar_icon"
+        ></div>
+        <div v-if="showSidebar" class="menu-sidebar_text">Thuế</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Thuế
+        </div>
+      </a>
+      <a class="menu-sidebar_item dashboard-page">
+        <div
+          style="background-position: -30px -1628px"
+          class="menu-sidebar_icon"
+        ></div>
+        <div v-if="showSidebar" class="menu-sidebar_text">Giá thành</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Giá thành
+        </div>
+      </a>
     </div>
   </div>
 </template>

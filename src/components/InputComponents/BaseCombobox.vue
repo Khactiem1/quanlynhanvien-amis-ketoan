@@ -10,9 +10,10 @@
         ref="input"
         @focus="handleFocusInput"
         class="input"
-        :value="headerValue"
+        :value="inputEvent"
         @input="handleInput"
         type="text"
+        :disabled="disabled"
         :tabindex="tab"
       />
       <div class="combobox-select_icon" @click="handleClickOpenCombobox">
@@ -21,7 +22,7 @@
       <div ref="listSelect" v-show="isShow" class="combobox-combobox_select">
         <div
           class="combobox-combobox_item"
-          v-for="(item, index) in options"
+          v-for="(item, index) in optionValue"
           :key="index"
           @click="handleClickItem(item[value], index)"
           :class="{
@@ -60,6 +61,7 @@ export default {
     tab: {},
     messageValid: {},
     noAnimation: {},
+    disabled: {},
   },
   setup(props, context) {
     /**
@@ -72,15 +74,13 @@ export default {
      * required: có bắt buộc hay không
      * Khắc Tiềm - 15.09.2022
      */
-    const {
-      options,
-      header,
-      modelValue,
-      defaultValue,
-      value,
-      noAnimation,
-      required,
-    } = toRefs(props);
+    const { options, header, modelValue, defaultValue, value, noAnimation, required } = toRefs(props);
+
+    /**
+     * Giá trị mảng binding lên giao diện
+     * Khắc Tiềm - 15.09.2022
+     */
+    const optionValue = ref(null);
 
     /**
      * lấy ra các mã phím khi bấm
@@ -131,18 +131,10 @@ export default {
     const valueClick = ref(null);
 
     /**
-     * biến lưu dữ liệu sẽ hiển thị lên giao diện người dùng được chọn
-     * Khắc Tiềm - 15.09.2022
-     */
-    const headerValue = ref(null); 
-
-    /**
      * Set vị trí list select hiển thị
      * Khắc Tiềm - 15.09.2022
      */
-    const positionListSelect = ref({
-      top: "110%",
-    });
+    const positionListSelect = ref({ top: "110%", });
 
     /**
      * nếu có sự thay đổi modelValue từ bên ngoài thì sẽ check render dropdown cho hợp lý
@@ -152,14 +144,14 @@ export default {
       let checkModelValueCoincideValue = false;
       options.value.forEach((item) => {
         if (item[value.value] == modelValue.value) {
-          headerValue.value = item[header.value];
+          inputEvent.value = item[header.value];
           valueClick.value = item[value.value];
           checkModelValueCoincideValue = true;
           return;
         }
       });
       if (checkModelValueCoincideValue === false) {
-        headerValue.value = null;
+        inputEvent.value = '';
         valueClick.value = null;
       }
       if (required.value) {
@@ -168,22 +160,30 @@ export default {
     });
 
     /**
+     * Chuyển props thành data
+     * Khắc Tiềm - 15.09.2022
+     */
+    watch(options, ()=>{
+      optionValue.value = [...options.value];
+    })
+
+    /**
      * hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
      * Khắc Tiềm - 15.09.2022
      */
     const handleEnum = function (event) {
       if (event.keyCode === UP) {
         // xử lý bấm lên
-        if (!valueClick.value && options.value) {
-          valueClick.value = options.value[0][value.value];
-          headerValue.value = options.value[0][header.value];
+        if (!valueClick.value && optionValue.value) {
+          valueClick.value = optionValue.value[0][value.value];
+          inputEvent.value = optionValue.value[0][header.value];
         } else {
-          for (let i = 0; i < options.value.length; i++) {
-            if (options.value[i][value.value] == valueClick.value) {
+          for (let i = 0; i < optionValue.value.length; i++) {
+            if (optionValue.value[i][value.value] == valueClick.value) {
               if (i > 0) {
                 const index = i - 1;
-                headerValue.value = options.value[index][header.value];
-                valueClick.value = options.value[index][value.value];
+                inputEvent.value = optionValue.value[index][header.value];
+                valueClick.value = optionValue.value[index][value.value];
                 break;
               }
             }
@@ -191,16 +191,16 @@ export default {
         }
       } else if (event.keyCode === DOWN) {
         // xử lý bấm xuống
-        if (!valueClick.value && options.value) {
-          valueClick.value = options.value[0][value.value];
-          headerValue.value = options.value[0][header.value];
+        if (!valueClick.value && optionValue.value) {
+          valueClick.value = optionValue.value[0][value.value];
+          inputEvent.value = optionValue.value[0][header.value];
         } else {
-          for (let i = 0; i < options.value.length; i++) {
-            if (options.value[i][value.value] == valueClick.value) {
-              if (i < options.value.length - 1) {
+          for (let i = 0; i < optionValue.value.length; i++) {
+            if (optionValue.value[i][value.value] == valueClick.value) {
+              if (i < optionValue.value.length - 1) {
                 const index = i + 1;
-                headerValue.value = options.value[index][header.value];
-                valueClick.value = options.value[index][value.value];
+                inputEvent.value = optionValue.value[index][header.value];
+                valueClick.value = optionValue.value[index][value.value];
                 break;
               }
             }
@@ -232,9 +232,8 @@ export default {
      * @param {Giá } index 
      * Khắc Tiềm - 15.09.2022
      */
-    function handleClickItem(value, index) {
+    function handleClickItem(value) {
       context.emit("update:modelValue", value);
-      headerValue.value = options.value[index][header.value];
       valueClick.value = value;
       toggleListSelect();
     }
@@ -251,10 +250,52 @@ export default {
     }
 
     /**
+     * Giá trị tìm kiếm được lưu lại
+     * Khắc Tiềm - 15.09.2022
+     */
+    const inputEnter = ref(null);
+    const inputEvent = ref('');
+
+    /**
+     * Chứa hàm setTimeOut sẽ thực hiện tìm kiếm khi tìm kiếm
+     * Khắc Tiềm - 15.09.2022
+     */
+    const eventSearchInput = [];
+
+    /**
+     * Hàm xử lý tìm kiếm dữ liệu
+     * @param {event để lấy giá trị nhập} event 
+     * Khắc Tiềm - 15.09.2022
+     */
+    const handleSearchData = (event) => {
+      inputEvent.value = event.target.value;
+      eventSearchInput.forEach((item) => {
+        clearTimeout(item);
+      });
+      eventSearchInput.length = 0;
+      eventSearchInput.push(
+        setTimeout(() => {
+          if(event.target.value.trim() === ''){
+            inputEnter.value = null;
+            valueClick.value = null;
+          }
+          else if(event.data != ' '){
+            inputEnter.value = {...optionValue.value.find(item => item[header.value].toLowerCase().trim().includes(event.target.value.toLowerCase().trim()))};
+              if(inputEnter.value[value.value]){
+                optionValue.value = [inputEnter.value, ...optionValue.value.filter(item => item[value.value] != inputEnter.value[value.value])]
+              }
+              valueClick.value = inputEnter.value[value.value];
+          }
+        }, 400)
+      );
+    };
+
+    /**
      * hàm xử lý khi người dùng nhập input sẽ hiện dropdown
      * Khắc Tiềm - 15.09.2022
      */
-    function handleInput() {
+    function handleInput(event) {
+      handleSearchData(event, isShow.value);
       if (!isShow.value) {
         setPositionListSelect();
         toggleListSelect();
@@ -284,7 +325,7 @@ export default {
         window.innerHeight - (input.value.getBoundingClientRect().bottom + 30) <
         listSelect.value.getBoundingClientRect().height
       ) {
-        positionListSelect.value.top = `-${options.value.length * 100 + 30}%`;
+        positionListSelect.value.top = `-${optionValue.value.length * 100 + 30}%`;
       } else {
         positionListSelect.value.top = "110%";
       }
@@ -318,11 +359,12 @@ export default {
           item[value.value] == modelValue.value ||
           item[value.value] == defaultValue.value
         ) {
-          headerValue.value = item[header.value];
+          inputEvent.value = item[header.value];
           valueClick.value = item[value.value];
           return;
         }
       });
+      optionValue.value = [...options.value];
     });
 
     /**
@@ -342,8 +384,9 @@ export default {
       isShowAnimation,
       isValid,
       template,
-      headerValue,
+      optionValue,
       listSelect,
+      inputEvent,
       positionListSelect,
       valueClick,
       handleFocusInput,

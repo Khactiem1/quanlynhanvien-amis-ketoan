@@ -98,7 +98,7 @@
               :key="index"
               class="calendar-select_item"
             >
-              <span @click="handleSelectMonth(item)">Thg {{ item }}</span>
+              <span @click="handleSelectMonth(item)">Thg{{ item }}</span>
             </div>
           </div>
           <div class="calendar-cancel">

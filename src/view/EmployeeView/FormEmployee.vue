@@ -402,19 +402,7 @@ export default {
      * Lấy ra các enum gồm mã phím và mã lỗi có thể nhận được khi call api
      * NK Tiềm 28/10/2022
      */
-    const {
-      ESC,
-      CTRL,
-      SHIFT,
-      S,
-      MALE,
-      FEMALE,
-      OTHER,
-      DuplicateCode,
-      InvalidInput,
-      AddFormEmployee,
-      EditFormEmployee,
-    } = eNum;
+    const { TypeSuccess, MessageSuccessAdd, MessageSuccessEdit, MessageErrorInternet, TypeError, ESC, CTRL, SHIFT, S, MALE, FEMALE, OTHER, DuplicateCode, InvalidInput, AddFormEmployee, EditFormEmployee, } = eNum;
 
     /**
      * Lấy ra hàm validate email và validate phone
@@ -531,10 +519,37 @@ export default {
             employee.value.employeeCode = response;
           })
           .catch(function (error) {
-            console.log(error.response.data);
+            showNotificationError(error);
           });
       }
     });
+
+    /**
+     * Hàm xử lý hiển thị thông báo lỗi khi call api bị lỗi
+     * @param {Lỗi từ sever trả về } error 
+     * Khắc Tiềm - 15.09.2022
+     */
+     function showNotificationError(error) {
+      try{
+        agreeAction.value = {
+          display: "Đóng",
+          action: () => {
+            isShowNotificationError.value = false;
+          },
+        };
+        messageAction.value = {
+          display: error.response.data.userMsg,
+        };
+        isShowNotificationError.value = true;
+        console.log(error.response.data);
+      }
+      catch{
+        store.dispatch("config/addNotification", {
+          type: TypeError,
+          message: MessageErrorInternet
+        });
+      }
+    }
     
     /**
      * Hàm xử lý lặp khi tab focus
@@ -558,9 +573,7 @@ export default {
      */
     onUnmounted(() => window.removeEventListener("keydown", handleEvent));
     onUnmounted(() => window.removeEventListener("focus", handleLoopFocus));
-    onUnmounted(() =>
-      window.removeEventListener("keyup", handleEventInterrupt)
-    );
+    onUnmounted(() => window.removeEventListener("keyup", handleEventInterrupt));
 
     /**
      * Hàm xử lý các event nút bấm tắt
@@ -623,39 +636,29 @@ export default {
      */
     function validateInput() {
       return [
-        employee.value.employeeCode.trim() === ""
-          ? employeeNotification.validateCode
-          : null,
-        employee.value.employeeName.trim() === ""
-          ? employeeNotification.validateName
-          : null,
-        !employee.value.unitID ? employeeNotification.validateUnit : null,
-        employee.value.dateOfBirth
-          ? new Date(employee.value.dateOfBirth) > new Date()
-            ? employeeNotification.validateDateOfBirth
-            : null
-          : null,
-        employee.value.dayForIdentity
-          ? new Date(employee.value.dayForIdentity) > new Date()
-            ? employeeNotification.validateDayForIdentity
-            : null
-          : null,
-        validatePhone(employee.value.phoneNumber) === false &&
-        employee.value.phoneNumber != "" &&
-        employee.value.phoneNumber
-          ? employeeNotification.validatePhoneNumber
-          : null,
-        validatePhone(employee.value.landlinePhone) === false &&
-        employee.value.landlinePhone != "" &&
-        employee.value.landlinePhone
-          ? employeeNotification.validateLandlinePhone
-          : null,
-        validateEmail(employee.value.employeeEmail) === false &&
-        employee.value.employeeEmail != "" &&
-        employee.value.employeeEmail
-          ? employeeNotification.validateEmail
-          : null,
+        // Validate code
+        employee.value.employeeCode.trim() === "" ? employeeNotification.validateCode : null,
+        // Validate name
+        employee.value.employeeName.trim() === "" ? employeeNotification.validateName : null,
+        // Validate unit
+        !employee.value.unitID ? employeeNotification.validateUnit : null, 
+        // Validate dateOfBirth
+        employee.value.dateOfBirth ? new Date(employee.value.dateOfBirth) > new Date() 
+          ? employeeNotification.validateDateOfBirth : null : null,
+        // Validate dayForIdentity
+        employee.value.dayForIdentity ? new Date(employee.value.dayForIdentity) > new Date() 
+          ? employeeNotification.validateDayForIdentity : null : null,
+        // Validate PhoneNumber
+        validatePhone(employee.value.phoneNumber) === false && employee.value.phoneNumber != "" && employee.value.phoneNumber 
+          ? employeeNotification.validatePhoneNumber : null,
+        // Validate landlinePhone
+        validatePhone(employee.value.landlinePhone) === false && employee.value.landlinePhone != "" && employee.value.landlinePhone
+          ? employeeNotification.validateLandlinePhone : null,
+        // Validate employeeEmail
+        validateEmail(employee.value.employeeEmail) === false && employee.value.employeeEmail != "" && employee.value.employeeEmail
+          ? employeeNotification.validateEmail : null,
       ].reduce((acc, cur) => {
+        // Nối lại thành chuỗi HTML
         return (acc += cur ? "- " + cur + "<br>" : "");
       }, "");
     }
@@ -675,14 +678,15 @@ export default {
       store.dispatch("config/setToggleShowLoaderAction");
       await Api({
         ...employee.value,
-        dateOfBirth:
-          employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
-        dayForIdentity:
-          employee.value.dayForIdentity === ""
-            ? null
-            : employee.value.dayForIdentity,
+        dateOfBirth: employee.value.dateOfBirth === "" ? null : employee.value.dateOfBirth,
+        dayForIdentity: employee.value.dayForIdentity === "" ? null  : employee.value.dayForIdentity,
       })
         .then(function () {
+          store.dispatch("config/addNotification", {
+            type: TypeSuccess,
+            message: stateAddEmployee.value ? MessageSuccessAdd : MessageSuccessEdit
+          });
+          store.dispatch("config/setToggleShowLoaderAction");
           errorApi.value = false;
           store.dispatch("employee/getEmployeeListAction");
           if(!stateAddEmployee.value){
@@ -691,23 +695,26 @@ export default {
           }
         })
         .catch(function (error) {
-          console.log(error.response.data);
-          errorApi.value = true;
-          messageAction.value = {
-            display:
-              error.response.data.errorCode === DuplicateCode
-                ? `${employeeNotification.nameDuplicateCode} < ${employee.value.employeeCode} > ${DUPLICATE_CODE}`
-                : error.response.data.errorCode === InvalidInput
-                ? INVALID_INPUT
-                : error.response.data.userMsg,
-          };
-          agreeAction.value = {
-            display: "Đóng",
-            action: handleToggleNotificationError,
-          };
-          handleToggleNotificationError();
+          store.dispatch("config/setToggleShowLoaderAction");
+          try{
+            console.log(error.response.data);
+            errorApi.value = true;
+            messageAction.value = {
+              display:
+                error.response.data.errorCode === DuplicateCode
+                  ? `${employeeNotification.nameDuplicateCode} < ${employee.value.employeeCode} > ${DUPLICATE_CODE}`
+                  : error.response.data.errorCode === InvalidInput ? INVALID_INPUT : error.response.data.userMsg,
+            };
+            agreeAction.value = { display: "Đóng", action: handleToggleNotificationError, };
+            handleToggleNotificationError();
+          }
+          catch{
+            store.dispatch("config/addNotification", {
+              type: TypeError,
+              message: MessageErrorInternet
+            });
+          }
         });
-      store.dispatch("config/setToggleShowLoaderAction");
     }
 
     /**
@@ -718,13 +725,8 @@ export default {
     const handleSaveData = async function (closeModal) {
       const messValid = validateInput();
       if (messValid != "") {
-        agreeAction.value = {
-          display: "Đóng",
-          action: handleToggleNotificationError,
-        };
-        messageAction.value = {
-          display: messValid,
-        };
+        agreeAction.value = { display: "Đóng", action: handleToggleNotificationError, };
+        messageAction.value = { display: messValid, };
         isValid.value = true;
         handleToggleNotificationError();
       } else {
@@ -746,7 +748,7 @@ export default {
               employee.value.employeeCode = response;
             })
             .catch(function (error) {
-              console.log(error.response.data);
+              showNotificationError(error);
             });
           // Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
           inputFocus.value.tagInput.focus(); 

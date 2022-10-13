@@ -86,6 +86,7 @@
               { value: 50, header: '50 bản ghi trên 1 trang' },
               { value: 100, header: '100 bản ghi trên 1 trang' },
             ]"
+            :disabled="true"
             :value="'value'"
             :header="'header'"
             :noAnimation="true"
@@ -142,12 +143,13 @@ import SettingTable from "../../components/TableComponents/BaseSetting.vue";
 import ModalForm from "./ModalForm.vue";
 import FormEmployee from "./FormEmployee.vue";
 import InputCombobox from "../../components/InputComponents/BaseCombobox.vue";
-import { computed, ref, watch, onBeforeMount, onUnmounted } from "vue";
+import { computed, ref, watch, onBeforeMount, onUnmounted, onMounted} from "vue";
 import { useStore } from "vuex";
 import actionTableStore from "../../utils/actionTable";
 import notification from "../../utils/notification";
 import index from "../../utils/index";
 import configs from "../../configs/index";
+import eNum from "../../utils/eNum.js";
 import {
   getEmployeeApi,
   deleteEmployeeApi,
@@ -167,6 +169,12 @@ export default {
     NotificationError,
   },
   setup() {
+    /**
+     * Lấy ra các enum gồm mã phím và mã lỗi có thể nhận được khi call api
+     * NK Tiềm 28/10/2022
+     */
+    const { CTRL, ALT, A, TypeSuccess, TypeError, MessageErrorInternet, MessageSuccessDelete } = eNum;
+    
     /**
      * hàm lấy và lưu số lượng bản ghi của page
      * Khắc Tiềm - 15.09.2022
@@ -376,11 +384,16 @@ export default {
       await deleteMultipleApi(checkShowActionSeries.value)
         .then(function () {
           loadData();
+          store.dispatch("config/setToggleShowLoaderAction");
+          store.dispatch("config/addNotification", {
+            type: TypeSuccess,
+            message: MessageSuccessDelete
+          });
         })
         .catch(function (error) {
+          store.dispatch("config/setToggleShowLoaderAction");
           showNotificationError(error);
         });
-      store.dispatch("config/setToggleShowLoaderAction");
     }
 
     /**
@@ -439,12 +452,17 @@ export default {
       store.dispatch("config/setToggleShowLoaderAction");
       await deleteEmployeeApi(id)
         .then(function () {
+          store.dispatch("config/setToggleShowLoaderAction");
+          store.dispatch("config/addNotification", {
+            type: TypeSuccess,
+            message: MessageSuccessDelete
+          });
           loadData();
         })
         .catch(function (error) {
+          store.dispatch("config/setToggleShowLoaderAction");
           showNotificationError(error);
         });
-      store.dispatch("config/setToggleShowLoaderAction");
       //End Loading
     }
 
@@ -478,13 +496,14 @@ export default {
       store.dispatch("config/setToggleShowLoaderAction");
         await getEmployeeApi(employeeId)
           .then(function (response) {
+            store.dispatch("config/setToggleShowLoaderAction");
             employeeEdit.value = response;
             handleOpenModal(EDIT);
           })
           .catch(function (error) {
+            store.dispatch("config/setToggleShowLoaderAction");
             showNotificationError(error);
           });
-        store.dispatch("config/setToggleShowLoaderAction");
     }
 
     /**
@@ -518,9 +537,11 @@ export default {
       store.dispatch("config/setToggleShowLoaderAction");
         await getEmployeeApi(employeeId)
           .then(function (response) {
+            store.dispatch("config/setToggleShowLoaderAction");
             employeeAdd.value = { ...response };
           })
           .catch(function (error) {
+            store.dispatch("config/setToggleShowLoaderAction");
             showNotificationError(error);
           }),
           await nextValue()
@@ -531,7 +552,6 @@ export default {
               showNotificationError(error);
             }),
           handleOpenModal(REPLICATION);
-        store.dispatch("config/setToggleShowLoaderAction");
     }
 
     /**
@@ -540,17 +560,25 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function showNotificationError(error) {
-      agreeAction.value = {
-        display: "Đóng",
-        action: () => {
-          isShowNotificationError.value = false;
-        },
-      };
-      messageAction.value = {
-        display: error.response.data.userMsg,
-      };
-      isShowNotificationError.value = true;
-      console.log(error.response.data);
+      try{
+        agreeAction.value = {
+          display: "Đóng",
+          action: () => {
+            isShowNotificationError.value = false;
+          },
+        };
+        messageAction.value = {
+          display: error.response.data.userMsg,
+        };
+        isShowNotificationError.value = true;
+        console.log(error.response.data);
+      }
+      catch{
+        store.dispatch("config/addNotification", {
+          type: TypeError,
+          message: MessageErrorInternet
+        });
+      }
     }
 
     /**
@@ -568,6 +596,7 @@ export default {
 
     /**
      * Chứa hàm setTimeOut sẽ thực hiện tìm kiếm khi tìm kiếm
+     * Khắc Tiềm - 15.09.2022
      */
     const eventSearchInput = [];
 
@@ -666,6 +695,63 @@ export default {
     onUnmounted(() =>
       window.removeEventListener("click", handleClickActionAll)
     );
+
+    /**
+     * Khi mounted component thì sẽ lắng nghe sự kiện các phím tắt
+     * NK Tiềm 28/10/2022
+     */
+    onMounted(() => window.addEventListener("keydown", handleEvent));
+    onMounted(() => window.addEventListener("keyup", handleEventInterrupt));
+
+    /**
+     * Khi unMounted thì sẽ xoá bỏ các sự kiện khỏi bộ nhớ
+     * NK Tiềm 28/10/2022
+     */
+    onUnmounted(() => window.removeEventListener("keydown", handleEvent));
+    onUnmounted(() => window.removeEventListener("keyup", handleEventInterrupt));
+
+    /**
+     * lưu lại giá trị các phím bấm tắt không ngắt quãng
+     * NK Tiềm 28/10/2022
+     */
+     const eventCtrlAltA = [];
+
+    /**
+     * Hàm xử lý các event nút bấm tắt
+     * NK Tiềm 28/10/2022
+     */
+     const handleEvent = function (event) {
+      if (
+        event.keyCode === CTRL ||
+        event.keyCode === ALT ||
+        event.keyCode === A
+      ) {
+        if (!eventCtrlAltA.includes(event.keyCode)) {
+          eventCtrlAltA.push(event.keyCode);
+          if (eventCtrlAltA.length === 3) {
+            // Khi bấm đủ 3 phím sẽ kích hoạt hành động nhấn
+            eventCtrlAltA.length = 0;
+            handleOpenModal(true);
+          }
+        }
+      }
+    };
+
+    /**
+     * Hàm xử lý khi các phím tắt bấm bị ngắt quãng thì hành động sẽ k đc thực hiện
+     * NK Tiềm 28/10/2022
+     */
+    const handleEventInterrupt = function (event) {
+      if (
+        event.keyCode === CTRL ||
+        event.keyCode === ALT ||
+        event.keyCode === A
+      ) {
+        if (eventCtrlAltA.includes(event.keyCode)) {
+          eventCtrlAltA.length = 0;
+        }
+      }
+    };
     return {
       employeeList,
       totalCount,

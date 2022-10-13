@@ -6,7 +6,5 @@ import axiosAPI from ".";
  * Khắc Tiềm - 15.09.2022
  */
 export const getUnitList = () => {
-  return axiosAPI.get(`/Units`).catch(function (error) {
-    console.log(error.toJSON());
-  });
+  return axiosAPI.get(`/Units`)
 };

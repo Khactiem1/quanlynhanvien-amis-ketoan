@@ -13,6 +13,12 @@ const config = {
        * Khắc Tiềm - 15.09.2022
        */
       isShowLoader: false,
+
+      /**
+       * Chứa danh sách thông báo
+       * Khắc Tiềm - 15.09.2022
+       */
+      notifications: [],
     };
   },
   mutations: {
@@ -31,6 +37,27 @@ const config = {
     setToggleShowLoaderMutation(state) {
       state.isShowLoader = !state.isShowLoader;
     },
+
+    /**
+     * Thêm thông báo
+     * Khắc Tiềm - 15.09.2022
+     */
+     PUSH_NOTIFICATION(state, notification) {
+      state.notifications.push({
+        ...notification,
+        id: (Math.random().toString(36) + Date.now().toString(36)).substr(2)
+      })
+    },
+
+    /**
+     * Xoá thông báo
+     * Khắc Tiềm - 15.09.2022
+     */
+     REMOVE_NOTIFICATION(state, notificationToRemove) {
+      state.notifications = state.notifications.filter(notification => {
+        return notification.id != notificationToRemove.id;
+      })
+    },
   },
   actions: {
     /**
@@ -47,6 +74,22 @@ const config = {
      */
     setToggleShowLoaderAction(context) {
       context.commit("setToggleShowLoaderMutation");
+    },
+
+    /**
+     * Thêm thông báo
+     * Khắc Tiềm - 15.09.2022
+     */
+    addNotification(context, notification){
+      context.commit('PUSH_NOTIFICATION', notification);
+    },
+
+    /**
+     * Xoá thông báo
+     * Khắc Tiềm - 15.09.2022
+     */
+     removeNotification(context, notification){
+      context.commit('REMOVE_NOTIFICATION', notification);
     },
   },
 };

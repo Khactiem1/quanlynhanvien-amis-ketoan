@@ -8,6 +8,9 @@
     <teleport to="#app">
       <loader-animation v-show="isShowLoader"></loader-animation>
     </teleport>
+    <teleport to="#app">
+      <the-top-message-list />
+    </teleport>
   </div>
 </template>
 
@@ -15,8 +18,9 @@
 import TheSidebar from "./components/TheSidebar.vue";
 import TheHeader from "./components/TheHeader.vue";
 import LoaderAnimation from "./components/TheLoader.vue";
+import TheTopMessageList from "./components/TheTopMessageList.vue";
 import { useStore } from "vuex";
-import { ref, computed } from "vue";
+import { computed } from "vue";
 
 export default {
   name: "App",
@@ -24,6 +28,7 @@ export default {
     TheSidebar,
     TheHeader,
     LoaderAnimation,
+    TheTopMessageList,
   },
   setup() {
     /**
@@ -36,13 +41,7 @@ export default {
      * Biến lưu trạng thái loader 
      * Khắc Tiềm - 15.09.2022
      */
-    let isShowLoader = ref(false);
-
-    /**
-     * Lấy ra trạng thái loader 
-     * Khắc Tiềm - 15.09.2022
-     */
-    isShowLoader = computed(() => store.state.config.isShowLoader);
+    const isShowLoader = computed(() => store.state.config.isShowLoader);
     return {
       isShowLoader,
     };

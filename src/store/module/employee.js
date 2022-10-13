@@ -218,6 +218,13 @@ const employees = {
         })
         .catch(function (error) {
           console.log(error.response.data);
+          context.rootState.config.notifications.push({
+            ...{
+              type: "error",
+              message: "Đã xảy ra lỗi mạng."
+            },
+            id: (Math.random().toString(36) + Date.now().toString(36)).substr(2)
+          })
         });
     },
 

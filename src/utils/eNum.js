@@ -5,6 +5,12 @@ export default {
   // phím CTRL
   CTRL: 17, 
 
+  // phím CTRL
+  ALT: 18, 
+
+  // phím CTRL
+  A: 65, 
+
   // phím SHIFT
   SHIFT: 16, 
 
@@ -49,4 +55,25 @@ export default {
 
   // from header hiển thị sửa nhân viên
   EditFormEmployee: "Sửa thông tin nhân viên",
+
+  //Type message
+  TypeSuccess: "success",
+
+  //Type message
+  TypeError: "error",
+
+  // message internet error
+  MessageErrorInternet: "Đã xảy ra lỗi mạng.",
+
+  // message xoá thành công
+  MessageSuccessDelete: "Nhân viên đã vị xoá.",
+
+  // message thêm thành công
+  MessageSuccessAdd: "Thêm nhân viên thành công.",
+
+  // message sửa thành công
+  MessageSuccessEdit: "Sửa nhân viên thành công.",
+
+  //Type message
+  TypeWanning: "wanning",
 };

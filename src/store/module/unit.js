@@ -49,7 +49,7 @@ const unit = {
   mutations: {
     /**
      * Set danh sách unit
-     * @param {Giá trị set} payload 
+     * @param {Giá trị set} payload
      * Khắc Tiềm - 15.09.2022
      */
     setUnitListMutation(state, payload) {
@@ -59,12 +59,26 @@ const unit = {
   actions: {
     /**
      * Set danh sách unit
-     * @param {Giá trị set} payload 
+     * @param {Giá trị set} payload
      * Khắc Tiềm - 15.09.2022
      */
     async getUnitListAction(context, payload) {
-      const data = await getUnitList(payload);
-      context.commit("setUnitListMutation", data);
+      await getUnitList(payload)
+        .then(function (response) {
+          context.commit("setUnitListMutation", response);
+        })
+        .catch(function (error) {
+          console.log(error.response.data);
+          context.rootState.config.notifications.push({
+            ...{
+              type: "error",
+              message: "Đã xảy ra lỗi mạng.",
+            },
+            id: (Math.random().toString(36) + Date.now().toString(36)).substr(
+              2
+            ),
+          });
+        });
     },
   },
 };
