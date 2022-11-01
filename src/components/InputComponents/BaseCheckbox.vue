@@ -13,6 +13,7 @@
       :value="value"
       :checked="checked"
     />
+    <span class="input-focus"></span>
     <div class="label-checkbox"></div>
     <slot></slot>
   </label>
@@ -91,7 +92,6 @@ export default defineComponent({
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 .label-checkbox {
   width: 18px;
@@ -108,6 +108,19 @@ export default defineComponent({
   transition: all ease 0.15s;
   position: relative;
 }
+.input-focus {
+  position: absolute;
+  border-radius: 2px;
+  left: -3px;
+  top: -3px;
+  width: 24px;
+  height: 24px;
+  display: block;
+  border: solid 1px #0076c04b;
+  opacity: 0;
+  visibility: hidden;
+}
+
 .checkbox {
   position: absolute;
   opacity: 0;
@@ -122,6 +135,11 @@ input:checked ~ .label-checkbox::before {
 input:checked ~ .label-checkbox {
   border-color: var(--primary__color);
   transform: rotate(0deg);
+}
+
+.check:active .input-focus{
+  opacity: 1;
+  visibility: visible;
 }
 input {
   z-index: 10;

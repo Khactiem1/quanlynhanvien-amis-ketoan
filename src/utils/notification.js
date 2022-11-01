@@ -1,6 +1,6 @@
 export default {
   //Cảnh báo xoá nhân viên
-  WANNING_DELETE: "Bạn có thực sự muốn xoá Nhân viên ",
+  WANNING_DELETE: "Bạn có thực sự muốn xoá bản ghi ",
 
   // Hỏi lưu khi có dữ liệu thay đổi
   QUESTION_DATA_CHANGE: "Dữ liệu đã bị thay đổi. Bạn có muốn cất không?",
@@ -12,7 +12,7 @@ export default {
   ERROR_CORRECT_DATA: "Kiểm tra nhập đúng ",
 
   // cảnh báo khi thực hiện xoá hàng loạt
-  WANNING_DELETE_ALL: "Bạn có thực sự muốn xoá toàn bộ nhân viên được chọn?",
+  WANNING_DELETE_ALL: "Bạn có thực sự muốn xoá toàn bộ bản ghi được chọn?",
 
   // thông báo khi bị trùng mã
   DUPLICATE_CODE : "đã tồn tại trong hệ thống, vui lòng kiểm tra lại.",
@@ -31,5 +31,21 @@ export default {
     validateDateOfBirth : 'Ngày sinh phải nhỏ hơn ngày hiện tại.',
     validateDayForIdentity : 'Ngày cấp phải nhỏ hơn ngày hiện tại.',
     nameDuplicateCode: 'Mã nhân viên',
+  },
+  unitCalculationNotification:{
+    validateName: 'Đơn vị không được để trống',
+  },
+  depotNotification:{
+    validateCode: 'Mã kho không được để trống',
+    validateName: 'Tên kho không được để trống',
+  },
+  commodityGroupNotification:{
+    validateCode: 'Mã nhóm nguyên vật liệu không được để trống',
+    validateName: 'Tên nhóm nguyên vật liệu không được để trống',
+  },
+  inventoryItemNotification:{
+    validateCode: 'Mã hàng hoá không được để trống.',
+    validateName: 'Tên không được để trống.',
+    validateUnit: 'Đơn vị không có trong danh mục.',
   },
 };

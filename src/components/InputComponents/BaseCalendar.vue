@@ -98,7 +98,7 @@
               :key="index"
               class="calendar-select_item"
             >
-              <span @click="handleSelectMonth(item)">Thg{{ item }}</span>
+              <span @click="handleSelectMonth(item)">Thg {{ item }}</span>
             </div>
           </div>
           <div class="calendar-cancel">
@@ -536,15 +536,15 @@ export default {
 .form-icon {
   position: absolute;
   background: var(--url__icon);
-  background-position: -118px -303px;
+  background-position: -118px -305px;
   width: 36px;
   padding: 4px 10px;
   height: calc(100% - 2px);
   right: 1px;
   top: 1px;
   background-color: #fff;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
 }
 .form-icon:hover {
   background-color: #e0e0e0;

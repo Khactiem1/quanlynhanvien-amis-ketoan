@@ -11,7 +11,6 @@
           v-if="cancelAction"
           ref="elmAgree"
           @click="cancelAction.action"
-          tabindex="1"
           class="btn"
         >
           {{ cancelAction.display }}
@@ -19,19 +18,19 @@
       </div>
       <div class="modal-notification_action-item">
         <button
-          tabindex="2"
           @click="agreeAction.action(messageAction.id)"
           class="btn btn-success"
         >
           {{ agreeAction.display }}
         </button>
+        <button ref="focusLoop" class="focus-loop"></button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 export default {
   props: {
     cancelAction: {
@@ -58,8 +57,25 @@ export default {
     onMounted(() => {
       elmAgree.value.focus();
     });
+
+    /**
+     * Element chứa vị trí tab đến sẽ quay lại tab ban đầu tạo thành vòng lặp
+     * NK Tiềm 28/10/2022
+     */
+     const focusLoop = ref(null); 
+
+    /**
+     * Hàm xử lý lặp khi tab focus
+     * NK Tiềm 28/10/2022
+     */
+     const handleLoopFocus = function () {
+      elmAgree.value.focus();
+    };
+    onMounted(() => focusLoop.value.addEventListener("focus", handleLoopFocus));
+    onUnmounted(() => window.removeEventListener("focus", handleLoopFocus));
     return {
       elmAgree,
+      focusLoop,
     };
   },
 };

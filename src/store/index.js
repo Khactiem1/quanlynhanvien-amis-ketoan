@@ -1,13 +1,19 @@
 import { createStore } from 'vuex';
 import config from './module/config';
 import employee from './module/employee';
-import unit from './module/unit';
+import unitCalculation from './module/unitCalculation';
+import depot from './module/Depot';
+import commodityGroup from './module/commodityGroup';
+import inventoryItem from './module/inventoryItem';
 
 const store = createStore({
   modules: {
     config,
     employee,
-    unit,
+    unitCalculation,
+    depot,
+    commodityGroup,
+    inventoryItem,
   },
 });
 

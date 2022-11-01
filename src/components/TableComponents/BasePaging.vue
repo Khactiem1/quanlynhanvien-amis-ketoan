@@ -14,7 +14,7 @@
     </div>
     <div class="show-paging_item" 
       @click="handleNextPage()"
-      :class="{ disabled : currentPage === Math.ceil(totalCount / countRecordPageEmployee) }"
+      :class="{ disabled : currentPage === Math.ceil(totalCount / countRecordPageRecord) }"
     >
       Sau
     </div>
@@ -24,7 +24,7 @@
 <script>
 import { toRefs, ref, computed } from "vue";
 export default {
-  props: ["modelValue", "totalCount", "countRecordPageEmployee"],
+  props: ["modelValue", "totalCount", "countRecordPageRecord"],
   emits: ["update:modelValue"],
   setup(props, context) {
     /**
@@ -43,7 +43,7 @@ export default {
      * props truyền vào là lượng muốn lấy và số tổng danh sách
      * NK Tiềm 7/10/2022
      */
-    const { countRecordPageEmployee, totalCount } = toRefs(props);
+    const { countRecordPageRecord, totalCount } = toRefs(props);
 
     /**
      * Danh sách mảng hiển thị lên giao diện
@@ -51,13 +51,18 @@ export default {
      */
     const displayPaging = computed(()=> {
       const arr = [];
-      for(let i = 1; i <= Math.ceil(totalCount.value / countRecordPageEmployee.value); i++){
-        if(currentPage.value === Math.ceil(totalCount.value / countRecordPageEmployee.value) - 1 || currentPage.value === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
-          if(i === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+      for(let i = 1; i <= Math.ceil(totalCount.value / countRecordPageRecord.value); i++){
+        if(currentPage.value === Math.ceil(totalCount.value / countRecordPageRecord.value) - 1 || currentPage.value === Math.ceil(totalCount.value / countRecordPageRecord.value)){
+          if(i === Math.ceil(totalCount.value / countRecordPageRecord.value)){
             arr.push(i);
           }
           else if(i === 3){
-            arr.push("...");
+            if(Math.ceil(totalCount.value / countRecordPageRecord.value) === 4){
+              arr.push(i);
+            }
+            else{
+              arr.push("...");
+            }
           }
           else if(i < 4){
             arr.push(i);
@@ -67,7 +72,7 @@ export default {
           }
         }
         else{
-          if(i === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+          if(i === Math.ceil(totalCount.value / countRecordPageRecord.value)){
             arr.push(i);
           }
           else if(i === 3){
@@ -91,7 +96,7 @@ export default {
      */
     function handleChangePage(page){
       if(page === "..."){
-        if(currentPage.value === Math.ceil(totalCount.value / countRecordPageEmployee.value) - 1 || currentPage.value === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+        if(currentPage.value === Math.ceil(totalCount.value / countRecordPageRecord.value) - 1 || currentPage.value === Math.ceil(totalCount.value / countRecordPageRecord.value)){
           handlePrevPage();
         }
         else{
@@ -100,16 +105,16 @@ export default {
       }
       else{
         currentPage.value = page;
-        if(page === Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+        if(page === Math.ceil(totalCount.value / countRecordPageRecord.value)){
           pageChangeCLick.value = currentPage.value - 1;
         }
-        else if(page === Math.ceil(totalCount.value / countRecordPageEmployee.value) - 1){
+        else if(page === Math.ceil(totalCount.value / countRecordPageRecord.value) - 1){
           pageChangeCLick.value = currentPage.value;
         }
         else{
           pageChangeCLick.value = 3;
         }
-        context.emit("update:modelValue", (countRecordPageEmployee.value ) * (page - 1));
+        context.emit("update:modelValue", (countRecordPageRecord.value ) * (page - 1));
       }
     }
 
@@ -119,11 +124,11 @@ export default {
      */
     function handlePrevPage(){
       if(currentPage.value > 1){
-        if(currentPage.value > 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageEmployee.value)){
+        if(currentPage.value > 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value)){
           pageChangeCLick.value = currentPage.value - 1;
         }
         currentPage.value -= 1;
-        context.emit("update:modelValue", (countRecordPageEmployee.value ) * (currentPage.value - 1));
+        context.emit("update:modelValue", (countRecordPageRecord.value ) * (currentPage.value - 1));
       }
     }
     
@@ -132,12 +137,12 @@ export default {
      * NK Tiềm 7/10/2022
      */
     function handleNextPage(){
-      if(currentPage.value < Math.ceil(totalCount.value / countRecordPageEmployee.value)){
-        if(currentPage.value >= 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageEmployee.value) - 1){
+      if(currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value)){
+        if(currentPage.value >= 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value) - 1){
           pageChangeCLick.value = currentPage.value + 1;
         }
         currentPage.value += 1;
-        context.emit("update:modelValue", (countRecordPageEmployee.value ) * (currentPage.value - 1));
+        context.emit("update:modelValue", (countRecordPageRecord.value ) * (currentPage.value - 1));
       }
     }
     return {

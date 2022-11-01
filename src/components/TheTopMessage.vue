@@ -7,7 +7,7 @@
     <div class="top-message_icon-content" :class="typeClass">
       <div class="top-message_icon"></div>
       <div class="top-message_content">
-        {{ notification.message }} 
+        {{ notificationScreen }} 
       </div>
     </div>
     <div @click="handleCloseNotification" class="top-message_close">
@@ -56,6 +56,29 @@ export default {
     });
 
     /**
+     * Thông báo binding lên
+     * Khắc Tiềm - 15.09.2022
+     */
+    const notificationScreen = computed(()=>{
+      if(Array.isArray(notification.value.message)){
+        if(notification.value.message.length === 1){
+          return notification.value.message[0];
+        }
+        else{
+          let displayMessage = '';
+          displayMessage = notification.value.message.reduce((acc, cur) => {
+            // Nối lại thành chuỗi HTML
+            return (acc += cur ? "- " + cur + "<br>" : "");
+          }, "");
+          return displayMessage;
+        }
+      }
+      else{
+        return notification.value.message;
+      }
+    });
+
+    /**
      * khi mounted thì sẽ kích hoạt hiệu ứng
      * Khắc Tiềm - 15.09.2022
      */
@@ -95,6 +118,7 @@ export default {
       timeout,
       typeClass,
       animation,
+      notificationScreen,
       handleCloseNotification,
     }
   },
@@ -151,7 +175,7 @@ export default {
   color: var(--primary__color);
   white-space: nowrap;
   font-family: "notosans-semibold";
-  top: 46%;
+  top: 50%;
   transform: translateY(-50%);
   left: 115%;
 }
@@ -165,7 +189,7 @@ export default {
   color: #DE3618;
   white-space: nowrap;
   font-family: "notosans-semibold";
-  top: 46%;
+  top: 50%;
   transform: translateY(-50%);
   left: 115%;
 }
@@ -179,7 +203,7 @@ export default {
   color: #F49342;
   white-space: nowrap;
   font-family: "notosans-semibold";
-  top: 46%;
+  top: 50%;
   transform: translateY(-50%);
   left: 115%;
 }

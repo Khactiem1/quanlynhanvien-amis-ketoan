@@ -11,11 +11,12 @@
   --border-icon__color: #babec5;
   --border-icon__color-hover: #6b6c72;
   --text__color: #111111;
-  --height__header: 56px;
-  --primary__button-height: 36px;
-  --input__height: 36px;
+  --height__header: 48px;
+  --primary__button-height: 34px;
+  --input__height: 32px;
   --border__input: #babec5;
   --url__icon: url("../logo/Sprites.64af8f61.svg");
+  --url__icon2: url("../logo/Sprites.d78db031.svg");
   --url__loader: url("../logo/loading.svg");
 }
 * {
@@ -86,18 +87,23 @@ a {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
 }
+.focus-loop {
+  opacity: 0;
+}
 .modal-body {
   position: relative;
   z-index: 1;
   margin: 0 10px;
   background-color: var(--while__color);
-  max-width: 900px;
-  width: 900px;
-  left: calc(50vw - 450px);
   top: 50vh;
   transform: translateY(-50%);
   box-shadow: 0 5px 20px 0 rgb(0, 0, 0, 10%);
   min-height: 100px;
   transition: all ease 0.15s;
-  border-radius: 4px;
+}
+.focus-loop{
+  width: 0;
+  height: 0;
+  display: block;
+  border: none;
 }

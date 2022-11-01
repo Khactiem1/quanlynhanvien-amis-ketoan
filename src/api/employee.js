@@ -1,72 +1,83 @@
 import axiosAPI from ".";
 
 /**
- * API lấy tất cả danh sách nhân viên tìm kiếm và phân trang
- * @returns Danh sách nhân viên và tổng số lượng
+ * API lấy tất cả danh sách bản ghi tìm kiếm và phân trang
+ * @returns Danh sách bản ghi và tổng số lượng
  * Khắc Tiềm - 15.09.2022
  */
-export const getEmployeeList = (filter) => {
+const getRecordList = (filter) => {
   return axiosAPI.get(`/Employees/fitter?offset=${filter.offset}&limit=${filter.limit}&keyword=${filter.keyword}`);
 };
 
 /**
- * API thêm nhân viên
- * @returns Guid nhân viên
+ * API thêm bản ghi
+ * @returns Guid bản ghi
  * Khắc Tiềm - 15.09.2022
  */
-export const createEmployeeApi = (employee) => {
+const createRecordApi = (employee) => {
   return axiosAPI.post(`/Employees`, employee)
 };
 
 /**
- * API lấy chi tiết nhân viên theo id
- * @returns Chi tiết nhân viên
+ * API lấy chi tiết bản ghi theo id
+ * @returns Chi tiết bản ghi
  * Khắc Tiềm - 15.09.2022
  */
-export const getEmployeeApi = (id) => {
+const getRecordApi = (id) => {
   return axiosAPI.get(`/Employees/${id}`);
 };
 
 /**
- * API Sửa nhân viên
- * @returns Guid nhân viên
+ * API Sửa bản ghi
+ * @returns Guid bản ghi
  * Khắc Tiềm - 15.09.2022
  */
-export const editEmployeeApi = (employee) => {
+const editRecordApi = (employee) => {
   return axiosAPI.put(`/Employees/${employee.employeeID}`, employee);
 };
 
 /**
- * API xoá nhân viên
- * @returns Guid nhân viên
+ * API xoá bản ghi
+ * @returns Guid bản ghi
  * Khắc Tiềm - 15.09.2022
  */
-export const deleteEmployeeApi = (id) => {
+const deleteRecordApi = (id) => {
   return axiosAPI.delete(`/Employees/${id}`)
 };
 
 /**
- * API lấy mã nhân viên mới
- * @returns Mã nhân viên
+ * API lấy mã bản ghi mới
+ * @returns Mã bản ghi
  * Khắc Tiềm - 15.09.2022
  */
-export const nextValue = () => {
+const nextValue = () => {
   return axiosAPI.get(`/Employees/next_value`);
 };
 
 /**
- * API xoá nhiều nhân viên
+ * API xoá nhiều bản ghi
  * Khắc Tiềm - 15.09.2022
  */
-export const deleteMultipleApi = (listID) => {
+const deleteMultipleApi = (listID) => {
   return axiosAPI.post(`/Employees/bulk_delete`, listID);
 };
 
 /**
  * API export data 
- * @returns file nhân viên excel
+ * @returns file bản ghi excel
  * Khắc Tiềm - 15.09.2022
  */
-export const exportDataApi = () => {
+const exportDataApi = () => {
   return axiosAPI.get(`/Employees/export_data`);
 };
+
+export default {
+  exportDataApi,
+  deleteMultipleApi,
+  nextValue,
+  deleteRecordApi,
+  editRecordApi,
+  getRecordList,
+  createRecordApi,
+  getRecordApi,
+}

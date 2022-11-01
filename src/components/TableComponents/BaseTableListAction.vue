@@ -21,13 +21,14 @@
         );
       "
     >
-      {{ actionItem }}
+      {{ actionItem === actionList.STOP_USING && row[actionTable.fieldActive] === false ? actionList.USING : actionItem}} 
     </div>
   </div>
 </template>
 
 <script>
 import { onUnmounted, ref } from "vue";
+import actionList from "../../utils/actionTable";
 export default {
   props: {
     actionTable: {
@@ -82,6 +83,7 @@ export default {
 
     return {
       template,
+      actionList,
     };
   },
 };
@@ -96,6 +98,7 @@ export default {
   top: 0;
   right: 5px;
   position: absolute;
+  min-width: 115px;
   z-index: 5;
   transition: all ease 0.15s;
 }

@@ -30,6 +30,16 @@
           Tiền mặt
         </div>
       </router-link>
+      <router-link to="/warehouse" class="menu-sidebar_item warehouse-page">
+        <div
+          style="background-position: -291px -1628px;"
+          class="menu-sidebar_icon"
+        ></div>
+        <div v-if="showSidebar" class="menu-sidebar_text">Kho</div>
+        <div v-if="!showSidebar" class="menu-sidebar_item-info">
+          Kho
+        </div>
+      </router-link>
       <a class="menu-sidebar_item">
         <div
           style="background-position: -117px -1628px"
@@ -70,16 +80,6 @@
           Quản lý hoá đơn
         </div>
       </router-link>
-      <a class="menu-sidebar_item dashboard-page">
-        <div
-          style="background-position: -30px -1628px"
-          class="menu-sidebar_icon"
-        ></div>
-        <div v-if="showSidebar" class="menu-sidebar_text">Kho</div>
-        <div v-if="!showSidebar" class="menu-sidebar_item-info">
-          Kho
-        </div>
-      </a>
       <a class="menu-sidebar_item nhanvien-page">
         <div
           style="background-position: -73px -1628px"
@@ -178,11 +178,6 @@ export default {
   height: 100vh;
   top: 0;
   left: 0;
-  width: 200px;
-}
-
-.sidebar.small{
-  width: 73px;
 }
 
 /* Phần logo sidebar */
@@ -217,17 +212,15 @@ export default {
 
 
 /* Phần menu */
-.menu-sidebar {
-  padding: 20px 12px;
+.menu-sidebar{
+  padding-top: 14px;
 }
 .menu-sidebar_item {
   position: relative;
   display: flex;
   align-items: center;
   color: var(--while__color);
-  border-radius: 4px;
-  height: 44px;
-  margin-bottom: 4px;
+  height: 42px;
   padding: 0 12px;
 }
 .menu-sidebar_item:hover .menu-sidebar_item-info{
@@ -243,7 +236,7 @@ export default {
   padding: 11px 16px;
   border-radius: 4px;
   white-space: nowrap;
-  left: 68px;
+  left: 60px;
   top: 2;
   z-index: 10;
 }
@@ -273,8 +266,6 @@ export default {
   top: 0;
   width: 6px;
   height: 100%;
-  border-top-left-radius: 4px;
-  border-bottom-left-radius: 4px;
 }
 .menu-sidebar_item.active::before {
   background-color: var(--primary__color);
@@ -286,7 +277,7 @@ export default {
 }
 .menu-sidebar_text {
   line-height: 42px;
-  margin-left: 12px;
+  margin-left: 8px;
 }
 /* Khi được active thì sẽ dùng icon khác màu trắng */
 .nhanvien-page.active .menu-sidebar_icon {
@@ -294,6 +285,9 @@ export default {
 }
 .dashboard-page.active .menu-sidebar_icon {
   background-position: -30px -1585px !important;
+}
+.warehouse-page.active .menu-sidebar_icon {
+  background-position: -291px -1585px !important;
 }
 .menu-sidebar_item.active .menu-sidebar_text {
   font-family: "notosans-bold";

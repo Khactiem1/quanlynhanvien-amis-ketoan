@@ -18,6 +18,8 @@ export default {};
   width: 100%;
   padding-bottom: 1rem;
   left: 45%;
+  display: flex;
+  flex-direction: column;
 }
 .table-empty_icon {
   width: 132px;

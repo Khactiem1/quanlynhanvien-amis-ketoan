@@ -2,11 +2,11 @@
   <table class="table">
     <thead class="thead-light">
       <tr>
-        <th>
+        <th v-if="checkShowActionSeries">
           <!-- :checkbox="checkAllRecord" -->
           <input-checkbox
-            :checked="checkAllRecord"
-            @custom-handle-click-checkbox="handleClickCheckbox(true)"
+            :checked="isShowCheckAllRecord"
+            @custom-handle-click-checkbox="handleClickCheckbox(true, listID)"
           ></input-checkbox>
         </th>
         <th
@@ -37,14 +37,14 @@
       <!-- Vòng lặp các user -->
       <tr
         v-for="(row, index) in tableList"
-        :class="{ active: row['Check'] }"
+        :class="{ active: checkShowActionSeries ? checkShowActionSeries.includes(row[actionTable.fieldId]) : false, parent: row.bindHTMLChild === '' && listTree}"
         :key="index"
       >
-        <td>
+        <td v-if="checkShowActionSeries" class="column-sticky">
           <!-- :checkbox="row.Check" -->
           <input-checkbox
-            :checked="row.Check"
-            @custom-handle-click-checkbox="handleClickCheckbox(index)"
+            :checked="checkShowActionSeries ? checkShowActionSeries.includes(row[actionTable.fieldId]) : false"
+            @custom-handle-click-checkbox="handleClickCheckbox(row[actionTable.fieldId])"
           ></input-checkbox>
         </td>
         <!-- Vòng lặp các columns sao cho đúng với các vị trí của header -->
@@ -60,6 +60,7 @@
           "
         >
           <!-- khi render các trường kiểm tra xem có yêu cầu cần thêm dấu phẩy thì sẽ thêm  -->
+          <span v-if="row[actionTable.fieldCode] === row[col.field] && row.bindHTMLChild" v-html="row.bindHTMLChild + row.bindHTMLChild"></span>
           {{
             col.fractionSize === true
               ? Comma(row[col.field])
@@ -67,6 +68,8 @@
               ? formatDateDDMMYYYY(row[col.field])
               : col.isGender === true
               ? formatGender(row[col.field])
+              : col.isActive === true
+              ? formatIsActive(row[col.field])
               : row[col.field]
           }}
         </td>
@@ -119,7 +122,7 @@ import TableEmpty from "../TableComponents/BaseTableEmpty.vue";
 import TableListAction from "../TableComponents/BaseTableListAction.vue";
 import eNum from "../../utils/eNum";
 import utilEnum from "../../utils/index";
-import { ref } from "vue";
+import { ref, toRefs, computed } from "vue";
 export default {
   components: {
     InputCheckbox,
@@ -134,9 +137,6 @@ export default {
     columns: {
       type: Array,
     },
-    checkAllRecord: {
-      type: Boolean,
-    },
     actionTable: {
       type: Object,
     },
@@ -149,8 +149,46 @@ export default {
     isShowLoaderTable: {
       type: Boolean,
     },
+    checkShowActionSeries: {
+      type: Array,
+    },
+    listTree: {},
   },
-  setup() {
+  setup(props) {
+    /**
+     * Bóc tách props ra từ props chuyển vào
+     * Khắc Tiềm - 15.09.2022
+     */
+    const { tableList, checkShowActionSeries, actionTable } = toRefs(props);
+
+    /**
+     * Danh sách chứa các id
+     * Khắc Tiềm - 15.09.2022
+     */
+    const listID = computed(()=> {
+      return tableList.value.reduce((acc, cur)=> {
+        return [...acc, cur[actionTable.value.fieldId]];
+      },[]); 
+    });
+    /**
+     * Ẩn hiện check tất cả
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowCheckAllRecord = computed(()=> {
+      if(checkShowActionSeries.value){
+        let count = 0;
+        checkShowActionSeries.value.forEach((item) => {
+          if(listID.value.includes(item)){
+            count++;
+          }
+        })
+        return count === tableList.value.length && count > 0;
+      }
+      else{
+        return false;
+      }
+    }); 
+
     /**
      * Lưu đối tượng được click các hành động như xoá , nhân bản, ...
      * Khắc Tiềm - 15.09.2022
@@ -181,17 +219,20 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function Comma(number) {
-      number = "" + number;
-      if (number.length > 3) {
-        var mod = number.length % 3;
-        var output = mod > 0 ? number.substring(0, mod) : "";
-        for (let i = 0; i < Math.floor(number.length / 3); i++) {
-          if (mod == 0 && i == 0)
-            output += number.substring(mod + 3 * i, mod + 3 * i + 3);
-          else output += "," + number.substring(mod + 3 * i, mod + 3 * i + 3);
-        }
-        return output;
-      } else return number;
+      if(number){
+        number = "" + number;
+        if (number.length > 3) {
+          var mod = number.length % 3;
+          var output = mod > 0 ? number.substring(0, mod) : "";
+          for (let i = 0; i < Math.floor(number.length / 3); i++) {
+            if (mod == 0 && i == 0)
+              output += number.substring(mod + 3 * i, mod + 3 * i + 3);
+            else output += "." + number.substring(mod + 3 * i, mod + 3 * i + 3);
+          }
+          return output;
+        } else return number;
+      }
+      else return '';
     }
 
     /**
@@ -206,6 +247,15 @@ export default {
         return "Nữ";
       } else if (OTHER == gender) {
         return "Khác";
+      }
+    }
+
+    function formatIsActive(isActive){
+      if(isActive === true){
+        return "Đang sử dụng";
+      }
+      else{
+        return "Ngừng sử dụng";
       }
     }
 
@@ -245,8 +295,10 @@ export default {
           if (item.className.includes("action-colum_table")) {
             const rect = item.getBoundingClientRect();
             positionAction.value.top = rect.top + window.scrollY + 32;
-            positionAction.value.right =
-              rect.right + window.scrollX - rect.left + window.scrollX - 45;
+            positionAction.value.right = rect.right + window.scrollX - rect.left + window.scrollX - 45;
+            if(window.innerHeight - rect.bottom < ((actionTable.value.actionList.length * 28) + 12)){
+              positionAction.value.top = rect.top + window.scrollY + 32 - ((actionTable.value.actionList.length * 28) + 40);
+            }
           }
         } catch {
           return;
@@ -258,7 +310,10 @@ export default {
       formatDateDDMMYYYY,
       formatGender,
       positionAction,
+      isShowCheckAllRecord,
+      listID,
       Comma,
+      formatIsActive,
       handleShowAction,
       handleCloseAction,
     };
@@ -275,15 +330,14 @@ table {
 .table .thead-light th {
   border-right: 1px solid #c7c7c7;
   border-bottom: 1px solid #c7c7c7;
-  min-height: 48px;
+  min-height: 34px;
   padding: 0 10px;
-  height: 48px;
+  height: 34px;
   position: sticky;
   top: 66px;
   background-color: #e5e8ec;
   text-transform: uppercase;
   vertical-align: middle;
-  white-space: nowrap;
 }
 .table .thead-light th:last-child {
   border-right: none;
@@ -305,8 +359,8 @@ tbody tr.active,
 .table tbody th,
 .table tbody td {
   padding: 0 10px;
-  min-height: 48px;
-  height: 48px;
+  min-height: 44px;
+  height: 44px;
   border-right: 1px dotted #c7c7c7;
   border-bottom: 1px solid #c7c7c7;
 }
@@ -318,7 +372,7 @@ tbody tr.active,
 .table .thead-light th:last-child,
 .table tbody th:last-child,
 .table tbody td:last-child {
-  right: 16px !important;
+  right: 15px !important;
 }
 .table .thead-light th:last-child::before,
 .table tbody th:last-child::before,
@@ -357,9 +411,10 @@ tbody tr.active,
   position: sticky;
 }
 .table tbody th:last-child,
-.table tbody th:first-child,
-.table tbody td:last-child,
-.table tbody td:first-child {
+.table tbody td:last-child{
+  background-color: aliceblue;
+}
+.column-sticky{
   background-color: aliceblue;
 }
 .table tbody td:last-child {
@@ -367,9 +422,8 @@ tbody tr.active,
 }
 .table .thead-light th:first-child,
 .table tbody th:first-child {
-  width: 48;
-  min-width: 48px;
-  max-width: 48px;
+  min-width: 40px;
+  max-width: 40px;
 }
 /* Nút bấm action */
 .action-colum_table {

@@ -11,6 +11,9 @@ export default {
   // Hành động nhân bản
   REPLICATION: 'Nhân bản', 
 
-  // Hành động ngừng sử dụng
+  // Hành động ngừng 
   STOP_USING: 'Ngừng sử dụng', 
+
+  //sử dụng
+  USING: 'Sử dụng',
 };

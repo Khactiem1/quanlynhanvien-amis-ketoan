@@ -7,9 +7,27 @@
     </div>
     <teleport to="#app">
       <loader-animation v-show="isShowLoader"></loader-animation>
-    </teleport>
-    <teleport to="#app">
       <the-top-message-list />
+      <notification-modal v-if="isShowNotificationWanning">
+        <notification-wanning
+          :cancelAction="configNotificationWanning.cancelAction"
+          :agreeAction="configNotificationWanning.agreeAction"
+          :messageAction="configNotificationWanning.messageAction"
+        ></notification-wanning>
+      </notification-modal>
+      <notification-modal v-if="isShowNotificationError">
+        <notification-error
+          :agreeAction="configNotificationError.agreeAction"
+          :messageAction="configNotificationError.messageAction"
+        ></notification-error>
+      </notification-modal>
+      <notification-modal v-if="isShowNotificationQuestion">
+          <notification-question
+            :cancelAction="configNotificationQuestion.cancelAction"
+            :agreeAction="configNotificationQuestion.agreeAction"
+            :messageAction="configNotificationQuestion.messageAction"
+          ></notification-question>
+        </notification-modal>
     </teleport>
   </div>
 </template>
@@ -21,6 +39,10 @@ import LoaderAnimation from "./components/TheLoader.vue";
 import TheTopMessageList from "./components/TheTopMessageList.vue";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import NotificationModal from './components/NotificationComponent/NotificationModal.vue';
+import NotificationQuestion from './components/NotificationComponent/NotificationQuestion.vue';
+import NotificationError from './components/NotificationComponent/NotificationError.vue';
+import NotificationWanning from './components/NotificationComponent/NotificationWanning.vue';
 
 export default {
   name: "App",
@@ -29,6 +51,10 @@ export default {
     TheHeader,
     LoaderAnimation,
     TheTopMessageList,
+    NotificationModal,
+    NotificationQuestion,
+    NotificationError,
+    NotificationWanning,
   },
   setup() {
     /**
@@ -42,8 +68,38 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     const isShowLoader = computed(() => store.state.config.isShowLoader);
+
+    /**
+     * Biến lưu trạng thái thông báo 
+     * Khắc Tiềm - 15.09.2022
+     */
+     const isShowNotificationWanning = computed(() => store.state.config.isShowNotificationWanning);
+
+     const configNotificationWanning = computed(() => store.state.config.configNotificationWanning);
+
+     /**
+     * Biến lưu trạng thái thông báo  
+     * Khắc Tiềm - 15.09.2022
+     */
+    const isShowNotificationError = computed(() => store.state.config.isShowNotificationError);
+
+    const configNotificationError = computed(() => store.state.config.configNotificationError);
+
+    /**
+     * Biến lưu trạng thái thông báo  
+     * Khắc Tiềm - 15.09.2022
+     */
+     const isShowNotificationQuestion = computed(() => store.state.config.isShowNotificationQuestion);
+
+     const configNotificationQuestion = computed(() => store.state.config.configNotificationQuestion);
     return {
       isShowLoader,
+      isShowNotificationWanning,
+      configNotificationWanning,
+      isShowNotificationError,
+      configNotificationError,
+      isShowNotificationQuestion,
+      configNotificationQuestion,
     };
   },
 };
@@ -77,12 +133,12 @@ export default {
   color: var(--text__color);
   text-align: left;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 13px;
   min-width: 1024px;
   min-height: 768px;
 }
 h1{
-  font-size: 20px;
+  font-size: 24px;
   font-family: 'notosans-bold';
 }
 .content {

@@ -37,9 +37,6 @@ table {
   border-collapse: collapse;
   width: 100%;
 }
-.table tbody td:last-child {
-  border-right: none;
-}
 tbody td {
   padding: 0 10px;
   min-height: 44px;
@@ -61,7 +58,7 @@ tbody td {
 .table .thead-light th:last-child,
 .table tbody th:last-child,
 .table tbody td:last-child {
-  right: 16px !important;
+  right: 15px !important;
 }
 .table .thead-light th:first-child,
 .table tbody th:first-child,

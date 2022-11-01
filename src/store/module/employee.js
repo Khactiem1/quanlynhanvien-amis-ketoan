@@ -1,4 +1,3 @@
-import { getEmployeeList } from "../../api/employee";
 const employees = {
   namespaced: true,
   state: () => {
@@ -126,7 +125,13 @@ const employees = {
        * Các Danh sách
        * Khắc Tiềm - 15.09.2022
        */
-      employeeList: [],
+       recordList: [],
+
+      /**
+       * Danh sách các record được check
+       * Khắc Tiềm - 15.09.2022
+       */
+       recordCheck: [],
 
       /**
        * Tổng số lượng bản ghi
@@ -160,8 +165,8 @@ const employees = {
      * @param {danh sách} payload 
      * Khắc Tiềm - 15.09.2022
      */
-    setEmployeeListMutation(state, payload) {
-      state.employeeList = [...payload.recordList];
+    setRecordListMutation(state, payload) {
+      state.recordList = [...payload.recordList];
       state.totalCount = payload.totalCount;
     },
 
@@ -170,27 +175,48 @@ const employees = {
      * @param {index các nhân viên được toggle} payload 
      * Khắc Tiềm - 15.09.2022
      */
-    setCheckboxEmployeeMutation(state, payload) {
-      state.employeeList[payload].Check = !state.employeeList[payload].Check;
+    setCheckboxRecordMutation(state, payload) {
+      if(state.recordCheck.includes(payload)){
+        state.recordCheck = state.recordCheck.filter(item => item !== payload);
+      }
+      else{
+        state.recordCheck.push(payload);
+      }
     },
 
     /**
      * Xét toggle tất cả checkbox được check
      * Khắc Tiềm - 15.09.2022
      */
-    setAllCheckboxEmployeeMutation(state) {
-      if (
-        state.employeeList.filter((value) => value.Check).length ===
-        state.employeeList.length
-      ) {
-        state.employeeList = state.employeeList.reduce((acc, cur) => {
-          return [...acc, { ...cur, Check: false }];
-        }, []);
-      } else {
-        state.employeeList = state.employeeList.reduce((acc, cur) => {
-          return [...acc, { ...cur, Check: true }];
-        }, []);
+    setAllCheckboxRecordMutation(state,payload) {
+      let countCheck = 0;
+      payload.forEach((item) => {
+        if(state.recordCheck.includes(item)){
+          countCheck++;
+        }
+      })
+      if(countCheck == state.filter.limit){
+        payload.forEach((item) => {
+          if(state.recordCheck.includes(item)){
+            state.recordCheck.splice(state.recordCheck.indexOf(item), 1);
+          }
+        })
       }
+      else{
+        payload.forEach((item) => {
+          if(!state.recordCheck.includes(item)){
+            state.recordCheck.push(item);
+          }
+        })
+      }
+    },
+
+    /**
+     * Xét xoá tất cả checkbox được check
+     * Khắc Tiềm - 15.09.2022
+     */
+    setEmptyCheckBoxRecordMutation(state){
+      state.recordCheck.length = 0;
     },
 
     /**
@@ -201,31 +227,67 @@ const employees = {
     setFilterMutation(state, payload) {
       state.filter = { ...payload };
     },
+
+    /**
+     * Xét xoá checkbox phần tử được check
+     * @param {index các nhân viên được toggle} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
+     setCheckboxUnCheckRecordMutation(state, payload) {
+      if(state.recordCheck.includes(payload)){
+        state.recordCheck = state.recordCheck.filter(item => item !== payload);
+      }
+    },
+    
+    /**
+     * Thêm record
+     * Khắc Tiềm - 15.09.2022
+     */
+    addRecordMutation(state, payload) {
+      state.recordList = [payload, ...state.recordList];
+      state.totalCount++;
+    },
+
+    /**
+     * Sửa record
+     * Khắc Tiềm - 15.09.2022
+     */
+    editRecordMutation(state, payload) {
+      state.recordList = [payload, ...state.recordList.filter(item => item[state.actionTable.fieldId] !== payload[state.actionTable.fieldId])]
+    },
   },
   actions: {
+    /**
+     * Thêm record
+     * Khắc Tiềm - 15.09.2022
+     */
+    addRecordAction(context, payload){
+      context.commit("addRecordMutation", payload);
+    },
+
+    /**
+     * Sửa record
+     * Khắc Tiềm - 15.09.2022
+     */
+    editRecordAction(context, payload){
+      context.commit("editRecordMutation", payload);
+    },
+
     /**
      * Lấy ra dánh sách nhân viên
      * @param {Giá trị set filter} payload 
      * Khắc Tiềm - 15.09.2022
      */
-    async getEmployeeListAction(context, payload) {
-      if (payload) {
-        await context.commit("setFilterMutation", payload);
-      }
-      await getEmployeeList(context.state.filter)
-        .then(function (response) {
-          context.commit("setEmployeeListMutation", response);
-        })
-        .catch(function (error) {
-          console.log(error.response.data);
-          context.rootState.config.notifications.push({
-            ...{
-              type: "error",
-              message: "Đã xảy ra lỗi mạng."
-            },
-            id: (Math.random().toString(36) + Date.now().toString(36)).substr(2)
-          })
-        });
+    async getRecordListAction(context, payload) {
+      context.commit("setRecordListMutation", payload);
+    },
+
+    /**
+     * Set các giá trị tìm kiếm và phân trang
+     * Khắc Tiềm - 15.09.2022
+     */
+    setFilterAction(context, payload){
+      context.commit("setFilterMutation", payload);
     },
 
     /**
@@ -233,16 +295,25 @@ const employees = {
      * @param {index các nhân viên được toggle} payload 
      * Khắc Tiềm - 15.09.2022
      */
-    setCheckboxEmployeeAction(context, payload) {
-      context.commit("setCheckboxEmployeeMutation", payload);
+    setCheckboxRecordAction(context, payload) {
+      context.commit("setCheckboxRecordMutation", payload);
+    },
+
+    /**
+     * Xét xoá checkbox phần tử được check
+     * @param {index các nhân viên được toggle} payload 
+     * Khắc Tiềm - 15.09.2022
+     */
+    setCheckboxUnCheckRecordAction(context, payload) {
+      context.commit("setCheckboxUnCheckRecordMutation", payload);
     },
 
     /**
      * Xét toggle tất cả checkbox được check
      * Khắc Tiềm - 15.09.2022
      */
-    setAllCheckboxEmployeeAction(context) {
-      context.commit("setAllCheckboxEmployeeMutation");
+    setAllCheckboxRecordAction(context, payload) {
+      context.commit("setAllCheckboxRecordMutation", payload);
     },
 
     /**
@@ -253,6 +324,14 @@ const employees = {
     setToggleShowColumnTableAction(context, payload) {
       context.commit("setToggleShowColumnTableMutation", payload);
     },
+    
+    /**
+     * Xét xoá tất cả checkbox được check
+     * Khắc Tiềm - 15.09.2022
+     */
+     setEmptyCheckBoxRecordAction(context){
+      context.commit("setEmptyCheckBoxRecordMutation");
+    }
   },
 };
 

@@ -3,13 +3,13 @@
  * @returns Số lượng bản ghi lưu trong local trước đó
  * Khắc Tiềm - 15.09.2022
  */
-const getCountRecordPageEmployee = () => {
-  const countRecordPageEmployee = localStorage.getItem("countRecordPageEmployee");
-  if (countRecordPageEmployee) {
-    return countRecordPageEmployee;
+const getCountRecordPageRecord = () => {
+  const countRecordPageRecord = localStorage.getItem("countRecordPageRecord");
+  if (countRecordPageRecord) {
+    return countRecordPageRecord;
   } else {
     // nếu chưa từng lưu số lượng bản ghi thì 20 là số lượng bản ghi được lấy ra mặc định
-    localStorage.setItem("countRecordPageEmployee", 20);
+    localStorage.setItem("countRecordPageRecord", 20);
     return 20;
   }
 };
@@ -19,8 +19,8 @@ const getCountRecordPageEmployee = () => {
  * @param {Số lượng bản ghi} record 
  * Khắc Tiềm - 15.09.2022
  */
-const setCountRecordPageEmployee = (record) => {
-  localStorage.setItem("countRecordPageEmployee", record);
+const setCountRecordPageRecord = (record) => {
+  localStorage.setItem("countRecordPageRecord", record);
 };
 
 /**
@@ -68,9 +68,40 @@ const formatDateYYYYMMDD = (date) => {
     return [d.getFullYear(), getMonth, getDate].join("-");
   }
 };
+
+const listToTree = (array, idRecord) => {
+  array = array.sort(function() {
+    return -1;
+  });
+  const data = [];
+  function recursiveData(id,text = ''){
+    for (let i = array.length - 1; i >= 0; i--){
+      if(array[i].parentID == id){
+        array[i].bindHTMLChild = text ;
+        data.push(array[i]);
+        recursiveData(array[i][idRecord], text + '&ensp;');
+      }
+    }
+  }
+  recursiveData('0');
+  array.forEach(item => {
+    let check = false;
+    data.forEach(i => {
+      if(item[idRecord] === i[idRecord]){
+        check = true;
+      }
+    })
+    if(check === false){
+      data.push(item);
+    }
+  });
+  return data;
+}
+
 export default {
-  getCountRecordPageEmployee,
-  setCountRecordPageEmployee,
+  getCountRecordPageRecord,
+  setCountRecordPageRecord,
   formatDateDDMMYYYY,
   formatDateYYYYMMDD,
+  listToTree,
 };

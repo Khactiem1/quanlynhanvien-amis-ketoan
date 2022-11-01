@@ -56,6 +56,30 @@ export default {
   // from header hiển thị sửa nhân viên
   EditFormEmployee: "Sửa thông tin nhân viên",
 
+  // from header hiển thị thêm mới đơn vị
+  AddFormUnit: "Thêm đơn vị tính",
+
+  // from header hiển thị sửa đơn vị
+  EditFormUnit: "Sửa đơn vị tính",
+
+  // from header hiển thị thêm mới đơn vị
+  AddFormDepot: "Thêm kho",
+
+  // from header hiển thị sửa đơn vị
+  EditFormDepot: "Sửa kho",
+
+  // from header hiển thị thêm mới đơn vị
+  AddFormCommodityGroup: "Thêm nhóm vật tư, hàng hoá, dịch vụ",
+
+  // from header hiển thị sửa đơn vị
+  EditFormCommodityGroup: "Sửa nhóm vật tư, hàng hoá, dịch vụ",
+
+  // from header hiển thị thêm mới đơn vị
+  AddFormInventoryItem: "Thêm thông tin vật tư, hàng hóa, dịch vụ",
+
+  // from header hiển thị sửa đơn vị
+  EditFormInventoryItem: "Sửa thông tin vật tư, hàng hóa, dịch vụ",
+
   //Type message
   TypeSuccess: "success",
 
@@ -66,13 +90,13 @@ export default {
   MessageErrorInternet: "Đã xảy ra lỗi mạng.",
 
   // message xoá thành công
-  MessageSuccessDelete: "Nhân viên đã vị xoá.",
+  MessageSuccessDelete: "Bản ghi đã bị xoá.",
 
   // message thêm thành công
-  MessageSuccessAdd: "Thêm nhân viên thành công.",
+  MessageSuccessAdd: "Thêm bản ghi thành công.",
 
   // message sửa thành công
-  MessageSuccessEdit: "Sửa nhân viên thành công.",
+  MessageSuccessEdit: "Sửa bản ghi thành công.",
 
   //Type message
   TypeWanning: "wanning",

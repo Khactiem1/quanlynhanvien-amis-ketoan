@@ -1,47 +1,82 @@
 <template>
   <div ref="template" class="data-input" :class="{ 'is-valid': isValid }">
     <label v-if="label" :class="{ required: required }">{{ label }}</label>
+    <span v-if="toolTip" class="tool-tip">{{toolTip}}</span>
     <!-- Thêm 'active' là sẽ chạy -->
     <div
       class="combobox-select"
-      :class="{ active: noAnimation ? isShow : isShowAnimation }"
+      :class="{ active: noAnimation ? isShow : isShowAnimation, 'add-icon' : addIcon }"
     >
+      <div v-if="selectMultiple && modelValue.length > 0" class="select-multiple_list">
+        <div class="selected-item" v-for="(item, index) in modelValue" :key="index">
+          <div class="selected-text">
+            {{ options.find(v => v[value] === item)[headerSelectMultiple] }}
+          </div>
+          <div class="selected-icon" @click="preventClose($event); handleSaveData(item)"></div>
+        </div>
+      </div>
       <input
         ref="input"
         @focus="handleFocusInput"
         class="input"
         :value="inputEvent"
         @input="handleInput"
+        @blur="handleBlur"
         type="text"
-        :disabled="disabled"
+        :readonly="disabled"
         :tabindex="tab"
       />
       <div class="combobox-select_icon" @click="handleClickOpenCombobox">
         <div class="select_icon-combobox"></div>
       </div>
-      <div ref="listSelect" v-show="isShow" class="combobox-combobox_select">
-        <div
-          class="combobox-combobox_item"
-          v-for="(item, index) in optionValue"
-          :key="index"
-          @click="handleClickItem(item[value], index)"
-          :class="{
-            active: valueClick == item[value],
-          }"
-        >
-          {{ item[header] }}
+      <div class="icon-add" @click="handleAddIcon()" v-if="addIcon">
+        <div class="select_icon-add"></div>
+      </div>
+      <div v-if="isShow" class="combobox-combobox_select" :style="{width : widthOptionSelect}">
+        <div v-if="labelCode && labelName" class="combobox-labelName">
+          <div v-if="labelCode" class="label-item label-code" :style="{width: widthLabelCode}">
+            {{ labelCode }}
+          </div>
+          <div class="label-item label-name">
+            {{ labelName }}
+          </div>
+        </div>
+        <div v-if="optionValue.length === 0" class="combobox-combobox_item">
+          Danh sách trống
+        </div>
+        <div ref="listSelect" class="combobox-combobox_select-content" :class="{'select-multiple' : selectMultiple}">
+          <div
+            class="combobox-combobox_item"
+            v-for="(item, index) in optionValue"
+            :key="index"
+            @click="handleClickItem(item[value])"
+            :class="{
+              active: (valueClick == item[value] && !selectMultiple) || (selectMultiple && modelValue.includes(item[value])),
+              hover: valueClick == item[value] && selectMultiple,
+            }"
+          >
+            <div v-if="labelCode" class="label-item label-code" :style="{width: widthLabelCode}">
+              <span v-html="item.bindHTMLChild"></span>
+              {{ item[headerCode] }}
+            </div>
+            <div class="label-item label-name">
+              {{ item[header] }}
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <span class="message-valid">{{ messageValid }}</span>
+    <span class="message-valid" :style="{left : leftMessage}">{{ messageValid }}</span>
   </div>
 </template>
 
 <script>
 import { ref, toRefs, onMounted, onUnmounted, onBeforeMount, watch } from "vue";
+import handleDebounce from '../../utils/event/debounce';
 import eNum from "../../utils/eNum";
 export default {
   props: {
+    widthOptionSelect: {},
     modelValue: {},
     value: {
       type: String,
@@ -49,8 +84,18 @@ export default {
     header: {
       type: String,
     },
+    headerCode: {
+      type: String,
+    },
     defaultValue: {},
     label: {
+      type: String,
+    },
+    labelCode: {
+      type: String,
+    },
+    widthLabelCode: {},
+    labelName: {
       type: String,
     },
     options: {
@@ -62,6 +107,13 @@ export default {
     messageValid: {},
     noAnimation: {},
     disabled: {},
+    toolTip:{},
+    addIcon: {},
+    leftMessage:{},
+    handleAddIcon:{},
+    selectMultiple:{},
+    headerSelectMultiple:{},
+    autoPosition: {},
   },
   setup(props, context) {
     /**
@@ -74,7 +126,7 @@ export default {
      * required: có bắt buộc hay không
      * Khắc Tiềm - 15.09.2022
      */
-    const { options, header, modelValue, defaultValue, value, noAnimation, required } = toRefs(props);
+    const { options, header, modelValue, defaultValue, value, noAnimation, required, headerCode, selectMultiple, autoPosition } = toRefs(props);
 
     /**
      * Giá trị mảng binding lên giao diện
@@ -134,28 +186,62 @@ export default {
      * Set vị trí list select hiển thị
      * Khắc Tiềm - 15.09.2022
      */
-    const positionListSelect = ref({ top: "110%", });
+    const positionListSelect = ref({ top: "calc(100% + 3px)", });
+
+    /**
+     * Set scroll list select đến vị trí giá trị được chọn
+     * Khắc Tiềm - 15.09.2022
+     */
+    watch(isShow,(newValue)=> {
+      if(newValue){
+        if(valueClick.value){
+          setTimeout(() => {
+            let indexSelect = 0;
+            options.value.forEach((item, index) => {
+              if(item[value.value] === valueClick.value){
+                indexSelect = index;
+                return;
+              }
+            })
+            const position = listSelect.value.children[indexSelect].offsetTop;
+            listSelect.value.scrollTop = position - 34;
+          }, 0);
+        }
+      }
+    })
 
     /**
      * nếu có sự thay đổi modelValue từ bên ngoài thì sẽ check render dropdown cho hợp lý
      * Khắc Tiềm - 15.09.2022
      */
     watch(modelValue, () => {
-      let checkModelValueCoincideValue = false;
-      options.value.forEach((item) => {
-        if (item[value.value] == modelValue.value) {
-          inputEvent.value = item[header.value];
-          valueClick.value = item[value.value];
-          checkModelValueCoincideValue = true;
-          return;
+      if(!selectMultiple.value){
+        let checkModelValueCoincideValue = false;
+        options.value.forEach((item) => {
+          if (item[value.value] == modelValue.value) {
+            inputEvent.value = item[header.value];
+            valueClick.value = item[value.value];
+            checkModelValueCoincideValue = true;
+            return;
+          }
+        });
+        if (checkModelValueCoincideValue === false) {
+          inputEvent.value = '';
+          valueClick.value = null;
         }
-      });
-      if (checkModelValueCoincideValue === false) {
+        if (required.value) {
+          isValid.value = false;
+        }
+        if(modelValue.value){
+          context.emit("update:textField", options.value.find(item => item[value.value] === modelValue.value)[header.value]);
+        }
+        else{
+          context.emit("update:textField", '');
+        }
+      }
+      else{
         inputEvent.value = '';
         valueClick.value = null;
-      }
-      if (required.value) {
-        isValid.value = false;
       }
     });
 
@@ -167,51 +253,92 @@ export default {
       optionValue.value = [...options.value];
     })
 
+    function preventClose(e){
+      e.stopPropagation();
+    }
+
     /**
      * hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
      * Khắc Tiềm - 15.09.2022
      */
     const handleEnum = function (event) {
       if (event.keyCode === UP) {
-        // xử lý bấm lên
-        if (!valueClick.value && optionValue.value) {
-          valueClick.value = optionValue.value[0][value.value];
-          inputEvent.value = optionValue.value[0][header.value];
-        } else {
-          for (let i = 0; i < optionValue.value.length; i++) {
-            if (optionValue.value[i][value.value] == valueClick.value) {
-              if (i > 0) {
-                const index = i - 1;
-                inputEvent.value = optionValue.value[index][header.value];
-                valueClick.value = optionValue.value[index][value.value];
-                break;
+        if(optionValue.value.length > 0){
+          // xử lý bấm lên
+          if (!valueClick.value && optionValue.value) {
+            valueClick.value = optionValue.value[0][value.value];
+            inputEvent.value = optionValue.value[0][header.value];
+          } else {
+            for (let i = 0; i < optionValue.value.length; i++) {
+              if (optionValue.value[i][value.value] == valueClick.value) {
+                if (i > 0) {
+                  const index = i - 1;
+                  inputEvent.value = optionValue.value[index][header.value];
+                  valueClick.value = optionValue.value[index][value.value];
+                  const position = listSelect.value.children[i - 1].offsetTop;
+                  listSelect.value.scrollTop = position - 34;
+                  break;
+                }
               }
             }
           }
         }
       } else if (event.keyCode === DOWN) {
-        // xử lý bấm xuống
-        if (!valueClick.value && optionValue.value) {
-          valueClick.value = optionValue.value[0][value.value];
-          inputEvent.value = optionValue.value[0][header.value];
-        } else {
-          for (let i = 0; i < optionValue.value.length; i++) {
-            if (optionValue.value[i][value.value] == valueClick.value) {
-              if (i < optionValue.value.length - 1) {
-                const index = i + 1;
-                inputEvent.value = optionValue.value[index][header.value];
-                valueClick.value = optionValue.value[index][value.value];
-                break;
+        if(optionValue.value.length > 0){
+          // xử lý bấm xuống
+          if (!valueClick.value && optionValue.value) {
+            valueClick.value = optionValue.value[0][value.value];
+            inputEvent.value = optionValue.value[0][header.value];
+          } else {
+            for (let i = 0; i < optionValue.value.length; i++) {
+              if (optionValue.value[i][value.value] == valueClick.value) {
+                if (i < optionValue.value.length - 1) {
+                  const index = i + 1;
+                  inputEvent.value = optionValue.value[index][header.value];
+                  valueClick.value = optionValue.value[index][value.value];
+                  const position = listSelect.value.children[i + 1].offsetTop;
+                  listSelect.value.scrollTop = position - 34;
+                  break;
+                }
               }
             }
           }
         }
       } else if (event.keyCode === ENTER || event.keyCode === TAB) {
         // xử lý bấm enter
-        context.emit("update:modelValue", valueClick.value);
+        handleSaveData(valueClick.value, true);
         toggleListSelect();
       }
     };
+
+    function handleSaveData(valueOf, noRemove){
+      if(selectMultiple.value){
+        if(valueOf){
+          const data = [...modelValue.value]
+          const index = modelValue.value.findIndex(v => v === valueOf);
+          if(index === -1){
+            data.push(valueOf);
+          }
+          else{
+            if(!noRemove){
+              data.splice(index, 1);
+            }
+          }
+          context.emit("update:modelValue", data);
+        }
+      }
+      else{
+        context.emit("update:modelValue", valueOf);
+      }
+    }
+
+    /**
+     * hàm xử lý sự kiện khi nhấn nút lên hoặc nút xuống, enter và tab
+     * Khắc Tiềm - 15.09.2022
+     */
+    function handleBlur(){
+      handleSaveData(valueClick.value);
+    }
 
     /**
      * hàm xử lý ẩn dropdown khi click không trúng vào component
@@ -233,9 +360,11 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleClickItem(value) {
-      context.emit("update:modelValue", value);
+      handleSaveData(value);
       valueClick.value = value;
-      toggleListSelect();
+      if(!selectMultiple.value){
+        toggleListSelect();
+      }
     }
 
     /**
@@ -255,40 +384,36 @@ export default {
      */
     const inputEnter = ref(null);
     const inputEvent = ref('');
-
-    /**
-     * Chứa hàm setTimeOut sẽ thực hiện tìm kiếm khi tìm kiếm
-     * Khắc Tiềm - 15.09.2022
-     */
-    const eventSearchInput = [];
-
-    /**
-     * Hàm xử lý tìm kiếm dữ liệu
-     * @param {event để lấy giá trị nhập} event 
-     * Khắc Tiềm - 15.09.2022
-     */
     const handleSearchData = (event) => {
       inputEvent.value = event.target.value;
-      eventSearchInput.forEach((item) => {
-        clearTimeout(item);
-      });
-      eventSearchInput.length = 0;
-      eventSearchInput.push(
-        setTimeout(() => {
-          if(event.target.value.trim() === ''){
+      handleDebounce(50, searchData, event);
+    };
+
+    /**
+     * Tìm kiếm
+     * Khắc Tiềm - 15.09.2022
+     */
+     function searchData(event){
+      if(optionValue.value.length > 0){
+        if(event.target.value.trim() === ''){
             inputEnter.value = null;
             valueClick.value = null;
           }
           else if(event.data != ' '){
-            inputEnter.value = {...optionValue.value.find(item => item[header.value].toLowerCase().trim().includes(event.target.value.toLowerCase().trim()))};
-              if(inputEnter.value[value.value]){
-                optionValue.value = [inputEnter.value, ...optionValue.value.filter(item => item[value.value] != inputEnter.value[value.value])]
-              }
-              valueClick.value = inputEnter.value[value.value];
+            let searchForName = {...optionValue.value.find(item => item[header.value].toLowerCase().trim().includes(event.target.value.toLowerCase().trim()))};
+            if(JSON.stringify(searchForName) === '{}' && headerCode.value){
+              searchForName = {...optionValue.value.find(item => item[headerCode.value].toLowerCase().trim().includes(event.target.value.toLowerCase().trim()))};
+            }
+            inputEnter.value = {...searchForName};
+            if(inputEnter.value[value.value]){
+              optionValue.value = [inputEnter.value, ...optionValue.value.filter(item => item[value.value] != inputEnter.value[value.value])]
+            }
+            valueClick.value = inputEnter.value[value.value];
+            const position = listSelect.value.children[0].offsetTop;
+            listSelect.value.scrollTop = position - 34;
           }
-        }, 400)
-      );
-    };
+      }
+    }
 
     /**
      * hàm xử lý khi người dùng nhập input sẽ hiện dropdown
@@ -321,13 +446,27 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function setPositionListSelect() {
-      if (
-        window.innerHeight - (input.value.getBoundingClientRect().bottom + 30) <
-        listSelect.value.getBoundingClientRect().height
-      ) {
-        positionListSelect.value.top = `-${optionValue.value.length * 100 + 30}%`;
-      } else {
-        positionListSelect.value.top = "110%";
+      if(autoPosition.value){
+        if(optionValue.value.length <= 5){
+          if (
+            window.innerHeight - (input.value.getBoundingClientRect().bottom + 30) <
+              optionValue.value.length * 32 + 8
+          ) {
+            positionListSelect.value.top = `-${optionValue.value.length * 100 + 60}%`;
+          } else {
+            positionListSelect.value.top = "calc(100% + 3px)";
+          }
+        }
+        else{
+          if (
+            window.innerHeight - (input.value.getBoundingClientRect().bottom + 30) <
+              5 * 32 + 8
+          ) {
+            positionListSelect.value.top = `-${5 * 100 + 60}%`;
+          } else {
+            positionListSelect.value.top = "calc(100% + 3px)";
+          }
+        }
       }
     }
 
@@ -346,6 +485,7 @@ export default {
         window.addEventListener("keydown", handleEnum);
       } else {
         window.removeEventListener("keydown", handleEnum);
+        optionValue.value = [...options.value];
       }
     }
 
@@ -377,7 +517,7 @@ export default {
      * xoá bỏ sự kiện lắng nghe
      * Khắc Tiềm - 15.09.2022
      */
-    onUnmounted(() => window.removeEventListener("click", handleClickTemplate));
+    onUnmounted(() => {window.removeEventListener("click", handleClickTemplate); window.removeEventListener("keydown", handleEnum);});
     return {
       input,
       isShow,
@@ -389,36 +529,118 @@ export default {
       inputEvent,
       positionListSelect,
       valueClick,
+      preventClose,
       handleFocusInput,
       handleClickItem,
       handleInput,
       handleClickOpenCombobox,
+      handleBlur,
+      handleSaveData,
     };
   },
 };
 </script>
 
 <style scoped>
-.combobox-select.active input {
+::-webkit-scrollbar-track {
+  direction: rtl;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: #b0b0b0;
+}
+::-webkit-scrollbar-thumb:hover {
+  border-radius: 0;
+  background: #808080;
+}
+::-webkit-scrollbar {
+  height: 10px; /* height of horizontal scrollbar ← You're missing this */
+  width: 8px;
+  background: #ECEEF1;
+}
+.combobox-select.active {
   border-color: var(--primary__color);
+}
+.is-valid .combobox-select {
+    border-color: red;
 }
 .combobox-select {
   position: relative;
+  border: solid 1px var(--border__input);
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 37px 0px 10px;
+}
+.combobox-select.add-icon{
+  padding: 0 73px 0px 10px;
+}
+.combobox-select:hover{
+  box-shadow: rgb(99, 99, 99, 20%) 0px 2px 8px 0px;
+}
+.combobox-select.active,.input:hover {
+  box-shadow: unset;
+}
+.input{
+  border: unset;
+  height: calc(var(--input__height) - 2px);
+  padding: 0;
+  flex: 1;
+  min-width: 10px;
+}
+.combobox-labelName{
+  background-color: #ECEEF1;
+  z-index: 1;
+  height: 32px;
+  margin-bottom: 2px;
+  font-family: "notosans-bold";
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+}
+.label-code{
+  min-width: 100px;
+}
+.label-name{
+  flex: 1;
+}
+.label-item + .label-item{
+  padding-left: 6px;
+}
+.label-item{
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
 }
 .combobox-select_icon {
   width: 36px;
-  height: calc(100% - 2px);
+  height: 100%;
   cursor: pointer;
-  right: 1px;
-  top: 1px;
+  right: 0;
+  top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
-  border-top-right-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+  background-color: var(--while__color);
 }
-.combobox-select_icon:hover {
+.icon-add{
+  width: 36px;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  background-color: var(--while__color);
+  border-right: solid 1px #ccc;
+  right: 36px;
+  top: 0;
+}
+.combobox-select_icon:hover , .icon-add:hover{
   background-color: #e0e0e0;
 }
 .select_icon-combobox {
@@ -428,20 +650,31 @@ export default {
   height: 16px;
   transition: all 0.3s ease;
 }
+.select_icon-add{
+  width: 16px;
+  height: 16px;
+  transition: all 0.3s ease;
+  background: var(--url__icon) no-repeat;
+  background-position: -31px -312px;
+}
 .combobox-combobox_select {
   position: absolute;
-  width: 100%;
-  left: 0;
+  width: calc(100% + 2px);
+  left: -1px;
   top: 130%;
   border: solid 1px var(--border__input);
   background-color: var(--while__color);
   border-radius: 2px;
-  padding: 3px 0;
+  padding: 0 0 2px 0; 
   opacity: 0;
   visibility: hidden;
   z-index: 1;
-  border-radius: 4px;
+  border-radius: 2px;
   transition: all 0.1s ease;
+}
+.combobox-combobox_select-content{
+  overflow-y: auto;
+  max-height: 170px;
 }
 .combobox-select.active .combobox-combobox_select {
   opacity: 1;
@@ -453,14 +686,19 @@ export default {
   text-align: left;
   padding: 5px 10px;
   cursor: pointer;
-  height: var(--primary__button-height);
+  height: 32px;
   color: inherit;
   display: flex;
+  position: relative;
   align-items: center;
 }
-.combobox-combobox_item:hover {
-  background-color: #ebedf0;
-  color: var(--primary__color);
+.combobox-combobox_item:hover:not(.combobox-combobox_item.active), .select-multiple .combobox-combobox_item.active:hover{
+  background-color: #ebedf0 !important;
+  color: var(--primary__color) !important;
+}
+.combobox-combobox_item.hover{
+  background-color: #ebedf0 !important;
+  color: var(--primary__color) !important;
 }
 .combobox-select.active .select_icon-combobox {
   transform: rotate(180deg);
@@ -468,5 +706,48 @@ export default {
 .combobox-combobox_item.active {
   background-color: var(--primary__color);
   color: var(--while__color);
+}
+.select-multiple .combobox-combobox_item.active {
+  background-color: unset;
+  color: inherit;
+  padding-right: 26px;
+}
+.select-multiple .combobox-combobox_item.active::before{
+  content: '';
+  width: 16px;
+  height: 16px;
+  background: var(--url__icon) no-repeat;
+  background-position: -896px -312px;
+  position: absolute;
+  right: 10px;
+}
+.select-multiple_list{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  min-width: 100%;
+}
+.selected-text{
+  white-space: nowrap;
+}
+.selected-item{
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: #f0f0f0;
+  padding: 2px 3px 2px 5px;
+  margin: 3px;
+  text-overflow: ellipsis;
+}
+.selected-icon{
+  margin-left: 4px;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  cursor: pointer;
+  background: var(--url__icon2) no-repeat;
+  background-position: -80px -312px;
 }
 </style>
