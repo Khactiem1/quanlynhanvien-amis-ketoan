@@ -55,7 +55,7 @@
                   ></input-default>
                 </div>
                 <div class="form-group ms-big">
-                  <!-- <input-combobox
+                  <input-combobox
                     :options="optionCommodityGroup"
                     widthOptionSelect="600px"
                     widthLabelCode="250px"
@@ -68,10 +68,10 @@
                     :toolTip="'Nhóm vật tư hàng hoá'"
                     :selectMultiple="true"
                     :headerSelectMultiple="'commodityCode'"
-                    v-model="inventoryItem.commodityGroupID"
+                    v-model="commodityGroupID"
                     :addIcon="true"
                     :handleAddIcon="handleToggleFormInventoryItemCategory"
-                  ></input-combobox> -->
+                  ></input-combobox>
                 </div>
               </div>
               <div class="form-item_input">
@@ -525,7 +525,7 @@
        * Biến record v-model và gửi lên sever khi thêm sửa xoá
        * NK Tiềm 28/10/2022
        */
-        // commodityGroupID: [],
+      const commodityGroupID = ref([]);
       const inventoryItem = ref({
         unitCalculationID: "",
         // commodityGroupID: [],
@@ -829,6 +829,7 @@
   
       return {
         inputFocus,
+        commodityGroupID,
         inventoryItemNotification,
         isShowFormHidden,
         isShowFormUnit,

@@ -23,6 +23,9 @@ export default {
   // phím DOWN
   DOWN: 40, 
 
+  //BACK
+  BACK: 8,
+
   // phím ENTER
   ENTER: 13, 
 

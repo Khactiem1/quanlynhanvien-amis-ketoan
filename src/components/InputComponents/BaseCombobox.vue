@@ -138,7 +138,7 @@ export default {
      * lấy ra các mã phím khi bấm
      * Khắc Tiềm - 15.09.2022
      */
-    const { UP, DOWN, ENTER, TAB } = eNum;
+    const { UP, DOWN, ENTER, TAB, BACK } = eNum;
 
     /**
      * Element chứa danh sách select
@@ -304,7 +304,15 @@ export default {
             }
           }
         }
-      } else if (event.keyCode === ENTER || event.keyCode === TAB) {
+      }
+      else if(event.keyCode === BACK){
+        if(input.value.value === '' && selectMultiple.value && modelValue.value.length > 0){
+          const data = [...modelValue.value];
+          data.pop();
+          context.emit("update:modelValue", data);
+        }
+      } 
+      else if (event.keyCode === ENTER || event.keyCode === TAB) {
         // xử lý bấm enter
         handleSaveData(valueClick.value, true);
         toggleListSelect();

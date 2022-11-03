@@ -9,7 +9,7 @@
       ref="tagInput"
       class="input"
       :type="type"
-      :value="valueHeader"
+      v-model="valueHeader"
       :placeholder="placeholder"
       :tabindex="tab"
       @input="handleInput"
@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { ref, onMounted, toRefs } from "vue";
+import { ref, onMounted, toRefs, watch } from "vue";
 import validate from "../../utils/validate.js";
 export default {
   props: [
@@ -60,8 +60,6 @@ export default {
      */
     const { focus, required, isEmail, isPhone, maxLength, modelValue, isNumber } = toRefs(props);
 
-    const valueHeader = ref('');
-
     /**
      * Trạng thái hiển thị validate
      * Khắc Tiềm - 15.09.2022
@@ -79,6 +77,11 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     const { validateEmail, validatePhone } = validate;
+
+    const valueHeader = ref('');
+    watch(modelValue, ()=>{
+      valueHeader.value = modelValue.value;
+    });
 
     /**
      * Sau khi được mounted vào dom thì nếu đc chỉ định focus ô input sẽ đc focus
@@ -99,8 +102,7 @@ export default {
     function handleInput(event) {
       if (maxLength.value && !isNumber.value) {
         if (event.target.value.length <= maxLength.value) {
-          context.emit("update:modelValue", event.target.value);
-          valueHeader.value = event.target.value;
+          updateValue(event.target.value);
           isValidEmailPhone.value = false;
           if (required.value) {
             if (event.target.value.trim() == "") {
@@ -111,22 +113,19 @@ export default {
           }
         }
         else{
-          tagInput.value.value = modelValue.value;
           valueHeader.value = modelValue.value;
         }
       }
       else if(isNumber.value){
         if(checkNumber(event.target.value) || event.target.value === ''){
-          valueHeader.value = event.target.value;
-          context.emit("update:modelValue", event.target.value);
+          updateValue(event.target.value);
         }
         else{
           valueHeader.value = modelValue.value;
         }
       }
       else {
-        context.emit("update:modelValue", event.target.value);
-        valueHeader.value = event.target.value;
+        updateValue(event.target.value);
         isValidEmailPhone.value = false;
         if (required.value) {
           if (event.target.value == "") {
@@ -138,6 +137,9 @@ export default {
       }
     }
 
+    function updateValue(value){
+      context.emit("update:modelValue", value);
+    }
     /**
      * hàm xử lý validate điện thoại và email
      * Khắc Tiềm - 15.09.2022
