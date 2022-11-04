@@ -292,8 +292,7 @@ export default {
         recordDeleteApi(recordId, recordCode)
       } else if (action == REPLICATION) {
         recordReplicationApi(recordId)
-      }
-      else if(action === STOP_USING){
+      } else if(action === STOP_USING){
         toggleRecordActiveApi(recordId);
       }
     }

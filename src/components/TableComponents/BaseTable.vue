@@ -220,17 +220,19 @@ export default {
      */
     function Comma(number) {
       if(number){
-        number = "" + number;
-        if (number.length > 3) {
-          var mod = number.length % 3;
-          var output = mod > 0 ? number.substring(0, mod) : "";
-          for (let i = 0; i < Math.floor(number.length / 3); i++) {
+        let intPart = Math.trunc(number); 
+        const floatPart = Number((number - intPart).toFixed(10));
+        intPart = "" + intPart;
+        if (intPart.length > 3) {
+          var mod = intPart.length % 3;
+          var output = mod > 0 ? intPart.substring(0, mod) : "";
+          for (let i = 0; i < Math.floor(intPart.length / 3); i++) {
             if (mod == 0 && i == 0)
-              output += number.substring(mod + 3 * i, mod + 3 * i + 3);
-            else output += "." + number.substring(mod + 3 * i, mod + 3 * i + 3);
+              output += intPart.substring(mod + 3 * i, mod + 3 * i + 3);
+            else output += "." + intPart.substring(mod + 3 * i, mod + 3 * i + 3);
           }
-          return output;
-        } else return number;
+          return floatPart !== 0 ? output + ',' + (floatPart + '').slice( 2 ) : output;
+        } else return floatPart !== 0 ? intPart + ',' + (floatPart + '').slice( 2 ) : intPart;
       }
       else return '';
     }

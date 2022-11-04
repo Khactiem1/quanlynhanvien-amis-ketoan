@@ -280,7 +280,7 @@ export default {
         commodityGroup.value = {...commodityGroup.value, parentID: "0"};
       }
       await callApi(Api, { ...commodityGroup.value },async (response) => { 
-        context.emit("handle-save-data-props", response);
+        context.emit("handle-save-data-props", { ...commodityGroup.value, commodityGroupID: response });
         store.dispatch("config/addNotification", {
             type: TypeSuccess,
             message: stateAdd.value ? MessageSuccessAdd : MessageSuccessEdit

@@ -11,6 +11,7 @@ const inventoryItems = {
           actionList: ['Nhân bản', 'Xoá', 'Ngừng sử dụng'],
           fieldId: "inventoryItemID",
           fieldCode: "inventoryItemCode",
+          fieldActive: "isActive",
         },
   
         /**
@@ -327,8 +328,26 @@ const inventoryItems = {
       editRecordMutation(state, payload) {
         state.recordList = [payload, ...state.recordList.filter(item => item[state.actionTable.fieldId] !== payload[state.actionTable.fieldId])]
       },
+      /**
+       * Hàm xử lý toggle active record
+       * Khắc Tiềm - 15.09.2022
+       */
+      setToggleActiveMutation(state, payload){
+        state.recordList.find((item, index) => {
+          if(item[state.actionTable.fieldId] === payload){
+            state.recordList[index].isActive = !state.recordList[index].isActive;
+          }
+        })
+      },
     },
     actions: {
+      /**
+       * Hàm xử lý toggle active record
+       * Khắc Tiềm - 15.09.2022
+       */
+      setToggleActiveAction(context, payload){
+        context.commit("setToggleActiveMutation", payload);
+      },
       /**
        * Thêm record
        * Khắc Tiềm - 15.09.2022

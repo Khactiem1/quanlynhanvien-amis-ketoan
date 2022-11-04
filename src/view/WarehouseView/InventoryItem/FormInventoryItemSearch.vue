@@ -65,7 +65,7 @@
         <button class="btn" @click="handleResetDataSearch()">
           Đặt lại
         </button>
-        <button class="btn btn-success" :tabindex="5" @click="handleSearchData()">
+        <button class="btn btn-success" @click="handleSearchData()">
           Lọc
         </button>
       </div>

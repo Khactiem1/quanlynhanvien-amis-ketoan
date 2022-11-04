@@ -431,38 +431,49 @@
     },
     setup(props, context) {
       const { nextValue, createRecordApi, editRecordApi } = apiInventoryItem;
+      /**
+       * Xử lý hiển thị và lưu data khi thêm đơn vị
+       * NK Tiềm 28/10/2022
+       */
       const isShowFormUnit = ref(false);
-      async function handleSaveDataUnit(id){
-        await callApi(unitCalculation.getAllRecordListActive, null, async (response) => { optionUnit.value = response; }, store, true);
-        inventoryItem.value.unitCalculationID = id;
+      function handleSaveDataUnit(response){
+        optionUnit.value = [response, ...optionUnit.value];
+        inventoryItem.value.unitCalculationID = response.unitCalculationID;
       }
       function handleToggleFormUnit(){
         isShowFormUnit.value = !isShowFormUnit.value;
       }
 
+      /**
+       * Xử lý hiển thị và lưu data khi thêm nhóm vật tư hàng hoá và dịch vụ
+       * NK Tiềm 28/10/2022
+       */
       const isShowFormInventoryItemCategory = ref(false);
-      async function handleSaveDataInventoryItemCategory(id){
-        await callApi(apiCommodityGroup.getAllRecordList, null, async (response) => { optionCommodityGroup.value = listToTree(response, "commodityGroupID"); }, store, true);
-        inventoryItem.value.commodityGroupID.push(id);
+      function handleSaveDataInventoryItemCategory(response){
+        optionCommodityGroup.value = listToTree([response, ...optionCommodityGroup.value], "commodityGroupID");
+        commodityGroupID.value.push(response.commodityGroupID);
       }
       function handleToggleFormInventoryItemCategory(){
         isShowFormInventoryItemCategory.value = !isShowFormInventoryItemCategory.value;
       }
 
+      /**
+       * Xử lý hiển thị và lưu data khi thêm nhà kho
+       * NK Tiềm 28/10/2022
+       */
       const isShowFormDepot = ref(false);
-      async function handleSaveDataDepot(id){
-        await callApi(apiDepot.getAllRecordListActive, null, async (response) => { optionDepot.value = response }, store, true);
-        inventoryItem.value.depotID = id;
+      function handleSaveDataDepot(response){
+        optionDepot.value = [response, ...optionDepot.value];
+        inventoryItem.value.depotID = response.depotID;
       }
       function handleToggleFormDepot(){
         isShowFormDepot.value = !isShowFormDepot.value;
       }
 
-
-
-
-
-
+      /**
+       * Xử lý hiển thị form đang ẩn 
+       * NK Tiềm 28/10/2022
+       */
       const isShowFormHidden = ref(false);
       function handleToggleShowFormHidden(){
         isShowFormHidden.value = !isShowFormHidden.value;

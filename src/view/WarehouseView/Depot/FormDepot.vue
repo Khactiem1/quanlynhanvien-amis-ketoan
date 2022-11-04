@@ -264,7 +264,7 @@
        */
       async function callApiForm(Api) {
         await callApi(Api, { ...depot.value },async (response) => { 
-          context.emit("handle-save-data-props", response);
+          context.emit("handle-save-data-props", { ...depot.value, depotID: response });
           store.dispatch("config/addNotification", {
               type: TypeSuccess,
               message: stateAdd.value ? MessageSuccessAdd : MessageSuccessEdit

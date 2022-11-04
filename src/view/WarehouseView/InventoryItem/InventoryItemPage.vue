@@ -214,7 +214,7 @@
        * Lấy ra api cần thiết
        * NK Tiềm 28/10/2022
        */
-      const { getRecordList, getRecordApi, deleteRecordApi, deleteMultipleApi } = apiInventoryItem;
+      const { getRecordList, getRecordApi, deleteRecordApi, deleteMultipleApi, toggleActiveApi } = apiInventoryItem;
       /**
        * Lấy ra các enum gồm mã phím và mã lỗi có thể nhận được khi call api
        * NK Tiềm 28/10/2022
@@ -231,7 +231,7 @@
        * Các hành động của table
        * Khắc Tiềm - 15.09.2022
        */
-      const { EDIT, DELETE, REPLICATION } = actionTableStore;
+      const { EDIT, DELETE, REPLICATION, STOP_USING } = actionTableStore;
   
       /**
        * Các thông báo của cảnh báo khi xoá bản ghi
@@ -441,8 +441,21 @@
           recordDeleteApi(recordId, recordCode)
         } else if (action == REPLICATION) {
           recordReplicationApi(recordId)
+        }else if(action === STOP_USING){
+          toggleRecordActiveApi(recordId);
         }
       }
+
+      /**
+       * Hàm thực hiện call api lấy toggle active record
+       * Khắc Tiềm - 15.09.2022
+       */
+      async function toggleRecordActiveApi(recordId){
+        await callApi(toggleActiveApi, recordId, () => { 
+          store.dispatch("inventoryItem/setToggleActiveAction", recordId);
+        }, store, true);
+      }
+
       /**
        * Hàm thực hiện call api lấy chi tiết nhân viên với trạng thái sửa
        * @param {ID nhân viên cần sửa}  

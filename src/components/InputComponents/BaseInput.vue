@@ -5,7 +5,6 @@
       {{ toolTip }}
     </span>
     <input
-      @keypress="isInputNumber($event)"
       ref="tagInput"
       class="input"
       :type="type"
@@ -42,6 +41,7 @@ export default {
   ],
   emits: ["update:modelValue"],
   setup(props, context) {
+    // <!-- @keypress="isInputNumber($event)" -->
     /**
      * Element thẻ input
      * Khắc Tiềm - 15.09.2022
@@ -79,8 +79,13 @@ export default {
     const { validateEmail, validatePhone } = validate;
 
     const valueHeader = ref('');
-    watch(modelValue, ()=>{
-      valueHeader.value = modelValue.value;
+    watch(modelValue, (newValue)=>{
+      if(isNumber.value){
+        valueHeader.value = Comma(newValue);
+      }
+      else{
+        valueHeader.value = newValue;
+      }
     });
 
     /**
@@ -117,11 +122,17 @@ export default {
         }
       }
       else if(isNumber.value){
-        if(checkNumber(event.target.value) || event.target.value === ''){
-          updateValue(event.target.value);
+        const number = CommaToNumber(event.target.value);
+        if(checkNumber(number) || number === ''){
+          if(event.data === '.' || event.data === ','){
+            valueHeader.value = Comma(modelValue.value) + ',';
+          }
+          else{
+            updateValue(number);
+          }
         }
         else{
-          valueHeader.value = modelValue.value;
+          valueHeader.value = Comma(modelValue.value);
         }
       }
       else {
@@ -139,6 +150,38 @@ export default {
 
     function updateValue(value){
       context.emit("update:modelValue", value);
+    }
+
+    /**
+     * Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
+     * @param {Số cần format} number 
+     * Khắc Tiềm - 15.09.2022
+     */
+    function Comma(number) {
+      if(number){
+        let intPart = Math.trunc(number); 
+        const floatPart = Number((number - intPart).toFixed(10));
+        intPart = "" + intPart;
+        if (intPart.length > 3) {
+          var mod = intPart.length % 3;
+          var output = mod > 0 ? intPart.substring(0, mod) : "";
+          for (let i = 0; i < Math.floor(intPart.length / 3); i++) {
+            if (mod == 0 && i == 0)
+              output += intPart.substring(mod + 3 * i, mod + 3 * i + 3);
+            else output += "." + intPart.substring(mod + 3 * i, mod + 3 * i + 3);
+          }
+          return floatPart !== 0 ? output + ',' + (floatPart + '').slice( 2 ) : output;
+        } else return floatPart !== 0 ? intPart + ',' + (floatPart + '').slice( 2 ) : intPart;
+      }
+      else if(number === 0 || number === '0'){
+        return 0;
+      }
+      else return '';
+    }
+
+    function CommaToNumber(number){
+      const ToNumber = number.replace(/\./g,'').replace(/,/g, '.');
+      return ToNumber ? ToNumber : '';
     }
     /**
      * hàm xử lý validate điện thoại và email
@@ -166,24 +209,23 @@ export default {
      * Hàm xử lý chỉ cho nhập số
      * Khắc Tiềm - 15.09.2022
      */
-    function isInputNumber(evt) {
-      if(isNumber.value){
-        evt = (evt) ? evt : window.event;
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
-          evt.preventDefault();
-        } else {
-          return true;
-        }
-      }
-    }
+    // function isInputNumber(evt) {
+    //   if(isNumber.value){
+    //     evt = (evt) ? evt : window.event;
+    //     var charCode = (evt.which) ? evt.which : evt.keyCode;
+    //     if ((charCode > 31 && (charCode < 48 || charCode > 57)) && charCode !== 46) {
+    //       evt.preventDefault();
+    //     } else {
+    //       return true;
+    //     }
+    //   }
+    // }
     function checkNumber(n) { return !isNaN(parseFloat(n)) && !isNaN(n - 0) }
     return {
       tagInput,
       isValid,
       valueHeader,
       isValidEmailPhone,
-      isInputNumber,
       handleCheckEmailPhone,
       handleInput,
     };

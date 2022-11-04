@@ -248,7 +248,7 @@ export default {
      */
     async function callApiForm(Api) {
       await callApi(Api, { ...unitCalculation.value },async (response) => { 
-        context.emit("handle-save-data-props", response);
+        context.emit("handle-save-data-props", { ...unitCalculation.value, unitCalculationID: response });
         store.dispatch("config/addNotification", {
             type: TypeSuccess,
             message: stateAdd.value ? MessageSuccessAdd : MessageSuccessEdit
