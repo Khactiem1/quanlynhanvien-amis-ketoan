@@ -281,6 +281,7 @@
                           :label="'Tỉ lệ CKMH (%)'"
                           :toolTip="'Tỉ lệ chiết khấu mua hàng'"
                           :isNumber="true"
+                          :maxValue="100"
                           v-model.number="inventoryItem.ratioDiscount"
                         ></input-default>
                       </div>
@@ -292,6 +293,7 @@
                           :label="'Thuế suất GTGT (%)'"
                           :toolTip="'Thuế giá trị gia tăng'"
                           :isNumber="true"
+                          :maxValue="100"
                           v-model.number="inventoryItem.vatTax"
                         ></input-default>
                       </div>
@@ -301,6 +303,7 @@
                           :label="'Thuế suất thuế NK (%)'"
                           :toolTip="'Thuế suất thuế nhập khẩu'"
                           :isNumber="true"
+                          :maxValue="100"
                           v-model.number="inventoryItem.vatImport"
                         ></input-default>
                       </div>
@@ -310,6 +313,7 @@
                           :label="'Thuế suất thuế XK (%)'"
                           :toolTip="'Thuế suất thuế suất khẩu'"
                           :isNumber="true"
+                          :maxValue="100"
                           v-model.number="inventoryItem.vatExport"
                         ></input-default>
                       </div>

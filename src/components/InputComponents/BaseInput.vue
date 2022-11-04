@@ -38,6 +38,7 @@ export default {
     "isEmail",
     "isNumber",
     "leftMessage",
+    "maxValue",
   ],
   emits: ["update:modelValue"],
   setup(props, context) {
@@ -58,7 +59,7 @@ export default {
      * isNumber: là số hay k
      * Khắc Tiềm - 15.09.2022
      */
-    const { focus, required, isEmail, isPhone, maxLength, modelValue, isNumber } = toRefs(props);
+    const { focus, required, isEmail, isPhone, maxLength, modelValue, isNumber, maxValue } = toRefs(props);
 
     /**
      * Trạng thái hiển thị validate
@@ -149,7 +150,17 @@ export default {
     }
 
     function updateValue(value){
-      context.emit("update:modelValue", value);
+      if(maxValue.value){
+        if(Number(value) <= maxValue.value){
+          context.emit("update:modelValue", value);
+        }
+        else{
+          valueHeader.value = Comma(modelValue.value);
+        }
+      }
+      else{
+        context.emit("update:modelValue", value);
+      }
     }
 
     /**
