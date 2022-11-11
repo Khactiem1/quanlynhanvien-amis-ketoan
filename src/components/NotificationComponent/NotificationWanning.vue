@@ -33,12 +33,21 @@
 import { onMounted, onUnmounted, ref } from "vue";
 export default {
   props: {
+    /**
+     * Các xử lý khi bấm huỷ
+     */
     cancelAction: {
       type: Object,
     },
+    /**
+     * Các xử lý khi bấm chấp nhận
+     */
     agreeAction: {
       type: Object,
     },
+    /**
+     * Các xử lý hiển thị message
+     */
     messageAction: {
       type: Object,
     },

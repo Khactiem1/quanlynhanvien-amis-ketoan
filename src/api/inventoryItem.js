@@ -6,7 +6,7 @@ import axiosAPI from ".";
  * Khắc Tiềm - 15.09.2022
  */
 const getRecordList = (filter) => {
-  return axiosAPI.get(`/InventoryItems/fitter?offset=${filter.offset}&limit=${filter.limit}&keyword=${filter.keyword}`);
+  return axiosAPI.post(`/InventoryItems/fitter`, filter);
 };
 
 /**
@@ -79,6 +79,10 @@ const exportDataApi = () => {
     return axiosAPI.get(`/InventoryItems/ToggleActive/${id}`);
   };
 
+const GetInventoryStatus = ()=> {
+  return axiosAPI.get(`/InventoryItems/GetInventoryStatus`);
+}
+
 export default {
   exportDataApi,
   deleteMultipleApi,
@@ -89,4 +93,5 @@ export default {
   createRecordApi,
   getRecordApi,
   toggleActiveApi,
+  GetInventoryStatus,
 }

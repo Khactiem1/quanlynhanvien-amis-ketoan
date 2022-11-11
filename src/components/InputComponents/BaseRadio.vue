@@ -15,8 +15,17 @@
 <script>
 export default {
   props: {
+    /**
+     * Label hiển thị
+     */
     label: { type: String, default: "", required: true },
+    /**
+     * Giá trị bind 2 chiều
+     */
     modelValue: { default: "" },
+    /**
+     * Giá trị mặc định
+     */
     value: { default: undefined },
     tab: {},
   },

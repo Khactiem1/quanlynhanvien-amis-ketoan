@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { toRefs, ref, computed } from "vue";
+import { toRefs, ref, computed, watch } from "vue";
 export default {
   props: ["modelValue", "totalCount", "countRecordPageRecord"],
   emits: ["update:modelValue"],
@@ -43,7 +43,11 @@ export default {
      * props truyền vào là lượng muốn lấy và số tổng danh sách
      * NK Tiềm 7/10/2022
      */
-    const { countRecordPageRecord, totalCount } = toRefs(props);
+    const { countRecordPageRecord, totalCount, modelValue } = toRefs(props);
+
+    watch(modelValue, (newValue) => {
+      currentPage.value = (newValue / countRecordPageRecord.value) + 1;
+    })
 
     /**
      * Danh sách mảng hiển thị lên giao diện
@@ -94,27 +98,30 @@ export default {
      * NK Tiềm 7/10/2022
      * @param {Biến nhận vào là trang muốn lấy} page 
      */
-    function handleChangePage(page){
-      if(page === "..."){
-        if(currentPage.value === Math.ceil(totalCount.value / countRecordPageRecord.value) - 1 || currentPage.value === Math.ceil(totalCount.value / countRecordPageRecord.value)){
-          handlePrevPage();
+    async function handleChangePage(page){
+      try {
+        if(page === "..."){
+          if(currentPage.value === Math.ceil(totalCount.value / countRecordPageRecord.value) - 1 || currentPage.value === Math.ceil(totalCount.value / countRecordPageRecord.value)){
+            handlePrevPage();
+          }
+          else{
+            handleNextPage();
+          }
         }
         else{
-          handleNextPage();
+          await context.emit("update:modelValue", (countRecordPageRecord.value ) * (page - 1));
+          if(page === Math.ceil(totalCount.value / countRecordPageRecord.value)){
+            pageChangeCLick.value = currentPage.value - 1;
+          }
+          else if(page === Math.ceil(totalCount.value / countRecordPageRecord.value) - 1){
+            pageChangeCLick.value = currentPage.value;
+          }
+          else{
+            pageChangeCLick.value = 3;
+          }
         }
-      }
-      else{
-        currentPage.value = page;
-        if(page === Math.ceil(totalCount.value / countRecordPageRecord.value)){
-          pageChangeCLick.value = currentPage.value - 1;
-        }
-        else if(page === Math.ceil(totalCount.value / countRecordPageRecord.value) - 1){
-          pageChangeCLick.value = currentPage.value;
-        }
-        else{
-          pageChangeCLick.value = 3;
-        }
-        context.emit("update:modelValue", (countRecordPageRecord.value ) * (page - 1));
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -123,12 +130,16 @@ export default {
      * NK Tiềm 7/10/2022
      */
     function handlePrevPage(){
-      if(currentPage.value > 1){
-        if(currentPage.value > 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value)){
-          pageChangeCLick.value = currentPage.value - 1;
+      try {
+        if(currentPage.value > 1){
+          if(currentPage.value > 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value)){
+            pageChangeCLick.value = currentPage.value - 1;
+          }
+          currentPage.value -= 1;
+          context.emit("update:modelValue", (countRecordPageRecord.value ) * (currentPage.value - 1));
         }
-        currentPage.value -= 1;
-        context.emit("update:modelValue", (countRecordPageRecord.value ) * (currentPage.value - 1));
+      } catch (e) {
+        console.log(e);
       }
     }
     
@@ -137,12 +148,16 @@ export default {
      * NK Tiềm 7/10/2022
      */
     function handleNextPage(){
-      if(currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value)){
-        if(currentPage.value >= 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value) - 1){
-          pageChangeCLick.value = currentPage.value + 1;
+      try {
+        if(currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value)){
+          if(currentPage.value >= 3 && currentPage.value < Math.ceil(totalCount.value / countRecordPageRecord.value) - 1){
+            pageChangeCLick.value = currentPage.value + 1;
+          }
+          currentPage.value += 1;
+          context.emit("update:modelValue", (countRecordPageRecord.value ) * (currentPage.value - 1));
         }
-        currentPage.value += 1;
-        context.emit("update:modelValue", (countRecordPageRecord.value ) * (currentPage.value - 1));
+      } catch (e) {
+        console.log(e);
       }
     }
     return {

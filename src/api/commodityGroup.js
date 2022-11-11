@@ -13,7 +13,7 @@ const getAllRecordList = () => {
  * Khắc Tiềm - 15.09.2022
  */
 const getRecordList = (filter) => {
-  return axiosAPI.get(`/CommodityGroups/fitter?offset=${filter.offset}&limit=${filter.limit}&keyword=${filter.keyword}`);
+  return axiosAPI.post(`/CommodityGroups/fitter`, filter);
 };
 
 /**

@@ -41,11 +41,29 @@ export default {
   // khác 
   OTHER: 2, 
 
+  // Hàng hoá 
+  Goods: 1,
+
+  // Dịch vụ
+  Service: 2,
+
+  // Nguyên vật liệu
+  Materials: 3,
+
+  // Thành phẩm
+  FinishedProduct: 4,
+
+  // Dụng cụ công cụ
+  ToolTools: 5,
+
   // Lỗi phía backend
   Exception: 1, 
 
   // Lỗi trùng mã
   DuplicateCode: 2, 
+
+  // Lỗi phát sinh khi xoá
+  Incurred: 8,
 
   // Lỗi để trống mã 
   EmptyCode: 3, 

@@ -33,10 +33,15 @@ const { MessageErrorInternet, TypeError } = eNum;
           if(catchApi){
             catchApi();
           }
-          store.dispatch("config/addNotification", {
-            type: TypeError,
-            message: response.data.userMsg
-          });
+          if(response.errorCode === eNum.Incurred){
+            store.dispatch("config/setToggleShowNotificationErrorAction", response.data.userMsg);
+          }
+          else{
+            store.dispatch("config/addNotification", {
+              type: TypeError,
+              message: response.data.userMsg
+            });
+          }
         }
       })
       .catch(function () {

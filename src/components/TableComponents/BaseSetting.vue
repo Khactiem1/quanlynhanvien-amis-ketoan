@@ -47,12 +47,21 @@ import eNum from "../../utils/eNum";
 import { onMounted, onUnmounted, toRefs, ref } from "vue";
 export default {
   props: {
+    /**
+     * Cột hiển thị
+     */
     columns: {
       type: Array,
     },
+    /**
+     * Hàm đóng mở form 
+     */
     handleShowSettingTable: {
       type: Function,
     },
+    /**
+     * Hàm xử lý khi click check box hiển thị column
+     */
     handleClickCheckbox: {
       type: Function,
     },

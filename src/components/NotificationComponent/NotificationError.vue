@@ -25,23 +25,43 @@
 import { onBeforeMount, onMounted, onUnmounted, ref, toRefs } from "vue";
 export default {
   props: {
+    /**
+     * Các xử lý khi bấm chấp nhận
+     */
     agreeAction: {
       type: Object,
     },
+    /**
+     * Các xử lý hiển thị message
+     */
     messageAction: {
       type: Object,
     },
   },
   setup(props) {
+    /**
+     * Lấy ra thông báo
+     */
     const { messageAction } = toRefs(props);
 
+    /**
+     * Thông báo hiển thị
+     */
     const displayMessage = ref('');
+    /**
+     * Kiểm tra thông báo nếu là mảng thì hiển thị theo danh sách
+     */
     onBeforeMount(()=> {
       if(Array.isArray(messageAction.value.display)){
-        displayMessage.value = messageAction.value.display.reduce((acc, cur) => {
-          // Nối lại thành chuỗi HTML
-          return (acc += cur ? "- " + cur + "<br>" : "");
-        }, "");
+        if(messageAction.value.display.length === 1){
+          displayMessage.value = messageAction.value.display[0];
+        }
+        else{
+          displayMessage.value = messageAction.value.display.reduce((acc, cur) => {
+            // Nối lại thành chuỗi HTML
+            return (acc += cur ? "- " + cur + "<br>" : "");
+          }, "");
+        }
       }
       else{
         displayMessage.value = messageAction.value.display;

@@ -69,6 +69,12 @@ const formatDateYYYYMMDD = (date) => {
   }
 };
 
+/**
+ * 
+ * @param {*} array 
+ * @param {*} idRecord 
+ * @returns 
+ */
 const listToTree = (array, idRecord) => {
   array = array.sort(function() {
     return -1;

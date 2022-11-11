@@ -40,9 +40,9 @@
           <div
             @click="
               loadData({
-                offset: recordSelectPaging,
-                limit: countRecordPageRecord,
-                keyword: keyword,
+                v_Offset: recordSelectPaging,
+                v_Limit: countRecordPageRecord,
+                v_Where: keyword,
               })
             "
             class="action-render_table reload-table"
@@ -269,7 +269,7 @@ export default {
      */
     watch(countRecordPageRecord, (newValue) => {
       setCountRecordPageRecord(newValue);
-      loadData({ offset: 0, limit: countRecordPageRecord.value, keyword: keyword.value, });
+      loadData({ v_Offset: 0, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     });
 
     /**
@@ -277,7 +277,7 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     watch(recordSelectPaging, () => {
-      loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+      loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     });
 
     /**
@@ -303,7 +303,7 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     onBeforeMount(() => {
-      loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+      loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     });
 
     /**
@@ -432,7 +432,7 @@ export default {
     function searchData(event){
       keyword.value = event.target.value;
       recordSelectPaging.value = 0;
-      loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+      loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     }
 
     /**

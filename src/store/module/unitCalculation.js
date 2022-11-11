@@ -36,7 +36,7 @@ const unitCalculations = {
           isShow: true,
           header: "Trạng thái",
           isActive: true,
-          width: "120px",
+          width: "150px",
         },
       ],
 
@@ -57,9 +57,10 @@ const unitCalculations = {
        * Khắc Tiềm - 15.09.2022
        */
       filter: {
-        offset: 0,
-        limit: 0,
-        keyword: "",
+        v_Offset: 0,
+        v_Limit: 0,
+        v_Where: "",
+        v_Sort: "",
       },
     };
   },
@@ -80,7 +81,9 @@ const unitCalculations = {
      * Khắc Tiềm - 15.09.2022
      */
     setFilterMutation(state, payload) {
-      state.filter = { ...payload };
+      state.filter.v_Offset = payload.v_Offset === 0 || payload.v_Offset ? payload.v_Offset : state.filter.v_Offset;
+        state.filter.v_Limit = payload.v_Limit ? payload.v_Limit : state.filter.v_Limit;
+        state.filter.v_Where = payload.v_Where === "" || payload.v_Where ? payload.v_Where : state.filter.v_Where;
     },
     
     /**

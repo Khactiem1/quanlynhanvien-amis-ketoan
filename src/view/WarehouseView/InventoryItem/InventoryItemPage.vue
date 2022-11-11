@@ -10,69 +10,51 @@
         </div>
         <div class="action-table">
           <!-- {{$t('common.language')}} -->
-          <button @click="handleOpenModal(true)" class="btn btn-success btn-add">
+          <button class="btn btn-action btn-radius btn-add">
+            Tiện ích
+          </button>
+          <router-link to="/DIInventoryItemCategory" class="btn btn-action btn-radius btn-add">
+            Nhóm hàng hoá dịch vụ
+          </router-link>
+          <button @click="handleOpenModal(true)" class="btn btn-radius btn-success btn-add">
             Thêm
           </button>
         </div>
       </div>
-      <div v-if="isShowOverview" class="overview">
-        <div class="overview-reload action-render_table"></div>
-        <div class="overview-item overview-item_left">
-          <div class="overview-image"></div>
-          <div class="overview-content">
-            <div class="overview-text overview-text_total">
-              6
-            </div>
-            <div class="overview-text overview-text_name">
-              Hàng hoá
-            </div>
-            <div class="overview-text overview-text_notification">
-              Sắp hết hàng
-            </div>
-          </div>
-        </div>
-        <div class="separate-line-overview"></div>
-        <div class="overview-item overview-item_right">
-          <div class="overview-image"></div>
-          <div class="overview-content">
-            <div class="overview-text overview-text_total">
-              41950
-            </div>
-            <div class="overview-text overview-text_name">
-              Hàng hoá
-            </div>
-            <div class="overview-text overview-text_notification">
-              Hết hàng
-            </div>
-          </div>
-        </div>
-      </div>
+      <form-overview v-if="isShowOverview"></form-overview>
       <div class="table-content">
         <div class="table-function sticky">  
           <div class="collapse-overview" @click="handleToggleShowOverView()" :class="{ 'mi-chevron-down--primary' : !isShowOverview }"></div>
           <div class="table-function-search">
-            <div class="mi-arrow-check-all"></div>
-            <div
-              ref="templateActionAll"
-              @click="handleToggleActionAll"
-              class="table-function_series"
-            >
-              <span>Thực hiện hàng loạt</span>
-              <div class="table-function_series-icon"></div>
+            <div class="form-fix">
+              <div class="mi-arrow-check-all"></div>
               <div
-                v-show="showActionAll && checkShowActionSeries.length > 0"
-                class="table-list_action"
+                ref="templateActionAll"
+                @click="handleToggleActionAll"
+                class="table-function_series"
               >
-                <div class="list_action-item" @click="handleDeleteAll()">Xoá</div>
+                <span>Thực hiện hàng loạt</span>
+                <div class="table-function_series-icon"></div>
+                <div
+                  v-show="showActionAll && checkShowActionSeries.length > 0"
+                  class="table-list_action"
+                >
+                  <div class="list_action-item" @click="handleDeleteAll()">Xoá</div>
+                </div>
+              </div>
+              <div class="table-function_series not-css">
+                <form-inventory-item-search @handle-filter-data="loadData">
+                </form-inventory-item-search>
               </div>
             </div>
-            <div class="table-function_series not-css">
-              <div @click="handleToggleSearchKey" class="table-function_series">
-                <span>Lọc</span>
-                <div class="table-function_series-icon"></div>
+            <div class="form-key-search">
+              <div class="filter-item" v-for="(item, index) in dataBindFilter" :key="index">
+                <span> {{item.labelSearch}}: {{item.headerSearch}}</span>
+                <div @click="handleDeleteFilterItem(item.columnSearch)" class="delete-filter-icon"></div>
               </div>
-              <form-inventory-item-search :handleClose="handleToggleSearchKey" v-if="isShowSearchKey">
-              </form-inventory-item-search>
+              <div @click="handleDeleteFilterItem()" class="filter-item delete-filter-item" v-if="dataBindFilter.length > 0">
+                <span>Xoá điều kiện lọc</span>
+              </div>
             </div>
           </div>
           <div class="table-function_search">
@@ -88,9 +70,9 @@
             <div
               @click="
                 loadData({
-                  offset: recordSelectPaging,
-                  limit: countRecordPageRecord,
-                  keyword: keyword,
+                  v_Offset: recordSelectPaging,
+                  v_Limit: countRecordPageRecord,
+                  v_Where: keyword,
                 })
               "
               class="action-render_table reload-table"
@@ -113,6 +95,9 @@
               :handleClickActionColumTable="handleClickActionColumTable"
               :isShowLoaderTable="isShowLoaderTable"
               :checkShowActionSeries="checkShowActionSeries"
+              :loadData="loadData"
+              :module="'inventoryItem'"
+              :showTotalColumn="true"
             >
             </table-data>
             <!-- End Table -->
@@ -137,7 +122,7 @@
               :header="'header'"
               :noAnimation="true"
               :autoPosition="true"
-              v-model="countRecordPageRecord"
+              v-model.number="countRecordPageRecord"
             ></input-combobox>
             <paging-page
               :totalCount="totalCount"
@@ -153,8 +138,10 @@
         <modal-form v-if="isShowModal">
           <form-inventory-item
             @handle-click-close-modal="handleCloseModal"
+            @handle-change-type-nature="handleChangeNature"
             :recordEdit="recordEdit"
             :recordAdd="recordAdd"
+            :typeNature="typeNature"
           ></form-inventory-item>
         </modal-form>
         <setting-table
@@ -176,6 +163,7 @@
   import eventCtrlAltA from '../../../utils/event/eventCtrlAltA';
   import handleDebounce from '../../../utils/event/debounce';
   import FormInventoryItemSearch from './FormInventoryItemSearch';
+  import FormOverview from "./FormOverview.vue";
   import InputCombobox from "../../../components/InputComponents/BaseCombobox.vue";
   import { computed, ref, watch, onBeforeMount, onUnmounted, onMounted } from "vue";
   import { useStore } from "vuex";
@@ -193,10 +181,25 @@
       InputCombobox,
       FormInventoryItem,
       SettingTable,
+      FormOverview,
       PagingPage,
       FormInventoryItemSearch,
     },
     setup() {
+      /**
+       * Dữ liệu đang được tìm kiếm
+       */
+      const dataBindFilter = computed(()=> {
+        return store.state.inventoryItem.filter.customSearch.filter(item => item.valueSearch || item.comparisonType === "!=Null" || item.comparisonType === "=Null");
+      });
+      /**
+       * Biến lưu trạng thái tính chất khi thêm hàng hoá
+       * NK Tiềm 28/10/2022
+       */
+      const typeNature = ref(null);
+      function handleChangeNature(nature){
+        typeNature.value = nature;
+      }
       /**
        * Biến lưu trạng thái show overview
        * NK Tiềm 28/10/2022
@@ -336,7 +339,8 @@
        */
       watch(countRecordPageRecord, (newValue) => {
         setCountRecordPageRecord(newValue);
-        loadData({ offset: 0, limit: countRecordPageRecord.value, keyword: keyword.value, });
+        recordSelectPaging.value = 0;
+        loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
       });
   
       /**
@@ -344,7 +348,7 @@
        * Khắc Tiềm - 15.09.2022
        */
       watch(recordSelectPaging, () => {
-        loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+        loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
       });
   
       /**
@@ -352,8 +356,14 @@
        * Khắc Tiềm - 15.09.2022
        */
       async function loadData(filter) {
+        if(filter && filter.resetPage){
+          recordSelectPaging.value = 0;
+          filter.v_Offset = recordSelectPaging.value;
+        }
         if (filter) {
-          await store.dispatch("inventoryItem/setFilterAction", filter);
+          if(filter !== true){
+            await store.dispatch("inventoryItem/setFilterAction", filter);
+          }
           //Kích hoạt hiệu ứng loader table
           isShowLoaderTable.value = true;
         }
@@ -364,13 +374,33 @@
           isShowLoaderTable.value = false;
         }
       }
+
+      /**
+       * Hàm xử lý filter
+       * @param {Cột cần xoá k filetr} column 
+       * Khắc Tiềm - 15.09.2022
+       */
+      function handleDeleteFilterItem(column){
+        try {
+          if(!column){
+          store.dispatch("inventoryItem/setFilterCustomSearchEmptyAction");
+          loadData({resetPage: true});
+        }
+        else{
+          store.dispatch("inventoryItem/setFilterCustomSearchDropAction", column);
+          loadData({resetPage: true});
+        }
+        } catch (e) {
+          console.log(e);
+        }
+      }
   
       /**
        * Trước khi mounted sẽ load dữ liệu 1 lần
        * Khắc Tiềm - 15.09.2022
        */
       onBeforeMount(() => {
-        loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+        loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
       });
   
       /**
@@ -378,7 +408,11 @@
        * Khắc Tiềm - 15.09.2022
        */
       function handleDeleteAll() {
-        store.dispatch("config/setToggleShowNotificationWanningAction", { action: DeleteAll, message: WANNING_DELETE_ALL});
+        try {
+          store.dispatch("config/setToggleShowNotificationWanningAction", { action: DeleteAll, message: WANNING_DELETE_ALL});
+        } catch (e) {
+          console.log(e);
+        }
       }
   
       /**
@@ -396,7 +430,11 @@
        * Khắc Tiềm - 15.09.2022
        */
       function handleClickToggleSettingTable(fieldIndex) {
-        store.dispatch("inventoryItem/setToggleShowColumnTableAction", fieldIndex);
+        try {
+          store.dispatch("inventoryItem/setToggleShowColumnTableAction", fieldIndex);
+        } catch (e) {
+          console.log(e);
+        }
       }
   
       /**
@@ -405,10 +443,13 @@
        * Khắc Tiềm - 15.09.2022
        */
       async function deleteRecord(id) {
-        await callApi(deleteRecordApi, id, () => { 
+        await callApi(deleteRecordApi, id, async () => { 
           store.dispatch("config/addNotification", { type: TypeSuccess, message: MessageSuccessDelete }); 
-          store.dispatch("inventoryItem/setCheckboxUnCheckRecordAction", id);
-          loadData(); 
+          await store.dispatch("inventoryItem/setCheckboxUnCheckRecordAction", id);
+          if(recordList.value.length === 0){
+            recordSelectPaging.value = 0;
+            loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
+          }
         }, store);
       }
   
@@ -417,9 +458,13 @@
        * Khắc Tiềm - 15.09.2022
        */
       async function DeleteAll() {
-        await callApi(deleteMultipleApi, checkShowActionSeries.value, () => { 
-          loadData(); store.dispatch("inventoryItem/setEmptyCheckBoxRecordAction");
-          store.dispatch("config/addNotification", { type: TypeSuccess, message: MessageSuccessDelete });
+        await callApi(deleteMultipleApi, checkShowActionSeries.value, async () => { 
+          store.dispatch("inventoryItem/setEmptyCheckBoxRecordAction");
+          await store.dispatch("config/addNotification", { type: TypeSuccess, message: MessageSuccessDelete });
+          if(recordList.value.length === 0){
+            recordSelectPaging.value = 0;
+            loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
+          }
         }, store);
       }
   
@@ -430,12 +475,9 @@
        * @param {Mã nhân viên}  
        * Khắc Tiềm - 15.09.2022
        */
-      async function handleClickActionColumTable(
-        action,
-        recordId,
-        recordCode
-      ) {
-        if (action == EDIT) {
+      async function handleClickActionColumTable( action, recordId, recordCode) {
+        try {
+          if (action == EDIT) {
           recordEditApi(recordId);
         } else if (action == DELETE) {
           recordDeleteApi(recordId, recordCode)
@@ -443,6 +485,9 @@
           recordReplicationApi(recordId)
         }else if(action === STOP_USING){
           toggleRecordActiveApi(recordId);
+        }
+        } catch (e) {
+          console.log(e);
         }
       }
 
@@ -490,10 +535,14 @@
        * Khắc Tiềm - 15.09.2022
        */
       function handleClickCheckbox(value, listID) {
-        if (value === true) {
-          store.dispatch("inventoryItem/setAllCheckboxRecordAction", listID);
-        } else {
-          store.dispatch("inventoryItem/setCheckboxRecordAction", value);
+        try {
+          if (value === true) {
+            store.dispatch("inventoryItem/setAllCheckboxRecordAction", listID);
+          } else {
+            store.dispatch("inventoryItem/setCheckboxRecordAction", value);
+          }
+        } catch (e) {
+         console.log(e); 
         }
       }
   
@@ -503,7 +552,11 @@
        * Khắc Tiềm - 15.09.2022
        */
       function handleSearchData(event){
-        handleDebounce(600, searchData, event);
+        try {
+          handleDebounce(600, searchData, event);
+        } catch (e) {
+          console.log(e);
+        }
       }
       /**
        * Tìm kiếm
@@ -512,7 +565,7 @@
       function searchData(event){
         keyword.value = event.target.value;
         recordSelectPaging.value = 0;
-        loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+        loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
       }
   
       /**
@@ -521,7 +574,8 @@
        * Khắc Tiềm - 15.09.2022
        */
       function handleOpenModal(stateForm) {
-        if (stateForm === true) {
+        try {
+          if (stateForm === true) {
           // Nếu tồn tại record cần sửa, cần nhân bản thì sẽ xoá đi
           recordEdit.value = null;
           recordAdd.value = null;
@@ -534,6 +588,9 @@
         }
         // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
         isShowModal.value = !isShowModal.value;
+        } catch (e) {
+          console.log(e);
+        }
       }
   
       /**
@@ -572,17 +629,17 @@
        * Khắc Tiềm - 15.09.2022
        */
       function handleToggleActionAll() {
-        if (!showActionAll.value && checkShowActionSeries.value.length > 0) {
+        try {
+          if (!showActionAll.value && checkShowActionSeries.value.length > 0) {
           showActionAll.value = true;
           window.addEventListener("click", handleClickActionAll);
         } else {
           window.removeEventListener("click", handleClickActionAll);
           showActionAll.value = false;
         }
-      }
-      const isShowSearchKey = ref(false);
-      function handleToggleSearchKey(){
-        isShowSearchKey.value = !isShowSearchKey.value;
+        } catch (e) {
+          console.log(e);
+        }
       }
   
       /**
@@ -597,7 +654,11 @@
       const { handleEventCtrlAltA, handleEventInterruptCtrlAltA } = eventCtrlAltA;
   
       function handleKey(event){
-        handleEventCtrlAltA(event, handleOpenModal, true)
+        try {
+          handleEventCtrlAltA(event, handleOpenModal, true)
+        } catch (e) {
+          console.log(e);
+        }
       }
   
       /**
@@ -618,6 +679,7 @@
         recordList,
         totalCount,
         columns,
+        typeNature,
         actionTable,
         isShowModal,
         templateActionAll,
@@ -628,12 +690,14 @@
         isShowLoaderTable,
         isShowSettingTable,
         isShowOverview,
-        isShowSearchKey,
         recordSelectPaging,
         checkShowActionSeries,
         keyword,
         configs,
+        dataBindFilter,
         showActionAll,
+        handleChangeNature,
+        handleDeleteFilterItem,
         handleShowSettingTable,
         handleDeleteAll,
         handleClickToggleSettingTable,
@@ -644,7 +708,6 @@
         handleSearchData,
         handleToggleActionAll,
         handleToggleShowOverView,
-        handleToggleSearchKey,
         loadData,
       };
     },
@@ -688,6 +751,22 @@
     display: flex;
     justify-content: space-between;
     padding: 24px 0 20px 0px;
+  }
+  .action-table .btn + .btn{
+    margin-left: 12px;
+  }
+  .btn-action{
+    background-color: unset;
+    border: 2px solid #3b3c3f;
+    display: flex;
+    align-items: center;
+    transition: all ease .15s;
+  }
+  .btn-action:hover{
+    background-color: #d2d3d6;
+  }
+  .action-table{
+    display: flex;
   }
   /* Phần table */
   .table-content {
@@ -748,7 +827,7 @@
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   }
   .table-function_series:not(.not-css) span {
-    font-family: "notosans-semibold";
+    font-family: "notosans-bold";
     padding-right: 4px;
   }
   .table-function_series-icon {
@@ -889,121 +968,9 @@
   min-height: 16px;
   background-position: -224px -360px;
 }
-.overview{
-  background-color: var(--while__color);
-  width: 100%;
-  min-height: 120px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px 0;
-  position: relative;
-}
-.overview-item {
-  display: flex;
-  align-items: center;
-}
-.separate-line-overview{
-  height: calc(100% - 32px);
-    width: 1px;
-    background: #707070;
-    position: absolute;
-    left: 50%;
-    top: 16px;
-}
-.overview-image{
-  background: var(--url__icon) no-repeat;
-  cursor: pointer;
-  width: 94px;
-  height: 94px;
-  min-width: 94px;
-  min-height: 94px;
-  border: 2px solid;
-  border-radius: 50%;
-  border-color: #fff;
-  margin-right: 30px;
-}
-.overview-item_left {
-  padding-right: 40px;
-}
-.overview-item_right {
-  padding-left: 40px;
-}
-.overview-item_left .overview-image{
-  background-position: -27px -1311px;
-}
-.overview-item_left .overview-image:hover{
-  border-color: rgba(254,167,17,.3)!important;
-}
-.overview-item_right .overview-image{
-  background-position: -139px -1307px;
-}
-.overview-item_right .overview-image:hover{
-  border-color: rgba(255,0,0,.3)!important;
-}
-.overview-item_left .overview-text{
-  text-align: right;
-}
-.overview-item_right .overview-text{
-  text-align: left;
-}
-.overview-item_left .overview-text_total{
-  color: #fea711;
-}
-.overview-item_right .overview-text_total{
-  color: #eb1d1d;;
-}
-.overview-text_total{
-  font-size: 38px;
-  line-height: 38px;
-}
-.overview-text_name{
-  color: #212121;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 26px;
-}
-.overview-text_notification{
-  color: #8c8c8e;
-  font-size: 16px;
-  text-transform: uppercase;
-}
-.collapse-overview{
-  border: 2px solid #e2e9f2;
-    background: #f2f5f8;
-    width: 26px;
-    height: 16px;
-    position: absolute;
-    cursor: pointer;
-    z-index: 9;
-    top: 0px;
-    right: 15px;
-    background: var(--url__icon) no-repeat;
-    background-position: -125px -362px;
-    border-top: none;
-}
+
 .mi-chevron-down--primary{
   background-position: -173px -362px;
-}
-.overview-reload{
-  position: absolute;
-    width: 24px;
-    height: 24px;
-    top: 5px;
-    right: 5px;
-    cursor: pointer;
-    z-index: 9;
-    background: var(--url__icon) no-repeat;
-    background-position: -423px -201px;
-}
-.overview-reload:hover{
-  background-position: -1097px -88px;
-}
-.overview-reload::before{
-  content: "Tải lại số liệu tổng hợp";
-    width: 130px;
-    left: -112px;
 }
 .table-function-search{
   display: flex;
@@ -1020,4 +987,39 @@
     margin-left: 7px;
     min-height: 24px;
 }
+.form-key-search{
+  display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.filter-item{
+    display: flex;
+    align-items: center;
+    position: relative;
+    color: #0075c0;
+    margin-left: 6px;
+    white-space: nowrap;
+  }
+  .delete-filter-icon{
+    background: var(--url__icon);
+    background-position: -80px -312px;
+    margin-left: 3px;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    min-width: 16px;
+    min-height: 16px;
+    cursor: pointer;
+  }
+  .form-fix{
+    min-width: 316px;
+    display: flex;
+    align-items: center;
+  }
+  .delete-filter-item{
+    cursor: pointer;
+  }
+  .delete-filter-item:hover{
+    text-decoration: underline
+  }
 </style>

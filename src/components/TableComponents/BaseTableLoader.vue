@@ -23,9 +23,15 @@
 <script>
 export default {
   props: {
+    /**
+     * column cần hiển thị
+     */
     columns: {
       type: Array,
     },
+    /**
+     * độ dài muốn hiển thị
+     */
     lengthList: {},
   },
 };

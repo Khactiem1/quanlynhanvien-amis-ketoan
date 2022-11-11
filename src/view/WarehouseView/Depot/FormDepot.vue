@@ -216,7 +216,11 @@
        * NK Tiềm 28/10/2022
        */
       function handleKey(event){
-        handleEventFormCtrlShiftS(event, handleCloseModal, null, handleSaveData, false, handleSaveData, true)
+        try {
+          handleEventFormCtrlShiftS(event, handleCloseModal, null, handleSaveData, false, handleSaveData, true)
+        } catch (e) {
+          console.log(e);
+        }
       }
   
       /**
@@ -289,27 +293,31 @@
        * NK Tiềm 28/10/2022
        */
       async function handleSaveData(closeModal) {
-        const messValid = validateInput();
-        if (messValid.length > 0) {
-          isValid.value = true;
-          store.dispatch("config/setToggleShowNotificationErrorAction", messValid);
-        } else {
-          if (stateAdd.value) {
-            // Trạng thái thêm thì sẽ truyền api thêm
-            await callApiForm(createRecordApi);
+        try {
+          const messValid = validateInput();
+          if (messValid.length > 0) {
+            isValid.value = true;
+            store.dispatch("config/setToggleShowNotificationErrorAction", messValid);
           } else {
-            // Trạng thái sửa thì sẽ truyền api sửac
-            await callApiForm(editRecordApi);
+            if (stateAdd.value) {
+              // Trạng thái thêm thì sẽ truyền api thêm
+              await callApiForm(createRecordApi);
+            } else {
+              // Trạng thái sửa thì sẽ truyền api sửac
+              await callApiForm(editRecordApi);
+            }
+            if (closeModal === true && errorApi.value === false) {
+              context.emit("handle-click-close-modal");
+            } else if (errorApi.value === false) {
+              titleForm.value = AddFormDepot;
+              isValid.value = false;
+              depot.value = { ...depotReset.value };
+              // Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
+              inputFocus.value.tagInput.focus(); 
+            }
           }
-          if (closeModal === true && errorApi.value === false) {
-            context.emit("handle-click-close-modal");
-          } else if (errorApi.value === false) {
-            titleForm.value = AddFormDepot;
-            isValid.value = false;
-            depot.value = { ...depotReset.value };
-            // Khi thêm xong nếu không đóng form thì sẽ focus vào ô input
-            inputFocus.value.tagInput.focus(); 
-          }
+        } catch (e) {
+          console.log(e);
         }
       }
   
@@ -318,7 +326,11 @@
        * NK Tiềm 28/10/2022
        */
       function handleCloseNotificationAndCloseModal() {
-        context.emit("handle-click-close-modal");
+        try {
+          context.emit("handle-click-close-modal");
+        } catch (e) {
+          console.log(e);
+        }
       }
       //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng thông báo và modal và thêm dữ liệu
   
@@ -337,25 +349,29 @@
        */
       function handleCloseModal(closeNow) {
         //Kiếm tra dữ liệu khi đóng form khác thì hỏi có lưu hay không
-        if (closeNow) {
-          context.emit("handle-click-close-modal");
-        } else if (stateAdd.value) {
-          if (
-            JSON.stringify(depot.value) != JSON.stringify(depotReset.value)
-          ) {
-            saveDataWhenCloseModal();
-          } else {
+        try {
+          if (closeNow) {
             context.emit("handle-click-close-modal");
+          } else if (stateAdd.value) {
+            if (
+              JSON.stringify(depot.value) != JSON.stringify(depotReset.value)
+            ) {
+              saveDataWhenCloseModal();
+            } else {
+              context.emit("handle-click-close-modal");
+            }
+          } else if (stateAdd.value === false) {
+            if (
+              JSON.stringify(depot.value) !=
+              JSON.stringify(recordEditReset.value)
+            ) {
+              saveDataWhenCloseModal();
+            } else {
+              context.emit("handle-click-close-modal");
+            }
           }
-        } else if (stateAdd.value === false) {
-          if (
-            JSON.stringify(depot.value) !=
-            JSON.stringify(recordEditReset.value)
-          ) {
-            saveDataWhenCloseModal();
-          } else {
-            context.emit("handle-click-close-modal");
-          }
+        } catch (e) {
+          console.log(e);
         }
       }
   

@@ -78,9 +78,11 @@ export default {
     InputDefault,
   },
   props: {
+    // Bản ghi sửa
     recordEdit: {
       type: Object,
     },
+    // Bản ghi nhân bản
     recordAdd: {
       type: Object,
     },
@@ -201,7 +203,11 @@ export default {
      * NK Tiềm 28/10/2022
      */
     function handleKey(event){
-      handleEventFormCtrlShiftS(event, handleCloseModal, null, handleSaveData, false, handleSaveData, true)
+      try {
+        handleEventFormCtrlShiftS(event, handleCloseModal, null, handleSaveData, false, handleSaveData, true)
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     /**
@@ -273,7 +279,8 @@ export default {
      * NK Tiềm 28/10/2022
      */
     async function handleSaveData(closeModal) {
-      const messValid = validateInput();
+      try {
+        const messValid = validateInput();
       if (messValid.length > 0) {
         isValid.value = true;
         store.dispatch("config/setToggleShowNotificationErrorAction", messValid);
@@ -295,6 +302,9 @@ export default {
           inputFocus.value.tagInput.focus(); 
         }
       }
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     /**
@@ -302,7 +312,11 @@ export default {
      * NK Tiềm 28/10/2022
      */
     function handleCloseNotificationAndCloseModal() {
-      context.emit("handle-click-close-modal");
+      try {
+        context.emit("handle-click-close-modal");
+      } catch (e) {
+        console.log(e);
+      }
     }
     //(Khắc Tiềm - 15.09.2022)  Hàm xử lý đóng thông báo và modal và thêm dữ liệu
 
@@ -311,7 +325,11 @@ export default {
      * NK Tiềm 28/10/2022
      */
     function handleSaveDataAndCloseNotificationAndCloseModal() {
-      handleSaveData(true);
+      try {
+        handleSaveData(true);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     /**
@@ -321,7 +339,8 @@ export default {
      */
     function handleCloseModal(closeNow) {
       //Kiếm tra dữ liệu khi đóng form khác thì hỏi có lưu hay không
-      if (closeNow) {
+      try {
+        if (closeNow) {
         context.emit("handle-click-close-modal");
       } else if (stateAdd.value) {
         if (
@@ -340,6 +359,9 @@ export default {
         } else {
           context.emit("handle-click-close-modal");
         }
+      }
+      } catch (e) {
+        console.log(e);
       }
     }
 

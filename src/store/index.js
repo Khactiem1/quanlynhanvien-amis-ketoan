@@ -2,7 +2,7 @@ import { createStore } from 'vuex';
 import config from './module/config';
 import employee from './module/employee';
 import unitCalculation from './module/unitCalculation';
-import depot from './module/Depot';
+import depot from './module/depot';
 import commodityGroup from './module/commodityGroup';
 import inventoryItem from './module/inventoryItem';
 

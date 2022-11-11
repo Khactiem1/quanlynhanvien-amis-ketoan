@@ -31,16 +31,31 @@ import { onUnmounted, ref } from "vue";
 import actionList from "../../utils/actionTable";
 export default {
   props: {
+    /**
+     * Các hành đồng của table
+     */
     actionTable: {
       type: Object,
     },
+    /**
+     * Row kèm data được chọn
+     */
     row: {},
+    /**
+     * Hàm xử lý click vào từng hành động của action table
+     */
     handleClickActionColumTable: {
       type: Function,
     },
+    /**
+     * Hàm đóng action
+     */
     handleCloseAction: {
       type: Function,
     },
+    /**
+     * Set vị trí của actable hiển thị
+     */
     positionAction: {
       type: Object,
     },

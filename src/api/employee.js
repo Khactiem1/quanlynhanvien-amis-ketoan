@@ -6,7 +6,7 @@ import axiosAPI from ".";
  * Khắc Tiềm - 15.09.2022
  */
 const getRecordList = (filter) => {
-  return axiosAPI.get(`/Employees/fitter?offset=${filter.offset}&limit=${filter.limit}&keyword=${filter.keyword}`);
+  return axiosAPI.post(`/Employees/fitter`, filter);
 };
 
 /**

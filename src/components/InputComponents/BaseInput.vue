@@ -5,6 +5,7 @@
       {{ toolTip }}
     </span>
     <input
+      :disabled="disabled"
       ref="tagInput"
       class="input"
       :type="type"
@@ -20,25 +21,26 @@
 </template>
 
 <script>
-import { ref, onMounted, toRefs, watch } from "vue";
+import { ref, onMounted, toRefs, watch, onBeforeMount } from "vue";
 import validate from "../../utils/validate.js";
 export default {
   props: [
-    "modelValue",
-    "maxLength",
-    "placeholder",
-    "required",
-    "type",
-    "messageValid",
-    "label",
-    "focus",
-    "tab",
-    "toolTip",
-    "isPhone",
-    "isEmail",
-    "isNumber",
-    "leftMessage",
-    "maxValue",
+    "modelValue", // Giá trị v-model
+    "maxLength", // Max độ dài
+    "placeholder", // placeholder ô input
+    "required", // Bắt buộc hay không
+    "type", // Kiểu input
+    "messageValid", // Thông báo lỗi khi input không thoả mãm
+    "label", // Label hiển thị
+    "focus", // có được focus hay không
+    "tab", // tab index
+    "toolTip", // toolTip hiển thị
+    "isPhone", // Có là sdt không
+    "isEmail", // Có là email không
+    "isNumber", // có là số hay không
+    "leftMessage", // hiển thị message bên left
+    "maxValue", // max giá trị có thể nhập khi là số
+    "disabled", // vô hiệu hoá ô input
   ],
   emits: ["update:modelValue"],
   setup(props, context) {
@@ -79,6 +81,9 @@ export default {
      */
     const { validateEmail, validatePhone } = validate;
 
+    /**
+     * Kiểm tra sự thay đổi của giá trị input và binding lên thẻ input
+     */
     const valueHeader = ref('');
     watch(modelValue, (newValue)=>{
       if(isNumber.value){
@@ -86,6 +91,17 @@ export default {
       }
       else{
         valueHeader.value = newValue;
+      }
+    });
+    /**
+     * Binding giá trị lên thẻ input
+     */
+    onBeforeMount(()=>{
+      if(isNumber.value){
+        valueHeader.value = Comma(modelValue.value);
+      }
+      else{
+        valueHeader.value = modelValue.value;
       }
     });
 
@@ -125,10 +141,11 @@ export default {
       else if(isNumber.value){
         const number = CommaToNumber(event.target.value);
         if(checkNumber(number) || number === ''){
-          if(event.data === '.' || event.data === ','){
+          if((event.data === '.' || event.data === ',') && !valueHeader.value.includes(',')){
             valueHeader.value = Comma(modelValue.value) + ',';
           }
           else{
+            valueHeader.value = Comma(modelValue.value);
             updateValue(number);
           }
         }
@@ -149,6 +166,11 @@ export default {
       }
     }
 
+    /**
+     * Hàm cập nhật giá trị
+     * @param {H} value 
+     * Khắc Tiềm - 15.09.2022
+     */
     function updateValue(value){
       if(maxValue.value){
         if(Number(value) <= maxValue.value){
@@ -171,7 +193,7 @@ export default {
     function Comma(number) {
       if(number){
         let intPart = Math.trunc(number); 
-        const floatPart = Number((number - intPart).toFixed(10));
+        const floatPart = Number((number - intPart).toFixed(2));
         intPart = "" + intPart;
         if (intPart.length > 3) {
           var mod = intPart.length % 3;
@@ -267,5 +289,8 @@ export default {
 }
 .is-number{
   text-align: right;
+}
+.input:disabled{
+  background-color: #EFF0F2;
 }
 </style>

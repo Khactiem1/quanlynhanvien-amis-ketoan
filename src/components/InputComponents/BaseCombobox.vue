@@ -17,6 +17,7 @@
       </div>
       <input
         ref="input"
+        :placeholder="placeholder"
         @focus="handleFocusInput"
         class="input"
         :value="inputEvent"
@@ -32,7 +33,7 @@
       <div class="icon-add" @click="handleAddIcon()" v-if="addIcon">
         <div class="select_icon-add"></div>
       </div>
-      <div v-if="isShow" class="combobox-combobox_select" :style="{width : widthOptionSelect}">
+      <div v-show="isShow" class="combobox-combobox_select" :style="{width : widthOptionSelect}">
         <div v-if="labelCode && labelName" class="combobox-labelName">
           <div v-if="labelCode" class="label-item label-code" :style="{width: widthLabelCode}">
             {{ labelCode }}
@@ -76,43 +77,116 @@ import handleDebounce from '../../utils/event/debounce';
 import eNum from "../../utils/eNum";
 export default {
   props: {
+    /**
+     * Độ dài của option select
+     */
     widthOptionSelect: {},
+    /**
+     * giá trị v-model
+     */
     modelValue: {},
+    /**
+     * Giá trị được chọn trong form select
+     */
     value: {
       type: String,
     },
+    /**
+     * Giá trị hiển thị lên combobox
+     */
     header: {
       type: String,
     },
+    /**
+     * Giá trị hiển thị lên form select phần code
+     */
     headerCode: {
       type: String,
     },
+    /**
+     * Value mặc định
+     */
     defaultValue: {},
+    /**
+     * label hiển thị của input
+     */
     label: {
       type: String,
     },
+    /**
+     * Label code hiển thị thêm bổ sung
+     */
     labelCode: {
       type: String,
     },
+    /**
+     * Độ dài của trường hiển thị code
+     */
     widthLabelCode: {},
+    /**
+     * Giá trị hiển thị phần tên
+     */
     labelName: {
       type: String,
     },
+    /**
+     * dữ liệu select và hiển thị
+     */
     options: {
       type: Array,
       default: () => [],
     },
+    /**
+     * placeholder ô input
+     */
+    placeholder:{String},
+    /**
+     * có bắt buộc hay không
+     */
     required: {},
+    /**
+     * tabindex
+     */
     tab: {},
+    /**
+     * báo lỗi khi giá trị sai
+     */
     messageValid: {},
+    /**
+     * Hiệu ứng
+     */
     noAnimation: {},
+    /**
+     * Không cho nhập
+     */
     disabled: {},
+    /**
+     * Tooltip hiển thị bổ sung
+     */
     toolTip:{},
+    /**
+     * Icon add phục vụ thêm ngay tại form
+     */
     addIcon: {},
+    /**
+     * Hiển thị thông báo bên left
+     */
     leftMessage:{},
+    /**
+     * xử lý khi bấm nút addIcon
+     */
     handleAddIcon:{},
+    /**
+     * Có là combobox select nhiều hay không
+     */
     selectMultiple:{},
+    /**
+     * Giá trị hiển thị khi select nhiều 
+     */
     headerSelectMultiple:{},
+    /**
+     * Có auto set vị trí hay không
+     */
     autoPosition: {},
   },
   setup(props, context) {
@@ -263,9 +337,26 @@ export default {
      */
     const handleEnum = function (event) {
       if (event.keyCode === UP) {
-        if(optionValue.value.length > 0){
+        eventKeyUp(event)
+      } else if (event.keyCode === DOWN) {
+        eventKeyDown(event)
+      }
+      else if(event.keyCode === BACK){
+        eventKeyBack(event)
+      } 
+      else if (event.keyCode === ENTER || event.keyCode === TAB) {
+        // xử lý bấm enter
+        handleSaveData(valueClick.value, true);
+        toggleListSelect();
+      }
+    };
+    /**
+     * Hàm xử lý bấm lên
+     */
+    function eventKeyUp(){
+      if(optionValue.value.length > 0){
           // xử lý bấm lên
-          if (!valueClick.value && optionValue.value) {
+          if (!valueClick.value && valueClick.value != '' && valueClick.value != 0 && optionValue.value) {
             valueClick.value = optionValue.value[0][value.value];
             inputEvent.value = optionValue.value[0][header.value];
           } else {
@@ -283,10 +374,14 @@ export default {
             }
           }
         }
-      } else if (event.keyCode === DOWN) {
-        if(optionValue.value.length > 0){
+    }
+    /**
+     * Hàm xử lý bấm phím xuống
+     */
+    function eventKeyDown(){
+      if(optionValue.value.length > 0){
           // xử lý bấm xuống
-          if (!valueClick.value && optionValue.value) {
+          if (!valueClick.value && valueClick.value != '' && valueClick.value != 0 && optionValue.value) {
             valueClick.value = optionValue.value[0][value.value];
             inputEvent.value = optionValue.value[0][header.value];
           } else {
@@ -304,39 +399,45 @@ export default {
             }
           }
         }
-      }
-      else if(event.keyCode === BACK){
-        if(input.value.value === '' && selectMultiple.value && modelValue.value.length > 0){
+    }
+    /**
+     * Hàm xử lý bấm phím xoá
+     */
+    function eventKeyBack(){
+      if(input.value.value === '' && selectMultiple.value && modelValue.value.length > 0){
           const data = [...modelValue.value];
           data.pop();
           context.emit("update:modelValue", data);
         }
-      } 
-      else if (event.keyCode === ENTER || event.keyCode === TAB) {
-        // xử lý bấm enter
-        handleSaveData(valueClick.value, true);
-        toggleListSelect();
-      }
-    };
+    }
 
+    /**
+     * Hàm lưu dữ liệu
+     * @param {*} valueOf 
+     * @param {*} noRemove 
+     */
     function handleSaveData(valueOf, noRemove){
-      if(selectMultiple.value){
-        if(valueOf){
-          const data = [...modelValue.value]
-          const index = modelValue.value.findIndex(v => v === valueOf);
-          if(index === -1){
-            data.push(valueOf);
-          }
-          else{
-            if(!noRemove){
-              data.splice(index, 1);
+      try {
+        if(selectMultiple.value){
+          if(valueOf){
+            const data = [...modelValue.value]
+            const index = modelValue.value.findIndex(v => v === valueOf);
+            if(index === -1){
+              data.push(valueOf);
             }
+            else{
+              if(!noRemove){
+                data.splice(index, 1);
+              }
+            }
+            context.emit("update:modelValue", data);
           }
-          context.emit("update:modelValue", data);
         }
-      }
       else{
         context.emit("update:modelValue", valueOf);
+      }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -369,9 +470,13 @@ export default {
      */
     function handleClickItem(value) {
       handleSaveData(value);
-      valueClick.value = value;
-      if(!selectMultiple.value){
-        toggleListSelect();
+      try {
+        valueClick.value = value;
+        if(!selectMultiple.value){
+          toggleListSelect();
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -380,9 +485,13 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleFocusInput() {
-      if (!isShow.value) {
-        setPositionListSelect();
-        toggleListSelect();
+      try {
+        if (!isShow.value) {
+          setPositionListSelect();
+          toggleListSelect();
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -428,10 +537,14 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleInput(event) {
-      handleSearchData(event, isShow.value);
-      if (!isShow.value) {
-        setPositionListSelect();
-        toggleListSelect();
+      try {
+        handleSearchData(event, isShow.value);
+        if (!isShow.value) {
+          setPositionListSelect();
+          toggleListSelect();
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -440,12 +553,16 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleClickOpenCombobox() {
-      if (!isShow.value) {
-        setPositionListSelect();
-      }
-      toggleListSelect();
-      if (isShow.value) {
-        input.value.focus();
+      try {
+        if (!isShow.value) {
+          setPositionListSelect();
+        }
+        toggleListSelect();
+        if (isShow.value) {
+          input.value.focus();
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -676,7 +793,7 @@ export default {
   padding: 0 0 2px 0; 
   opacity: 0;
   visibility: hidden;
-  z-index: 1;
+  z-index: 5;
   border-radius: 2px;
   transition: all 0.1s ease;
 }

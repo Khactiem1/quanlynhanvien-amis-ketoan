@@ -29,9 +29,9 @@
           <div
             @click="
               loadData({
-                offset: recordSelectPaging,
-                limit: countRecordPageRecord,
-                keyword: keyword,
+                v_Offset: recordSelectPaging,
+                v_Limit: countRecordPageRecord,
+                v_Where: keyword,
               })
             "
             class="action-render_table reload-table"
@@ -226,7 +226,7 @@ export default {
      */
     watch(countRecordPageRecord, (newValue) => {
       setCountRecordPageRecord(newValue);
-      loadData({ offset: 0, limit: countRecordPageRecord.value, keyword: keyword.value, });
+      loadData({ v_Offset: 0, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     });
 
     /**
@@ -234,7 +234,7 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     watch(recordSelectPaging, () => {
-      loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+      loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     });
 
     /**
@@ -261,7 +261,7 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     onBeforeMount(() => {
-      loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+      loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     });
 
     /**
@@ -283,20 +283,20 @@ export default {
      * @param {Mã nhân viên}  
      * Khắc Tiềm - 15.09.2022
      */
-    async function handleClickActionColumTable(
-      action,
-      recordId,
-      recordCode
-    ) {
-      if (action == EDIT) {
-        recordEditApi(recordId);
-      } else if (action == DELETE) {
-        recordDeleteApi(recordId, recordCode)
-      } else if (action == REPLICATION) {
-        recordReplicationApi(recordId)
-      }
-      else if(action === STOP_USING){
-        toggleRecordActiveApi(recordId);
+    async function handleClickActionColumTable( action, recordId, recordCode ) {
+      try {
+        if (action == EDIT) {
+          recordEditApi(recordId);
+        } else if (action == DELETE) {
+          recordDeleteApi(recordId, recordCode)
+        } else if (action == REPLICATION) {
+          recordReplicationApi(recordId)
+        }
+        else if(action === STOP_USING){
+          toggleRecordActiveApi(recordId);
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -342,7 +342,11 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleSearchData(event){
-      handleDebounce(600, searchData, event);
+      try {
+        handleDebounce(600, searchData, event);
+      } catch (e) {
+        console.log(e);
+      }
     }
     /**
      * Tìm kiếm
@@ -351,7 +355,7 @@ export default {
     function searchData(event){
       keyword.value = event.target.value;
       recordSelectPaging.value = 0;
-      loadData({ offset: recordSelectPaging.value, limit: countRecordPageRecord.value, keyword: keyword.value, });
+      loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     }
 
     /**
@@ -360,19 +364,23 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleOpenModal(stateForm) {
-      if (stateForm === true) {
-        // Nếu tồn tại record cần sửa, cần nhân bản thì sẽ xoá đi
-        recordEdit.value = null;
-        recordAdd.value = null;
-      } else if (stateForm === EDIT) {
-        // Nếu tồn tại record cần nhân bản thì sẽ xoá đi
-        recordAdd.value = null;
-      } else if (stateForm === REPLICATION) {
-        // Nếu tồn tại record cần sửa thì sẽ xoá đi
-        recordEdit.value = null;
+      try {
+        if (stateForm === true) {
+          // Nếu tồn tại record cần sửa, cần nhân bản thì sẽ xoá đi
+          recordEdit.value = null;
+          recordAdd.value = null;
+        } else if (stateForm === EDIT) {
+          // Nếu tồn tại record cần nhân bản thì sẽ xoá đi
+          recordAdd.value = null;
+        } else if (stateForm === REPLICATION) {
+          // Nếu tồn tại record cần sửa thì sẽ xoá đi
+          recordEdit.value = null;
+        }
+        // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
+        isShowModal.value = !isShowModal.value;
+      } catch (e) {
+        console.log(e);
       }
-      // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
-      isShowModal.value = !isShowModal.value;
     }
 
     /**
@@ -389,7 +397,11 @@ export default {
     const { handleEventCtrlAltA, handleEventInterruptCtrlAltA } = eventCtrlAltA;
 
     function handleKey(event){
-      handleEventCtrlAltA(event, handleOpenModal, true)
+      try {
+        handleEventCtrlAltA(event, handleOpenModal, true)
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     /**

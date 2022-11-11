@@ -107,7 +107,7 @@ export default {
 
 <style>
 @font-face {
-  font-family: notosans-bold;
+  font-family: notosans-semibold;
   src: url(../public/asset/fonts/notosans-bold.3ede5aff.woff2);
 }
 @font-face {
@@ -119,7 +119,7 @@ export default {
   src: url(../public/asset/fonts/notosans-regular.2cb88a13.woff2);
 }
 @font-face {
-  font-family: notosans-semibold;
+  font-family: notosans-bold ;
   src: url(../public/asset/fonts/notosans-semibold.df3e6dc4.woff2);
 }
 @import "../public/asset/css/base.css";

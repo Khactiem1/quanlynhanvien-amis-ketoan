@@ -45,6 +45,7 @@
   .modal-title h2 {
     font-size: 24px;
     font-weight: 700;
+    font-family: 'notosans-semibold';
   }
   .modal-close {
     display: flex;
@@ -241,6 +242,9 @@
   .input-radio_item {
     display: flex;
     padding-top: 5px;
+  }
+  label{
+    font-size: 12px;
   }
   </style>
   

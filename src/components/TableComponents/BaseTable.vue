@@ -18,7 +18,11 @@
           }"
           :key="index"
         >
-          {{ item.header }}
+          <span @click="handleSetSortColumn(item.field)">
+            {{ item.header }} 
+            <!-- <div class="sort" :class="{ 'sortASC': false }"></div> -->
+          </span>
+          <div v-if="item.filter" @click="handleShowFilter($event, item.filter)" class="mi-header-option"></div>
         </th>
         <th style="width: 120px; min-width: 120px" class="text-center">
           Chức năng
@@ -70,8 +74,15 @@
               ? formatGender(row[col.field])
               : col.isActive === true
               ? formatIsActive(row[col.field])
-              : row[col.field]
+              : col.isNature === true
+              ? formatNature(row[col.field])
+              : col.isImage === true
+              ? ""
+              :row[col.field]
           }}
+          <div v-if="col.isImage === true" class="image-table">
+            <img v-bind:src="row[col.field] ? row[col.field].includes('/Assets/Images/') ? baseUrl.baseUrlImage + row[col.field] : '' + row[col.field] : ''" alt="">
+          </div>
         </td>
         <td class="text-center">
           <div class="action-colum_table">
@@ -102,7 +113,26 @@
         </td>
       </tr>
     </tbody>
-
+    <thead v-if="showTotalColumn && tableList.length !== 0" class="thead-light table-footer">
+      <tr>
+        <th style="text-transform: none;" v-if="checkShowActionSeries">
+          Tổng
+        </th>
+        <th
+          v-for="(item, index) in columns"
+          :style="{
+            'text-align': item.textAlign,
+            'min-width': item.width,
+            width: item.width,
+          }"
+          :key="index"
+        >
+          {{ item.data ?  Comma(item.data) : "" }}
+        </th>
+        <th style="width: 120px; min-width: 120px" class="text-center">
+        </th>
+      </tr>
+    </thead>
     <teleport to="#app">
       <table-list-action
         :actionTable="actionTable"
@@ -111,6 +141,8 @@
         :handleCloseAction="handleCloseAction"
         :handleClickActionColumTable="handleClickActionColumTable"
       ></table-list-action>
+      <base-table-filter :handleShowFilter="handleShowFilter" :dataFilter="dataFilter" @handle-filter-data="handleFilterData" :setPositionFilter="setPositionFilter" v-if="isShowFilter">
+      </base-table-filter>
     </teleport>
   </table>
 </template>
@@ -119,47 +151,129 @@
 import InputCheckbox from "../InputComponents/BaseCheckbox.vue";
 import TableLoader from "../TableComponents/BaseTableLoader.vue";
 import TableEmpty from "../TableComponents/BaseTableEmpty.vue";
+import BaseTableFilter from '../../components/TableComponents/BaseTableFilter.vue';
 import TableListAction from "../TableComponents/BaseTableListAction.vue";
 import eNum from "../../utils/eNum";
+import baseUrl from '../../configs/index';
 import utilEnum from "../../utils/index";
-import { ref, toRefs, computed } from "vue";
+import { ref, toRefs, computed, Teleport } from "vue";
+import { useStore } from "vuex";
 export default {
   components: {
     InputCheckbox,
     TableLoader,
     TableEmpty,
     TableListAction,
-  },
+    BaseTableFilter,
+    Teleport
+},
   props: {
+    /**
+     * Danh sách hiển thị
+     */
     tableList: {
       type: Array,
     },
+    /**
+     * header của table
+     */
     columns: {
       type: Array,
     },
+    /**
+     * Hành động table
+     */
     actionTable: {
       type: Object,
     },
+    /**
+     * sự kiện click vào các ô check box
+     */
     handleClickCheckbox: {
       type: Function,
     },
+    /**
+     * sự kiện click các action table
+     */
     handleClickActionColumTable: {
       type: Function,
     },
+    /**
+     * Biến show trạng thái load của table
+     */
     isShowLoaderTable: {
       type: Boolean,
     },
+    /**
+     * Biến show hạnh động thực hiện hàng loạt của table
+     */
     checkShowActionSeries: {
       type: Array,
     },
+    showTotalColumn: {},
+    loadData: {Function},
+    module: {String},
     listTree: {},
   },
   setup(props) {
+    const store = useStore();
+    /**
+     * Trạng thái hiển thị ô lọc
+     */
+    const isShowFilter = ref(false);
+    /**
+     * Set vị trị của form filter
+     */
+    const setPositionFilter = ref({ top: 0, left: 0});
+    /**
+     * Dữ liệu tìm kiếm sẽ được gửi đi
+     */
+    const dataFilter = ref(null);
+    /**
+     * 
+     * Hàm đóng mở form tìm kiếm
+     */
+    function handleShowFilter(event, data){
+      try {
+        if(event){
+          dataFilter.value = data;
+          const rect = event.path[1].getBoundingClientRect()
+          setPositionFilter.value.top = rect.top + 35;
+          setPositionFilter.value.left = rect.left - (350 - rect.width);
+        }
+        isShowFilter.value = !isShowFilter.value;
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    /**
+     * Hàm xử lý tìm kiếm
+     * @param {data tìm kiếm} filter 
+     */
+    function handleFilterData(filter){
+      try {
+        loadData.value(filter);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    /**
+     * Hàm xử lý sắp xếp
+     */
+    async function handleSetSortColumn (field){
+      try {
+        await store.dispatch(`${module.value}/setFilterCustomSearchSortAction`, field.charAt(0).toUpperCase() + field.slice(1));
+        loadData.value(true);
+      } catch (e) {
+        console.log(e);
+      }
+    }
     /**
      * Bóc tách props ra từ props chuyển vào
      * Khắc Tiềm - 15.09.2022
      */
-    const { tableList, checkShowActionSeries, actionTable } = toRefs(props);
+    const { tableList, checkShowActionSeries, actionTable, loadData, module} = toRefs(props);
 
     /**
      * Danh sách chứa các id
@@ -219,7 +333,7 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function Comma(number) {
-      if(number){
+      if(number || number === 0){
         let intPart = Math.trunc(number); 
         const floatPart = Number((number - intPart).toFixed(10));
         intPart = "" + intPart;
@@ -252,6 +366,20 @@ export default {
       }
     }
 
+    function formatNature(nature){
+      if (nature == 1) {
+        return "Hàng hoá";
+      } else if (nature == 2) {
+        return "Dịch vụ";
+      } else if (nature == 3) {
+        return "Nguyên vật liệu";
+      }else if (nature == 4) {
+        return "Thành phẩm";
+      }else if (nature == 5) {
+        return "Dụng cụ công cụ";
+      }
+    }
+
     function formatIsActive(isActive){
       if(isActive === true){
         return "Đang sử dụng";
@@ -267,15 +395,19 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleShowAction(event, row) {
-      if (JSON.stringify(rowColumn.value) === JSON.stringify(row)) {
-        rowColumn.value = null;
-      } else {
-        if (JSON.stringify(rowColumn.value) !== JSON.stringify(row)) {
-          setTimeout(() => {
-            setPositionActionTable(event);
-            rowColumn.value = row;
-          }, 0);
+      try {
+        if (JSON.stringify(rowColumn.value) === JSON.stringify(row)) {
+          rowColumn.value = null;
+        } else {
+          if (JSON.stringify(rowColumn.value) !== JSON.stringify(row)) {
+            setTimeout(() => {
+              setPositionActionTable(event);
+              rowColumn.value = row;
+            }, 0);
+          }
         }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -314,8 +446,16 @@ export default {
       positionAction,
       isShowCheckAllRecord,
       listID,
+      isShowFilter,
+      baseUrl,
+      dataFilter,
+      handleFilterData,
       Comma,
+      setPositionFilter,
       formatIsActive,
+      handleSetSortColumn,
+      formatNature,
+      handleShowFilter,
       handleShowAction,
       handleCloseAction,
     };
@@ -333,13 +473,38 @@ table {
   border-right: 1px solid #c7c7c7;
   border-bottom: 1px solid #c7c7c7;
   min-height: 34px;
-  padding: 0 10px;
+  padding: 0 10px 0 10px;
+  font-size: 12px;
+  font-family: 'notosans-semibold';
   height: 34px;
   position: sticky;
   top: 66px;
   background-color: #e5e8ec;
   text-transform: uppercase;
   vertical-align: middle;
+}
+.table .thead-light th span{
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.table .thead-light th:not(:first-child){
+  padding: 0 25px 0 10px;
+}
+.mi-header-option{
+  height: fit-content;
+    position: absolute;
+    display: none;
+    right: 3px;
+    background: var(--url__icon) no-repeat;
+    cursor: pointer;
+    top: calc(50% - 8px);
+    min-width: 16px;
+    min-height: 16px;
+    background-position: -1687px -564px;
+}
+.table .thead-light th:hover .mi-header-option{
+  display: block;
 }
 .table .thead-light th:last-child {
   border-right: none;
@@ -481,5 +646,33 @@ tbody tr.active,
 .action-table:active .border-icon_table,
 .action-table:active .action-default {
   border: solid 1px #0075c0;
+}
+.image-table{
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
+.image-table img{
+  height: 100%;
+}
+.sort{
+  width: 16px;
+    height: 16px;
+    min-width: 16px;
+    min-height: 16px;
+    background: var(--url__icon) no-repeat;
+    background-position: -1752px -312px;
+} 
+.sortASC{
+  transform: rotate(180deg);
+}
+.table-footer{
+  position: relative;
+}
+.table-footer th{
+  bottom: 56px !important;
+  padding-right: 10px !important;
+  border-color: #E5E8EC !important;
 }
 </style>
