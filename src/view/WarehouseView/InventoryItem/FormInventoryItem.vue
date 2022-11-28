@@ -825,13 +825,9 @@
         await callApi(apiDepot.getAllRecordListActive, null, async (response) => { optionDepot.value = response; }, store, true);
         if (recordEdit.value) {
           titleForm.value = EditFormInventoryItem;
-          inventoryItem.value = {
-            ...recordEdit.value,
-          }; 
           stateAdd.value = false;
-          recordEditReset.value = {
-            ...recordEdit.value,
-          };
+          inventoryItem.value = recordEdit.value;
+          recordEditReset.value = recordEdit.value;
           // Đưa danh sách id vào mảng
           commodityGroupID.value = inventoryItem.value.commodityGroupID ? inventoryItem.value.commodityGroupID.split(';') : [];
         } else {

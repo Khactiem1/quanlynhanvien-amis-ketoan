@@ -1,3 +1,4 @@
+import actionTable from "../../utils/actionTable";
 const unitCalculations = {
   namespaced: true,
   state: () => {
@@ -7,8 +8,8 @@ const unitCalculations = {
        * Khắc Tiềm - 15.09.2022
        */
       actionTable: {
-        actionDefault: 'Sửa',
-        actionList: ['Nhân bản', 'Xoá', 'Ngừng sử dụng'],
+        actionDefault: actionTable.EDIT,
+        actionList: [actionTable.REPLICATION, actionTable.DELETE, actionTable.STOP_USING],
         fieldId: "unitCalculationID",
         fieldCode: "unitCalculationName",
         fieldActive: "isActive",

@@ -47,15 +47,7 @@
                 </form-inventory-item-search>
               </div>
             </div>
-            <div class="form-key-search">
-              <div class="filter-item" v-for="(item, index) in dataBindFilter" :key="index">
-                <span> {{item.labelSearch}}: {{item.headerSearch}}</span>
-                <div @click="handleDeleteFilterItem(item.columnSearch)" class="delete-filter-icon"></div>
-              </div>
-              <div @click="handleDeleteFilterItem()" class="filter-item delete-filter-item" v-if="dataBindFilter.length > 0">
-                <span>Xoá điều kiện lọc</span>
-              </div>
-            </div>
+            <base-form-key-search :loadData="loadData" :moduleFilter="'inventoryItem'"></base-form-key-search>
           </div>
           <div class="table-function_search">
             <div class="search-table">
@@ -158,6 +150,7 @@
   import TableData from "../../../components/TableComponents/BaseTable.vue";
   import PagingPage from "../../../components/TableComponents/BasePaging.vue";
   import SettingTable from "../../../components/TableComponents/BaseSetting.vue";
+  import BaseFormKeySearch from '../../../components/TableComponents/BaseFormKeySearch.vue';
   import ModalForm from "../../../components/BaseModalForm.vue";
   import FormInventoryItem from "./FormInventoryItem.vue";
   import eventCtrlAltA from '../../../utils/event/eventCtrlAltA';
@@ -183,15 +176,10 @@
       SettingTable,
       FormOverview,
       PagingPage,
+      BaseFormKeySearch,
       FormInventoryItemSearch,
     },
     setup() {
-      /**
-       * Dữ liệu đang được tìm kiếm
-       */
-      const dataBindFilter = computed(()=> {
-        return store.state.inventoryItem.filter.customSearch.filter(item => item.valueSearch || item.comparisonType === "!=Null" || item.comparisonType === "=Null");
-      });
       /**
        * Biến lưu trạng thái tính chất khi thêm hàng hoá
        * NK Tiềm 28/10/2022
@@ -380,20 +368,6 @@
        * @param {Cột cần xoá k filetr} column 
        * Khắc Tiềm - 15.09.2022
        */
-      function handleDeleteFilterItem(column){
-        try {
-          if(!column){
-          store.dispatch("inventoryItem/setFilterCustomSearchEmptyAction");
-          loadData({resetPage: true});
-        }
-        else{
-          store.dispatch("inventoryItem/setFilterCustomSearchDropAction", column);
-          loadData({resetPage: true});
-        }
-        } catch (e) {
-          console.log(e);
-        }
-      }
   
       /**
        * Trước khi mounted sẽ load dữ liệu 1 lần
@@ -694,10 +668,8 @@
         checkShowActionSeries,
         keyword,
         configs,
-        dataBindFilter,
         showActionAll,
         handleChangeNature,
-        handleDeleteFilterItem,
         handleShowSettingTable,
         handleDeleteAll,
         handleClickToggleSettingTable,
@@ -987,39 +959,9 @@
     margin-left: 7px;
     min-height: 24px;
 }
-.form-key-search{
-  display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-}
-.filter-item{
-    display: flex;
-    align-items: center;
-    position: relative;
-    color: #0075c0;
-    margin-left: 6px;
-    white-space: nowrap;
-  }
-  .delete-filter-icon{
-    background: var(--url__icon);
-    background-position: -80px -312px;
-    margin-left: 3px;
-    width: 16px;
-    height: 16px;
-    margin-top: 2px;
-    min-width: 16px;
-    min-height: 16px;
-    cursor: pointer;
-  }
   .form-fix{
     min-width: 316px;
     display: flex;
     align-items: center;
-  }
-  .delete-filter-item{
-    cursor: pointer;
-  }
-  .delete-filter-item:hover{
-    text-decoration: underline
   }
 </style>

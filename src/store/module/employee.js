@@ -1,3 +1,5 @@
+import eNum from "../../utils/eNum";
+import actionTable from "../../utils/actionTable";
 const employees = {
   namespaced: true,
   state: () => {
@@ -7,10 +9,11 @@ const employees = {
        * Khắc Tiềm - 15.09.2022
        */
       actionTable: {
-        actionDefault: 'Sửa',
-        actionList: ['Nhân bản', 'Xoá', 'Ngừng sử dụng'],
+        actionDefault: actionTable.EDIT,
+        actionList: [actionTable.REPLICATION, actionTable.DELETE, actionTable.STOP_USING],
         fieldId: "employeeID",
         fieldCode: "employeeCode",
+        fieldActive: "isActive",
       },
 
       /**
@@ -22,18 +25,26 @@ const employees = {
           field: "employeeCode",
           isShow: true,
           header: "Mã nhân viên",
-          width: "120px",
+          filter: { typeSearch: "text", columnSearch: "EmployeeCode" , typeFilter: "text", module: "employee", headerSearch: "Mã nhân viên"},
+          width: "150px",
         },
         {
           field: "employeeName",
           isShow: true,
           header: "Tên nhân viên",
+          filter: { typeSearch: "text", columnSearch: "EmployeeName" , typeFilter: "text", module: "employee", headerSearch: "Tên nhân viên"},
           width: "200px",
         },
         {
           field: "gender",
           isShow: true,
           header: "Giới tính",
+          filter: { typeSearch: "number", columnSearch: "Gender" , typeFilter: "combobox", module: "employee", headerSearch: "Giới tính", data: [
+            { value: '', header: 'Tất cả' },
+            { value: eNum.MALE, header: 'Nam' },
+            { value: eNum.FEMALE, header: 'Nữ' },
+            { value: eNum.OTHER, header: 'Khác' },
+          ], comparisonType: '=' },
           width: "120px",
           isGender: true,
         },
@@ -41,6 +52,7 @@ const employees = {
           field: "dateOfBirth",
           isShow: true,
           header: "Ngày sinh",
+          filter: { typeSearch: "date", columnSearch: "DateOfBirth" , typeFilter: "date", module: "employee", headerSearch: "Ngày sinh"},
           textAlign: "center",
           formatDate: true,
           width: "130px",
@@ -48,76 +60,100 @@ const employees = {
         {
           field: "branchBank",
           isShow: true,
+          filter: { typeSearch: "text", columnSearch: "BranchBank" , typeFilter: "text", module: "employee", headerSearch: "Chi nhánh ngân hàng"},
           header: "Chi nhánh ngân hàng",
-          width: "200px",
+          width: "230px",
         },
         {
           field: "identityCard",
           isShow: true,
           header: "Số chứng minh",
+          filter: { typeSearch: "text", columnSearch: "IdentityCard" , typeFilter: "text", module: "employee", headerSearch: "Số chứng minh"},
           width: "200px",
         },
         {
           field: "employeeTitle",
           isShow: true,
           header: "Chức danh",
-          width: "120px",
+          filter: { typeSearch: "text", columnSearch: "EmployeeTitle" , typeFilter: "text", module: "employee", headerSearch: "Chức danh"},
+          width: "150px",
         },
         {
           field: "unitName",
           isShow: true,
           header: "Tên đơn vị",
+          filter: { typeSearch: "text", columnSearch: "UnitName" , typeFilter: "text", module: "employee", headerSearch: "Tên đơn vị"},
           width: "200px",
         },
         {
           field: "bankAccount",
           isShow: true,
           header: "Số tài khoản",
+          filter: { typeSearch: "text", columnSearch: "BankAccount" , typeFilter: "text", module: "employee", headerSearch: "Số tài khoản"},
           width: "150px",
         }, //(Khắc Tiềm - 15.09.2022)fractionSize: true ,fractionSize Thêm dấu phẩy vào đơn vị tiền tệ
         {
           field: "nameBank",
           isShow: true,
           header: "Tên ngân hàng",
+          filter: { typeSearch: "text", columnSearch: "NameBank" , typeFilter: "text", module: "employee", headerSearch: "Tên ngân hàng"},
           width: "180px",
         },
         {
           field: "dayForIdentity",
           isShow: true,
           header: "Ngày cấp chứng minh",
+          filter: { typeSearch: "date", columnSearch: "DayForIdentity" , typeFilter: "date", module: "employee", headerSearch: "Ngày cấp chứng minh"},
           textAlign: "center",
-          width: "180px",
+          width: "220px",
           formatDate: true,
         },
         {
           field: "grantAddressIdentity",
           isShow: true,
           header: "Nơi cấp chứng minh",
+          filter: { typeSearch: "text", columnSearch: "GrantAddressIdentity" , typeFilter: "text", module: "employee", headerSearch: "Nơi cấp chứng minh"},
           width: "230px",
         },
         {
           field: "phoneNumber",
           isShow: true,
           header: "Số điện thoại",
+          filter: { typeSearch: "text", columnSearch: "PhoneNumber" , typeFilter: "text", module: "employee", headerSearch: "Số điện thoại"},
           width: "230px",
         },
         {
           field: "landlinePhone",
           isShow: true,
           header: "Điện thoại cố định",
+          filter: { typeSearch: "text", columnSearch: "LandlinePhone" , typeFilter: "text", module: "employee", headerSearch: "Điện thoại cố định"},
           width: "230px",
         },
         {
           field: "employeeEmail",
           isShow: true,
           header: "Địa chỉ email",
+          filter: { typeSearch: "text", columnSearch: "EmployeeEmail" , typeFilter: "text", module: "employee", headerSearch: "Địa chỉ email"},
           width: "230px",
         },
         {
           field: "employeeAddress",
           isShow: true,
           header: "Địa chỉ",
+          filter: { typeSearch: "text", columnSearch: "EmployeeAddress" , typeFilter: "text", module: "employee", headerSearch: "Địa chỉ"},
           width: "200px",
+        },
+        {
+          field: "isActive",
+          isShow: true,
+          header: "Trạng thái",
+          filter: { typeSearch: "number", columnSearch: "IsActive" , typeFilter: "combobox", data: [
+            { value: '', header: 'Tất cả' },
+            { value: 'true', header: 'Đang sử dụng' },
+            { value: 'false', header: 'Ngừng sử dụng' },
+          ], module: "inventoryItem", headerSearch: "Trạng thái ", comparisonType: '=' },
+          isActive: true,
+          width: "150px",
         },
       ],
 
@@ -148,6 +184,7 @@ const employees = {
         v_Limit: 0,
         v_Where: "",
         v_Sort: "",
+        customSearch: [],
       },
     };
   },
@@ -191,25 +228,25 @@ const employees = {
      */
     setAllCheckboxRecordMutation(state,payload) {
       let countCheck = 0;
-      payload.forEach((item) => {
-        if(state.recordCheck.includes(item)){
-          countCheck++;
-        }
-      })
-      if(countCheck == state.filter.v_Limit){
         payload.forEach((item) => {
           if(state.recordCheck.includes(item)){
-            state.recordCheck.splice(state.recordCheck.indexOf(item), 1);
+            countCheck++;
           }
         })
-      }
-      else{
-        payload.forEach((item) => {
-          if(!state.recordCheck.includes(item)){
-            state.recordCheck.push(item);
-          }
-        })
-      }
+        if(countCheck == state.filter.v_Limit || countCheck == state.recordList.length){
+          payload.forEach((item) => {
+            if(state.recordCheck.includes(item)){
+              state.recordCheck.splice(state.recordCheck.indexOf(item), 1);
+            }
+          })
+        }
+        else{
+          payload.forEach((item) => {
+            if(!state.recordCheck.includes(item)){
+              state.recordCheck.push(item);
+            }
+          })
+        }
     },
 
     /**
@@ -217,6 +254,8 @@ const employees = {
      * Khắc Tiềm - 15.09.2022
      */
     setEmptyCheckBoxRecordMutation(state){
+      state.recordList = state.recordList.filter((item) => !state.recordCheck.includes(item[state.actionTable.fieldId]));
+      state.totalCount = state.totalCount - state.recordCheck.length;
       state.recordCheck.length = 0;
     },
 
@@ -225,10 +264,38 @@ const employees = {
      * @param {giá trị set} payload 
      * Khắc Tiềm - 15.09.2022
      */
-    setFilterMutation(state, payload) {
+     setFilterMutation(state, payload) {
       state.filter.v_Offset = payload.v_Offset === 0 || payload.v_Offset ? payload.v_Offset : state.filter.v_Offset;
-        state.filter.v_Limit = payload.v_Limit ? payload.v_Limit : state.filter.v_Limit;
-        state.filter.v_Where = payload.v_Where === "" || payload.v_Where ? payload.v_Where : state.filter.v_Where;
+      state.filter.v_Limit = payload.v_Limit ? payload.v_Limit : state.filter.v_Limit;
+      state.filter.v_Where = payload.v_Where === "" || payload.v_Where ? payload.v_Where : state.filter.v_Where;
+      if(payload.resetPage){
+        for(let key in payload){
+          if(key != 'v_Offset' && key != 'resetPage'){
+            const findIndex = state.filter.customSearch.findIndex(item => item.columnSearch === payload[key].columnSearch);
+            if(findIndex != -1){
+              state.filter.customSearch.splice(findIndex, 1);
+            }
+            state.filter.customSearch.push(payload[key]);
+          }
+        }
+      }
+    },
+
+    /**
+       * Set các giá trị tìm kiếm rỗng
+       */
+     setFilterCustomSearchEmptyMutation(state){
+      state.filter.customSearch.length = 0;
+    },
+
+    /**
+     * Set xoá giá trị tìm kiếm
+     */
+    setFilterCustomSearchDropMutation(state, payload){
+      const findIndex = state.filter.customSearch.findIndex(item => item.columnSearch === payload);
+      if(findIndex != -1){
+        state.filter.customSearch.splice(findIndex, 1);
+      }
     },
 
     /**
@@ -240,6 +307,8 @@ const employees = {
       if(state.recordCheck.includes(payload)){
         state.recordCheck = state.recordCheck.filter(item => item !== payload);
       }
+      state.recordList = state.recordList.filter((item) => item[state.actionTable.fieldId] !== payload);
+      state.totalCount--;
     },
     
     /**
@@ -258,8 +327,58 @@ const employees = {
     editRecordMutation(state, payload) {
       state.recordList = [payload, ...state.recordList.filter(item => item[state.actionTable.fieldId] !== payload[state.actionTable.fieldId])]
     },
+
+    /**
+       * Hàm xử lý toggle active record
+       * Khắc Tiềm - 15.09.2022
+       */
+     setToggleActiveMutation(state, payload){
+      state.recordList.find((item, index) => {
+        if(item[state.actionTable.fieldId] === payload){
+          state.recordList[index].isActive = !state.recordList[index].isActive;
+        }
+      })
+    },
+    setFilterCustomSearchSortMutation(state, payload){
+      if(state.filter.v_Sort === ''){
+        state.filter.v_Sort = `${payload} DESC`;
+      }
+      else if(state.filter.v_Sort.slice(-4) === 'DESC'){
+        state.filter.v_Sort = `${payload} ASC`;
+      }
+      else{
+        state.filter.v_Sort = ``;
+      }
+    },
   },
   actions: {
+    /**
+       * Hàm xử lý sắp xếp theo trường
+       */
+    async setFilterCustomSearchSortAction(context, payload){
+      await context.commit("setFilterCustomSearchSortMutation", payload);
+      return context.state.filter.v_Sort;
+    },
+    /**
+     * Hàm xử lý xoá trường tìm kiếm
+     */
+    setFilterCustomSearchDropAction(context, payload){
+      context.commit("setFilterCustomSearchDropMutation", payload);
+    }, 
+
+    /**
+     * Hàm xử lý xoá tất cả các trường tìm kiếm
+     */
+    setFilterCustomSearchEmptyAction(context){
+      context.commit("setFilterCustomSearchEmptyMutation");
+    },
+    /**
+     * Hàm xử lý toggle active record
+     * Khắc Tiềm - 15.09.2022
+     */
+    setToggleActiveAction(context, payload){
+      context.commit("setToggleActiveMutation", payload);
+    },
     /**
      * Thêm record
      * Khắc Tiềm - 15.09.2022

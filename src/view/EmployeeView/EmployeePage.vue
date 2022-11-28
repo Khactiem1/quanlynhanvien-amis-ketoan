@@ -13,21 +13,24 @@
     </div>
     <div class="table-content">
       <div class="table-function sticky">
-        <div
-          ref="templateActionAll"
-          @click="handleToggleActionAll"
-          class="table-function_series"
-        >
-          <span>Thực hiện hàng loạt</span>
-          <div class="table-function_series-icon"></div>
+        <div class="form-fix">
           <div
-            v-show="showActionAll && checkShowActionSeries.length > 0"
-            class="table-list_action"
+            ref="templateActionAll"
+            @click="handleToggleActionAll"
+            class="table-function_series"
           >
-            <div class="list_action-item" @click="handleDeleteAll()">Xoá</div>
+            <span>Thực hiện hàng loạt</span>
+            <div class="table-function_series-icon"></div>
+            <div
+              v-show="showActionAll && checkShowActionSeries.length > 0"
+              class="table-list_action"
+            >
+              <div class="list_action-item" @click="handleDeleteAll()">Xoá</div>
+            </div>
           </div>
+          <base-form-key-search :loadData="loadData" :moduleFilter="'employee'"></base-form-key-search>
         </div>
-        <div class="table-function_search">
+        <div style="min-width: 350px;" class="table-function_search">
           <div class="search-table">
             <input
               class="input input-table_search"
@@ -65,6 +68,8 @@
             :handleClickActionColumTable="handleClickActionColumTable"
             :isShowLoaderTable="isShowLoaderTable"
             :checkShowActionSeries="checkShowActionSeries"
+            :loadData="loadData"
+            :module="'employee'"
           >
           </table-data>
           <!-- End Table -->
@@ -123,6 +128,7 @@
 import TableData from "../../components/TableComponents/BaseTable.vue";
 import PagingPage from "../../components/TableComponents/BasePaging.vue";
 import SettingTable from "../../components/TableComponents/BaseSetting.vue";
+import BaseFormKeySearch from '../../components/TableComponents/BaseFormKeySearch.vue';
 import ModalForm from "../../components/BaseModalForm.vue";
 import FormEmployee from "./FormEmployee.vue";
 import eventCtrlAltA from '../../utils/event/eventCtrlAltA';
@@ -143,17 +149,17 @@ export default {
     ModalForm,
     InputCombobox,
     FormEmployee,
+    BaseFormKeySearch,
     SettingTable,
     PagingPage,
   },
   setup() {
-    const { getRecordList, getRecordApi, deleteRecordApi, deleteMultipleApi } = apiEmployee;
+    const { getRecordList, getRecordApi, deleteRecordApi, deleteMultipleApi, toggleActiveApi } = apiEmployee;
     /**
      * Lấy ra các enum gồm mã phím và mã lỗi có thể nhận được khi call api
      * NK Tiềm 28/10/2022
      */
     const { TypeSuccess, MessageSuccessDelete } = eNum;
-    
     /**
      * hàm lấy và lưu số lượng bản ghi của page
      * Khắc Tiềm - 15.09.2022
@@ -164,7 +170,7 @@ export default {
      * Các hành động của table
      * Khắc Tiềm - 15.09.2022
      */
-    const { EDIT, DELETE, REPLICATION } = actionTableStore;
+    const { EDIT, DELETE, REPLICATION, STOP_USING } = actionTableStore;
 
     /**
      * Các thông báo của cảnh báo khi xoá bản ghi
@@ -269,7 +275,8 @@ export default {
      */
     watch(countRecordPageRecord, (newValue) => {
       setCountRecordPageRecord(newValue);
-      loadData({ v_Offset: 0, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
+      recordSelectPaging.value = 0;
+      loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
     });
 
     /**
@@ -284,19 +291,25 @@ export default {
      * Hàm Load danh sách người dùng
      * Khắc Tiềm - 15.09.2022
      */
-    async function loadData(filter) {
-      if (filter) {
-        await store.dispatch("employee/setFilterAction", filter);
-        //Kích hoạt hiệu ứng loader table
-        isShowLoaderTable.value = true;
+     async function loadData(filter) {
+        if(filter && filter.resetPage){
+          recordSelectPaging.value = 0;
+          filter.v_Offset = recordSelectPaging.value;
+        }
+        if (filter) {
+          if(filter !== true){
+            await store.dispatch("employee/setFilterAction", filter);
+          }
+          //Kích hoạt hiệu ứng loader table
+          isShowLoaderTable.value = true;
+        }
+        const find = store.state.employee.filter;
+        await callApi(getRecordList, find, (response) => { store.dispatch("employee/getRecordListAction", response); }, store, true);
+        if (filter) {
+          //Dừng hiệu ứng loader table
+          isShowLoaderTable.value = false;
+        }
       }
-      const find = store.state.employee.filter;
-      await callApi(getRecordList, find, (response) => { store.dispatch("employee/getRecordListAction", response); }, store, true);
-      if (filter) {
-        //Dừng hiệu ứng loader table
-        isShowLoaderTable.value = false;
-      }
-    }
 
     /**
      * Trước khi mounted sẽ load dữ liệu 1 lần
@@ -311,7 +324,11 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleDeleteAll() {
-      store.dispatch("config/setToggleShowNotificationWanningAction", { action: DeleteAll, message: WANNING_DELETE_ALL});
+      try {
+          store.dispatch("config/setToggleShowNotificationWanningAction", { action: DeleteAll, message: WANNING_DELETE_ALL});
+        } catch (e) {
+          console.log(e);
+        }
     }
 
     /**
@@ -329,7 +346,11 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleClickToggleSettingTable(fieldIndex) {
-      store.dispatch("employee/setToggleShowColumnTableAction", fieldIndex);
+      try {
+        store.dispatch("employee/setToggleShowColumnTableAction", fieldIndex);
+      } catch (e) {
+        console.log(e);
+      }
     }
 
     /**
@@ -338,23 +359,30 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     async function deleteRecord(id) {
-      await callApi(deleteRecordApi, id, () => { 
-        store.dispatch("config/addNotification", { type: TypeSuccess, message: MessageSuccessDelete }); 
-        store.dispatch("employee/setCheckboxUnCheckRecordAction", id);
-        loadData(); 
-      }, store);
+      await callApi(deleteRecordApi, id, async () => { 
+          store.dispatch("config/addNotification", { type: TypeSuccess, message: MessageSuccessDelete }); 
+          await store.dispatch("employee/setCheckboxUnCheckRecordAction", id);
+          if(recordList.value.length === 0){
+            recordSelectPaging.value = 0;
+            loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
+          }
+        }, store);
     }
 
     /**
-     * Hàm xử lý xoá toàn bộ danh sách
-     * Khắc Tiềm - 15.09.2022
-     */
-    async function DeleteAll() {
-      await callApi(deleteMultipleApi, checkShowActionSeries.value, () => { 
-        loadData(); store.dispatch("employee/setEmptyCheckBoxRecordAction");
-        store.dispatch("config/addNotification", { type: TypeSuccess, message: MessageSuccessDelete });
-      }, store);
-    }
+       * Hàm xử lý xoá toàn bộ danh sách
+       * Khắc Tiềm - 15.09.2022
+       */
+       async function DeleteAll() {
+        await callApi(deleteMultipleApi, checkShowActionSeries.value, async () => { 
+          store.dispatch("employee/setEmptyCheckBoxRecordAction");
+          await store.dispatch("config/addNotification", { type: TypeSuccess, message: MessageSuccessDelete });
+          if(recordList.value.length === 0){
+            recordSelectPaging.value = 0;
+            loadData({ v_Offset: recordSelectPaging.value, v_Limit: countRecordPageRecord.value, v_Where: keyword.value, });
+          }
+        }, store);
+      }
 
     /**
      * Hàm xử lý khi click vào các hành động của từng cột dữ liệu table
@@ -363,25 +391,38 @@ export default {
      * @param {Mã nhân viên}  
      * Khắc Tiềm - 15.09.2022
      */
-    async function handleClickActionColumTable(
-      action,
-      recordId,
-      recordCode
-    ) {
-      if (action == EDIT) {
-        recordEditApi(recordId);
-      } else if (action == DELETE) {
-        recordDeleteApi(recordId, recordCode)
-      } else if (action == REPLICATION) {
-        recordReplicationApi(recordId)
+    async function handleClickActionColumTable(action, recordId, recordCode) {
+      try {
+        if (action == EDIT) {
+          recordEditApi(recordId);
+        } else if (action == DELETE) {
+          recordDeleteApi(recordId, recordCode)
+        } else if (action == REPLICATION) {
+          recordReplicationApi(recordId)
+        }else if(action === STOP_USING){
+          toggleRecordActiveApi(recordId);
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
+
+    /**
+       * Hàm thực hiện call api lấy toggle active record
+       * Khắc Tiềm - 15.09.2022
+       */
+       async function toggleRecordActiveApi(recordId){
+        await callApi(toggleActiveApi, recordId, () => { 
+          store.dispatch("employee/setToggleActiveAction", recordId);
+        }, store, true);
+      }
+
     /**
      * Hàm thực hiện call api lấy chi tiết nhân viên với trạng thái sửa
      * @param {ID nhân viên cần sửa}  
      * Khắc Tiềm - 15.09.2022
      */
-    async function recordEditApi(recordId){
+    async function recordEditApi(recordId){`111111111`
       await callApi(getRecordApi, recordId, (response) => { recordEdit.value = response; handleOpenModal(EDIT); }, store);
     }
 
@@ -441,19 +482,23 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleOpenModal(stateForm) {
-      if (stateForm === true) {
-        // Nếu tồn tại record cần sửa, cần nhân bản thì sẽ xoá đi
-        recordEdit.value = null;
-        recordAdd.value = null;
-      } else if (stateForm === EDIT) {
-        // Nếu tồn tại record cần nhân bản thì sẽ xoá đi
-        recordAdd.value = null;
-      } else if (stateForm === REPLICATION) {
-        // Nếu tồn tại record cần sửa thì sẽ xoá đi
-        recordEdit.value = null;
+      try {
+        if (stateForm === true) {
+          // Nếu tồn tại record cần sửa, cần nhân bản thì sẽ xoá đi
+          recordEdit.value = null;
+          recordAdd.value = null;
+        } else if (stateForm === EDIT) {
+          // Nếu tồn tại record cần nhân bản thì sẽ xoá đi
+          recordAdd.value = null;
+        } else if (stateForm === REPLICATION) {
+          // Nếu tồn tại record cần sửa thì sẽ xoá đi
+          recordEdit.value = null;
+        }
+        // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
+        isShowModal.value = !isShowModal.value; 
+      } catch (e) {
+        console.log(e);
       }
-      // Khi mounted modal xong thì mới thêm class active để có hiệu ứng đẹp
-      isShowModal.value = !isShowModal.value;
     }
 
     /**
@@ -492,12 +537,16 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleToggleActionAll() {
-      if (!showActionAll.value && checkShowActionSeries.value.length > 0) {
-        showActionAll.value = true;
-        window.addEventListener("click", handleClickActionAll);
-      } else {
-        window.removeEventListener("click", handleClickActionAll);
-        showActionAll.value = false;
+      try {
+        if (!showActionAll.value && checkShowActionSeries.value.length > 0) {
+          showActionAll.value = true;
+          window.addEventListener("click", handleClickActionAll);
+        } else {
+          window.removeEventListener("click", handleClickActionAll);
+          showActionAll.value = false;
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
 
@@ -642,6 +691,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
   transition: all 0.2s ease;
   position: relative;
 }
@@ -779,4 +829,9 @@ export default {
   align-items: flex-end;
   justify-content: space-between;
 }
+  .form-fix{
+    min-width: 316px;
+    display: flex;
+    align-items: center;
+  }
 </style>

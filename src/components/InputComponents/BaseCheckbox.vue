@@ -92,6 +92,7 @@ export default defineComponent({
   position: relative;
   display: flex;
   align-items: center;
+  font-size: 13px;
 }
 .label-checkbox {
   width: 18px;

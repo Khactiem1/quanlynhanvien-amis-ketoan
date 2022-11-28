@@ -141,7 +141,7 @@ export default {
       else if(isNumber.value){
         const number = CommaToNumber(event.target.value);
         if(checkNumber(number) || number === ''){
-          if((event.data === '.' || event.data === ',') && !valueHeader.value.includes(',')){
+          if((event.data === '.' || event.data === ',')){
             valueHeader.value = Comma(modelValue.value) + ',';
           }
           else{

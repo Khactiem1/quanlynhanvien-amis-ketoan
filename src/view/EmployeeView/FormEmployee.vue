@@ -37,8 +37,7 @@
                   :type="'text'"
                   :maxLength="20"
                   :messageValid="employeeNotification.validateCode"
-                  :label="'Mã'"
-                  :tab="1"
+                  :label="'Mã'" 
                   :class="{ 'is-valid': isValid && employee.employeeCode == '' }"
                   v-model="employee.employeeCode"
                   ref="inputFocus"
@@ -51,7 +50,6 @@
                   :maxLength="80"
                   :messageValid="employeeNotification.validateName"
                   :label="'Tên'"
-                  :tab="2"
                   :class="{ 'is-valid': isValid && employee.employeeName == '' }"
                   v-model="employee.employeeName"
                 ></input-default>
@@ -68,7 +66,6 @@
                 :required="true"
                 :headerCode = "'unitCode'"
                 :messageValid="employeeNotification.validateUnit"
-                :tab="3"
                 :class="{ 'is-valid': isValid && !employee.unitID }"
                 v-model="employee.unitID"
               ></input-combobox>
@@ -77,7 +74,6 @@
               <input-default
                 :type="'text'"
                 :label="'Chức danh'"
-                :tab="4"
                 v-model="employee.employeeTitle"
               ></input-default>
             </div>
@@ -86,7 +82,6 @@
             <div class="form-item_input">
               <div class="form-group ms-small">
                 <input-calendar
-                  :tabindex="5"
                   :label="'Ngày sinh'"
                   :maxDate="new Date()"
                   :messageValid="employeeNotification.validateDateOfBirth"
@@ -99,21 +94,18 @@
                 <div class="input-radio_item">
                   <input-radio
                     label="Nam"
-                    :value="MALE"
+                    :value="eNum.MALE"
                     v-model.number="employee.gender"
-                    :tab="6"
                   ></input-radio>
                   <input-radio
                     label="Nữ"
-                    :value="FEMALE"
+                    :value="eNum.FEMALE"
                     v-model.number="employee.gender"
-                    :tab="7"
                   ></input-radio>
                   <input-radio
                     label="Khác"
-                    :value="OTHER"
+                    :value="eNum.OTHER"
                     v-model.number="employee.gender"
-                    :tab="8"
                   ></input-radio>
                 </div>
               </div>
@@ -123,14 +115,12 @@
                 <input-default
                   :type="'text'"
                   :label="'Số CMND'"
-                  :tab="9"
                   :toolTip="'Số chứng minh nhân dân'"
                   v-model="employee.identityCard"
                 ></input-default>
               </div>
               <div class="form-group ms-small">
                 <input-calendar
-                  :tabindex="10"
                   :label="'Ngày cấp'"
                   :maxDate="new Date()"
                   :messageValid="employeeNotification.validateDayForIdentity"
@@ -143,7 +133,6 @@
               <input-default
                 :type="'text'"
                 :label="'Nơi cấp'"
-                :tab="11"
                 v-model="employee.grantAddressIdentity"
               ></input-default>
             </div>
@@ -154,7 +143,6 @@
             <input-default
               :type="'text'"
               :label="'Địa chỉ'"
-              :tab="12"
               v-model="employee.employeeAddress"
             ></input-default>
           </div>
@@ -164,7 +152,6 @@
                 :type="'text'"
                 :label="'ĐT di động'"
                 :toolTip="'Điện thoại di động'"
-                :tab="13"
                 :isPhone="true"
                 :messageValid="employeeNotification.validatePhoneNumber"
                 v-model="employee.phoneNumber"
@@ -174,7 +161,6 @@
               <input-default
                 :type="'text'"
                 :label="'ĐT cố định'"
-                :tab="14"
                 :isPhone="true"
                 :toolTip="'Điện thoại cố định'"
                 :messageValid="employeeNotification.validateLandlinePhone"
@@ -185,7 +171,6 @@
               <input-default
                 :type="'text'"
                 :label="'Email'"
-                :tab="15"
                 :isEmail="true"
                 :messageValid="employeeNotification.validateEmail"
                 v-model="employee.employeeEmail"
@@ -197,8 +182,6 @@
               <input-default
                 :type="'text'"
                 :label="'Tài khoản ngân hàng'"
-                :tab="16"
-                :isNumber="true"
                 v-model="employee.bankAccount"
               ></input-default>
             </div>
@@ -206,7 +189,6 @@
               <input-default
                 :type="'text'"
                 :label="'Tên ngân hàng'"
-                :tab="17"
                 v-model="employee.nameBank"
               ></input-default>
             </div>
@@ -214,7 +196,6 @@
               <input-default
                 :type="'text'"
                 :label="'Chi nhánh'"
-                :tab="18"
                 v-model="employee.branchBank"
               ></input-default>
             </div>
@@ -228,26 +209,24 @@
               @click="handleSaveData(true)"
               style="margin-right: 9px"
               class="btn modal-icon btn-form_cat"
-              :tabindex="19"
             >
               Cất
             </button>
             <button
               @click="handleSaveData(false)"
               class="btn btn-success modal-icon btn-form_cat-them"
-              :tabindex="20"
             >
               Cất và thêm
             </button>
           </div>
           <div class="form-action_item">
-            <button @click="handleCloseModal(true)" :tabindex="21" class="btn">
+            <button @click="handleCloseModal(true)" class="btn">
               Huỷ
             </button>
           </div>
         </div>
       </div>
-      <div tabindex="21" ref="focusLoop" class="focus-loop"></div>
+      <button ref="focusLoop" class="focus-loop"></button>
     </div>
   </div>
 </template>
@@ -265,7 +244,7 @@ import notificationMessage from "../../utils/notification.js";
 import validate from "../../utils/validate.js";
 import utilEnum from "../../utils/index.js";
 import eventFormCtrlShiftS from '../../utils/event/eventFormCtrlShiftS';
-import callApi from '../../api/callApi';//Record
+import callApi from '../../api/callApi';
 import apiEmployee from "../../api/employee.js";
 import apiUnit from '../../api/unit';
 export default {
@@ -344,7 +323,7 @@ export default {
      * Lấy ra các enum gồm mã phím và mã lỗi có thể nhận được khi call api
      * NK Tiềm 28/10/2022
      */
-    const { TypeSuccess, MessageSuccessAdd, MessageSuccessEdit, MALE, FEMALE, OTHER, AddFormEmployee, EditFormEmployee, } = eNum;
+    const { TypeSuccess, MessageSuccessAdd, MessageSuccessEdit, AddFormEmployee, EditFormEmployee, } = eNum;
 
     /**
      * Lấy ra hàm validate email và validate phone
@@ -358,7 +337,7 @@ export default {
      */
     const employee = ref({
       employeeName: "",
-      gender: MALE,
+      gender: eNum.MALE,
       dateOfBirth: null,
       identityCard: "",
       employeeTitle: "",
@@ -387,7 +366,7 @@ export default {
      */
     const employeeReset = ref({
       employeeName: "",
-      gender: MALE,
+      gender: eNum.MALE,
       dateOfBirth: null,
       identityCard: "",
       employeeTitle: "",
@@ -446,7 +425,7 @@ export default {
           };
         }
         //Lấy mã mới khi thêm 
-        await callApi(nextValue, null, (response) => { employee.value.employeeCode = response; }, store, true);
+        await callApi(nextValue, null, (response) => { employee.value.employeeCode = response; employeeReset.value.employeeCode = response;}, store, true);
       }
     });
     
@@ -516,10 +495,6 @@ export default {
           return true;
         }
       });
-      // .reduce((acc, cur) => {
-      //   // Nối lại thành chuỗi HTML
-      //   return (acc += cur ? "- " + cur + "<br>" : "");
-      // }, "");
     }
 
     /**
@@ -547,10 +522,10 @@ export default {
           if(!stateAdd.value){
             //sau khi sửa xong sửa trạng thái modal thành thêm user
             stateAdd.value = true; 
-            store.dispatch("employee/editRecordAction", {employeeID: response, ...employee.value });
+            store.dispatch("employee/editRecordAction", { ...employee.value, employeeID: response });
           }
           else{
-            store.dispatch("employee/addRecordAction", {employeeID: response, ...employee.value });
+            store.dispatch("employee/addRecordAction", { ...employee.value, employeeID: response });
           }
        }, store, false, () => {
         errorApi.value = true;
@@ -646,9 +621,7 @@ export default {
       inputFocus,
       employee,
       employeeNotification,
-      MALE,
-      FEMALE,
-      OTHER,
+      eNum,
       isValid,
       focusLoop,
       titleForm,

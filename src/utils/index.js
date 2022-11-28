@@ -6,7 +6,7 @@
 const getCountRecordPageRecord = () => {
   const countRecordPageRecord = localStorage.getItem("countRecordPageRecord");
   if (countRecordPageRecord) {
-    return countRecordPageRecord;
+    return Number(countRecordPageRecord);
   } else {
     // nếu chưa từng lưu số lượng bản ghi thì 20 là số lượng bản ghi được lấy ra mặc định
     localStorage.setItem("countRecordPageRecord", 20);
@@ -69,6 +69,25 @@ const formatDateYYYYMMDD = (date) => {
   }
 };
 
+const Comma = (number)=> {
+  if(number || number === 0){
+    let intPart = Math.trunc(number); 
+    const floatPart = Number((number - intPart).toFixed(10));
+    intPart = "" + intPart;
+    if (intPart.length > 3) {
+      var mod = intPart.length % 3;
+      var output = mod > 0 ? intPart.substring(0, mod) : "";
+      for (let i = 0; i < Math.floor(intPart.length / 3); i++) {
+        if (mod == 0 && i == 0)
+          output += intPart.substring(mod + 3 * i, mod + 3 * i + 3);
+        else output += "." + intPart.substring(mod + 3 * i, mod + 3 * i + 3);
+      }
+      return floatPart !== 0 ? output + ',' + (floatPart + '').slice( 2 ) : output;
+    } else return floatPart !== 0 ? intPart + ',' + (floatPart + '').slice( 2 ) : intPart;
+  }
+  else return '';
+};
+
 /**
  * 
  * @param {*} array 
@@ -110,4 +129,5 @@ export default {
   formatDateDDMMYYYY,
   formatDateYYYYMMDD,
   listToTree,
+  Comma,
 };

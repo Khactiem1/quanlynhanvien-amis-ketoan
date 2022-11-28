@@ -149,6 +149,24 @@ export default {
           isActiveAnimation.value = false;
         }
         isShowSearchKey.value = !isShowSearchKey.value;
+        if(isShowSearchKey.value){
+          const dataBindFilter = store.state.inventoryItem.filter.customSearch
+          .filter(item => (item.valueSearch || item.valueSearch === 0 || item.comparisonType === "!=Null" || item.comparisonType === "=Null") && (item.columnSearch === 'Nature' || item.columnSearch === 'CommodityGroupID' || item.columnSearch === "IsActive"));
+          dataBindFilter.forEach(item => {
+            if(item.columnSearch === nature.value.columnSearch){
+              nature.value.valueSearch = item.valueSearch;
+              nature.value.headerSearch = item.headerSearch;
+            }
+            if(item.columnSearch === group.value.columnSearch){
+              group.value.valueSearch = item.valueSearch;
+              group.value.headerSearch = item.headerSearch;
+            }
+            if(item.columnSearch === status.value.columnSearch){
+              status.value.valueSearch = item.valueSearch;
+              status.value.headerSearch = item.headerSearch;
+            }
+          });
+        }
       } catch (e) {
         console.log(e);
       }
@@ -269,6 +287,7 @@ export default {
 }
 .ms-dropdown-menu.active{
   top: 105%;
+  z-index: 1;
 }
 .form-control{
   display: flex;

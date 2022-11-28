@@ -3,6 +3,7 @@
     <label v-if="label">{{ label }}</label>
     <div class="form-input" :class="{ 'is-valid': new Date(modelValue) > maxDate }">
       <input
+        :disabled="disabled"
         @keypress="isNumber($event)"
         @blur="handleSave()"
         ref="elementInput"
@@ -18,9 +19,10 @@
         ref="elementIcon"
         @click="handleShowCalendar()"
         class="form-icon"
+        :class="{ disabled: disabled }"
       ></div>
     </div>
-    <div ref="elementCalendar" v-if="showCalendar" class="calendar">
+    <div ref="elementCalendar" v-show="showCalendar" class="calendar">
       <div class="calendar-item calendar-date">
         <div class="info">
           <div
@@ -143,7 +145,7 @@
 </template>
 
 <script>
-import { ref, toRefs, computed, watch, onUnmounted } from "vue";
+import { ref, toRefs, computed, watch, onUnmounted, onBeforeMount } from "vue";
 import utilEnum from "../../utils/index";
 export default {
   props: {
@@ -152,6 +154,7 @@ export default {
     label: {},
     messageValid: {},
     maxDate: {},
+    disabled: {},
   },
 
   setup(props, context) {
@@ -219,7 +222,7 @@ export default {
      * Model value truyền từ props
      * Khắc Tiềm - 15.09.2022
      */
-    const { modelValue } = toRefs(props);
+    const { modelValue, disabled } = toRefs(props);
 
     /**
      * Dữ liệu hiển thị lên ui
@@ -260,6 +263,12 @@ export default {
         ? new Date(modelValue.value).getFullYear()
         : new Date().getFullYear()
     );
+
+    onBeforeMount(()=> {
+      if(modelValue.value){
+        displayData.value = formatDateDDMMYYYY(new Date(modelValue.value));
+      }
+    });
 
     /**
      * Kiểm tra nếu có sự thay đổi của model value thì render lại giao diện
@@ -401,14 +410,16 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function handleShowCalendar() {
-      if (showCalendar.value) {
-        showSelectYear.value = false;
-        showSelectMonth.value = false;
-        window.removeEventListener("click", handleClickTemplate);
-      } else {
-        window.addEventListener("click", handleClickTemplate);
+      if(!disabled.value){
+        if (showCalendar.value) {
+          showSelectYear.value = false;
+          showSelectMonth.value = false;
+          window.removeEventListener("click", handleClickTemplate);
+        } else {
+          window.addEventListener("click", handleClickTemplate);
+        }
+        showCalendar.value = !showCalendar.value;
       }
-      showCalendar.value = !showCalendar.value;
     }
 
     /**
@@ -757,5 +768,9 @@ export default {
 }
 .message-valid {
   top: 118%;
+}
+.disabled{
+  background-color: #EFF0F2 !important;
+  cursor: unset !important;
 }
 </style>

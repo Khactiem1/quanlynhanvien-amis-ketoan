@@ -18,9 +18,11 @@
           }"
           :key="index"
         >
-          <span @click="handleSetSortColumn(item.field)">
+          <span :style="{
+            'text-align': item.textAlign,
+          }" @click="handleSetSortColumn(item.field)">
             {{ item.header }} 
-            <!-- <div class="sort" :class="{ 'sortASC': false }"></div> -->
+            <div v-if="item.field.charAt(0).toUpperCase() + item.field.slice(1) === sortBy.split(' ')[0]" class="sort" :class="{ 'sortASC': sortBy.split(' ')[1] === 'ASC' }"></div>
           </span>
           <div v-if="item.filter" @click="handleShowFilter($event, item.filter)" class="mi-header-option"></div>
         </th>
@@ -141,7 +143,7 @@
         :handleCloseAction="handleCloseAction"
         :handleClickActionColumTable="handleClickActionColumTable"
       ></table-list-action>
-      <base-table-filter :handleShowFilter="handleShowFilter" :dataFilter="dataFilter" @handle-filter-data="handleFilterData" :setPositionFilter="setPositionFilter" v-if="isShowFilter">
+      <base-table-filter :oldSearch="oldSearch" :handleShowFilter="handleShowFilter" :dataFilter="dataFilter" @handle-filter-data="handleFilterData" :setPositionFilter="setPositionFilter" v-if="isShowFilter">
       </base-table-filter>
     </teleport>
   </table>
@@ -229,11 +231,16 @@ export default {
      * Dữ liệu tìm kiếm sẽ được gửi đi
      */
     const dataFilter = ref(null);
+
+  /**
+   * Dữ liệu tìm kiếm trước đó khi click vo column table filter
+   */
+    const oldSearch = ref(null);
     /**
      * 
      * Hàm đóng mở form tìm kiếm
      */
-    function handleShowFilter(event, data){
+    async function handleShowFilter(event, data){
       try {
         if(event){
           dataFilter.value = data;
@@ -241,11 +248,21 @@ export default {
           setPositionFilter.value.top = rect.top + 35;
           setPositionFilter.value.left = rect.left - (350 - rect.width);
         }
+        if(!isShowFilter.value){
+          const valueSearch = await store.state[module.value].filter.customSearch.find(item => item.columnSearch === data.columnSearch);
+            if(valueSearch){
+              oldSearch.value = valueSearch;
+            }
+            else{
+              oldSearch.value = null;
+            }
+        }
         isShowFilter.value = !isShowFilter.value;
       } catch (e) {
         console.log(e);
       }
     }
+
     /**
      * Hàm xử lý tìm kiếm
      * @param {data tìm kiếm} filter 
@@ -257,13 +274,22 @@ export default {
         console.log(e);
       }
     }
-
+    
+    /**
+     * Sắp xếp theo trường gì
+     */
+    const sortBy = ref('');
     /**
      * Hàm xử lý sắp xếp
      */
     async function handleSetSortColumn (field){
       try {
-        await store.dispatch(`${module.value}/setFilterCustomSearchSortAction`, field.charAt(0).toUpperCase() + field.slice(1));
+        await store.dispatch(`${module.value}/setFilterCustomSearchSortAction`, field.charAt(0).toUpperCase() + field.slice(1)).then((res)=> {
+          if(res){
+            sortBy.value = res;
+          }
+          else sortBy.value = '';
+        });
         loadData.value(true);
       } catch (e) {
         console.log(e);
@@ -316,40 +342,10 @@ export default {
     const positionAction = ref({ top: 0, right: 0 });
 
     /**
-     * Lấy ra mã giới tính
-     * Khắc Tiềm - 15.09.2022
-     */
-    const { MALE, FEMALE, OTHER } = eNum;
-
-    /**
      * Lấy ra hàm format date dd/MM/YYYY
      * Khắc Tiềm - 15.09.2022
      */
-    const { formatDateDDMMYYYY } = utilEnum;
-    
-    /**
-     * Hàm xử lý table với những cột cần thêm dấu phẩy vào đơn vị tiền tệ
-     * @param {Số cần format} number 
-     * Khắc Tiềm - 15.09.2022
-     */
-    function Comma(number) {
-      if(number || number === 0){
-        let intPart = Math.trunc(number); 
-        const floatPart = Number((number - intPart).toFixed(10));
-        intPart = "" + intPart;
-        if (intPart.length > 3) {
-          var mod = intPart.length % 3;
-          var output = mod > 0 ? intPart.substring(0, mod) : "";
-          for (let i = 0; i < Math.floor(intPart.length / 3); i++) {
-            if (mod == 0 && i == 0)
-              output += intPart.substring(mod + 3 * i, mod + 3 * i + 3);
-            else output += "." + intPart.substring(mod + 3 * i, mod + 3 * i + 3);
-          }
-          return floatPart !== 0 ? output + ',' + (floatPart + '').slice( 2 ) : output;
-        } else return floatPart !== 0 ? intPart + ',' + (floatPart + '').slice( 2 ) : intPart;
-      }
-      else return '';
-    }
+    const { formatDateDDMMYYYY, Comma } = utilEnum;
 
     /**
      * hàm xử lý hiển thị giới tính dựa trên enum
@@ -357,11 +353,11 @@ export default {
      * Khắc Tiềm - 15.09.2022
      */
     function formatGender(gender) {
-      if (MALE == gender) {
+      if (eNum.MALE == gender) {
         return "Nam";
-      } else if (FEMALE == gender) {
+      } else if (eNum.FEMALE == gender) {
         return "Nữ";
-      } else if (OTHER == gender) {
+      } else if (eNum.OTHER == gender) {
         return "Khác";
       }
     }
@@ -448,7 +444,9 @@ export default {
       listID,
       isShowFilter,
       baseUrl,
+      oldSearch,
       dataFilter,
+      sortBy,
       handleFilterData,
       Comma,
       setPositionFilter,

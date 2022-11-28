@@ -71,6 +71,14 @@ const exportDataApi = () => {
   return axiosAPI.get(`/Employees/export_data`);
 };
 
+/**
+ * API Active toggle sử dụng
+ * Khắc Tiềm - 15.09.2022
+ */
+ const toggleActiveApi = (id) => {
+  return axiosAPI.get(`/Employees/ToggleActive/${id}`);
+};
+
 export default {
   exportDataApi,
   deleteMultipleApi,
@@ -80,4 +88,5 @@ export default {
   getRecordList,
   createRecordApi,
   getRecordApi,
+  toggleActiveApi,
 }

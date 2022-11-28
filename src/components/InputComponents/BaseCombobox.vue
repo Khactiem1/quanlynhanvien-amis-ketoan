@@ -52,7 +52,7 @@
             :key="index"
             @click="handleClickItem(item[value])"
             :class="{
-              active: (valueClick == item[value] && !selectMultiple) || (selectMultiple && modelValue.includes(item[value])),
+              active: (valueClick === item[value] && !selectMultiple) || (selectMultiple && modelValue.includes(item[value])),
               hover: valueClick == item[value] && selectMultiple,
             }"
           >
@@ -292,7 +292,7 @@ export default {
       if(!selectMultiple.value){
         let checkModelValueCoincideValue = false;
         options.value.forEach((item) => {
-          if (item[value.value] == modelValue.value) {
+          if (item[value.value] === modelValue.value) {
             inputEvent.value = item[header.value];
             valueClick.value = item[value.value];
             checkModelValueCoincideValue = true;
@@ -306,7 +306,7 @@ export default {
         if (required.value) {
           isValid.value = false;
         }
-        if(modelValue.value){
+        if(modelValue.value || modelValue.value === 0){
           context.emit("update:textField", options.value.find(item => item[value.value] === modelValue.value)[header.value]);
         }
         else{
@@ -356,12 +356,12 @@ export default {
     function eventKeyUp(){
       if(optionValue.value.length > 0){
           // xử lý bấm lên
-          if (!valueClick.value && valueClick.value != '' && valueClick.value != 0 && optionValue.value) {
+          if (!valueClick.value && valueClick.value !== '' && valueClick.value !== 0 && optionValue.value) {
             valueClick.value = optionValue.value[0][value.value];
             inputEvent.value = optionValue.value[0][header.value];
           } else {
             for (let i = 0; i < optionValue.value.length; i++) {
-              if (optionValue.value[i][value.value] == valueClick.value) {
+              if (optionValue.value[i][value.value] === valueClick.value) {
                 if (i > 0) {
                   const index = i - 1;
                   inputEvent.value = optionValue.value[index][header.value];
@@ -381,12 +381,12 @@ export default {
     function eventKeyDown(){
       if(optionValue.value.length > 0){
           // xử lý bấm xuống
-          if (!valueClick.value && valueClick.value != '' && valueClick.value != 0 && optionValue.value) {
+          if (!valueClick.value && valueClick.value !== '' && valueClick.value !== 0 && optionValue.value) {
             valueClick.value = optionValue.value[0][value.value];
             inputEvent.value = optionValue.value[0][header.value];
           } else {
             for (let i = 0; i < optionValue.value.length; i++) {
-              if (optionValue.value[i][value.value] == valueClick.value) {
+              if (optionValue.value[i][value.value] === valueClick.value) {
                 if (i < optionValue.value.length - 1) {
                   const index = i + 1;
                   inputEvent.value = optionValue.value[index][header.value];
@@ -621,8 +621,8 @@ export default {
     onBeforeMount(() => {
       options.value.forEach((item) => {
         if (
-          item[value.value] == modelValue.value ||
-          item[value.value] == defaultValue.value
+          item[value.value] === modelValue.value ||
+          item[value.value] === defaultValue.value
         ) {
           inputEvent.value = item[header.value];
           valueClick.value = item[value.value];

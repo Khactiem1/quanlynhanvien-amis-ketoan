@@ -1,16 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
-import NotFoundPage from "../view/NotFoundPage";
-import EmployeePage from "../view/EmployeeView/EmployeePage";
-import DIInventoryItemCategoryPage from "../view/WarehouseView/DIInventoryItemCategory/DIInventoryItemCategoryPage";
-import DepotPage from "../view/WarehouseView/Depot/DepotPage";
-import UnitPage from "../view/WarehouseView/Unit/UnitPage";
-import WarehousePage from "../view/WarehouseView/WarehousePage";
-import InventoryItemPage from "../view/WarehouseView/InventoryItem/InventoryItemPage";
-import HomePage from "../view/HomePage";
+function lazyLoad(view){
+  return() => import(`@/view/${view}.vue`)
+}
 const routes = [
   {
     path: "/",
-    component: HomePage,
+    component: lazyLoad('HomePage'),
     beforeEnter(to, from, next) {
       document.title = `Trang chủ`;
       next();
@@ -30,7 +25,7 @@ const routes = [
       document.title = 'Nhân viên';
       next();
     },
-    component: EmployeePage,
+    component: lazyLoad('EmployeeView/EmployeePage'),
   },
   {
     path: "/warehouse",
@@ -38,7 +33,7 @@ const routes = [
       document.title = 'Kho';
       next();
     },
-    component: WarehousePage,
+    component: lazyLoad('WarehouseView/WarehousePage'),
   },
   {
     path: "/DIInventoryItemCategory",
@@ -46,7 +41,7 @@ const routes = [
       document.title = 'Nhóm vật tư, hàng hoá, dịch vụ';
       next();
     },
-    component: DIInventoryItemCategoryPage,
+    component: lazyLoad('WarehouseView/DIInventoryItemCategory/DIInventoryItemCategoryPage'),
   },
   {
     path: "/Unit",
@@ -54,7 +49,7 @@ const routes = [
       document.title = 'Đơn vị tính';
       next();
     },
-    component: UnitPage,
+    component: lazyLoad('WarehouseView/Unit/UnitPage'),
   },
   {
     path: "/Depot",
@@ -62,7 +57,7 @@ const routes = [
       document.title = 'Nhà kho';
       next();
     },
-    component: DepotPage,
+    component: lazyLoad('WarehouseView/Depot/DepotPage'),
   },
   {
     path: "/InventoryItem",
@@ -70,11 +65,11 @@ const routes = [
       document.title = 'Hàng hoá dịch vụ';
       next();
     },
-    component: InventoryItemPage,
+    component: lazyLoad('WarehouseView/InventoryItem/InventoryItemPage'),
   },
   {
     path: "/:pathMatch(.*)*",
-    component: NotFoundPage,
+    component: lazyLoad('NotFoundPage'),
     beforeEnter(to, from, next) {
       document.title = 'Không tìm thấy trang';
       next();

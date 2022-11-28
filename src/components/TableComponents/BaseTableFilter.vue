@@ -23,7 +23,8 @@
             </div>
         </div>
         <div class="filter-value">
-          <base-input v-if="dataFilter.typeFilter !== 'combobox'" :disabled="isDisableInput" :placeholder="'Nhập giá trị lọc'" v-model="valueSearch" :isNumber="dataFilter.typeFilter === 'number'" ></base-input>
+          <base-input v-if="dataFilter.typeFilter === 'number' || dataFilter.typeFilter === 'text'" :disabled="isDisableInput" :placeholder="'Nhập giá trị lọc'" v-model="valueSearch" :isNumber="dataFilter.typeFilter === 'number'" ></base-input>
+          <base-calendar v-if="dataFilter.typeFilter === 'date'" :disabled="isDisableInput" v-model="valueSearch"></base-calendar>
           <base-combobox 
             v-if="dataFilter.typeFilter === 'combobox'" 
             :placeholder="'Nhập giá trị lọc'"
@@ -46,7 +47,8 @@
 <script>
 import BaseInput from '../../components/InputComponents/BaseInput.vue';
 import BaseCombobox from '../../components/InputComponents/BaseCombobox.vue';
-import { ref, onUnmounted, toRefs } from 'vue';
+import BaseCalendar from '../../components/InputComponents/BaseCalendar.vue';
+import { ref, onUnmounted, toRefs, onBeforeMount } from 'vue';
 import { useStore } from "vuex";
 import eNum from '@/utils/eNum';
 export default {
@@ -63,17 +65,23 @@ export default {
      * Dữ liệu đi kèm form để binding và tìm kiếm
      */
     dataFilter: {Object},
+
+    /**
+     * Dữ liệu tìm kiếm trước đó
+     */
+     oldSearch: {},
   },
   components: {
     BaseInput,
     BaseCombobox,
+    BaseCalendar,
   },
   setup(props, context){
     const store = useStore();
     /**
      * Lấy ra props
      */
-    const { handleShowFilter, dataFilter } = toRefs(props);
+    const { handleShowFilter, dataFilter, oldSearch } = toRefs(props);
     /**
      * Biến lưu trạng thái show dropdown chọn cách lọc
      */
@@ -113,18 +121,30 @@ export default {
       {header: "Lớn hơn hoặc bằng" , comparisonType: ">="},
     ];
     /**
-     * Giá trị comparisonType được select mặc định sẽ laf 4 (là index của mảng)
+     * Giá trị comparisonType được select mặc định sẽ là 4 (là index của mảng)
      */
     const comparisonType = ref(4);
     /**
      * option select 
      */
-    const selectComparison = ref(dataFilter.value.typeFilter === "text" ? selectComparisonTypeText : dataFilter.value.typeFilter === "number" ? selectComparisonTypeNumber: []);
-
+    const selectComparison = ref(dataFilter.value.typeFilter === "text" ? selectComparisonTypeText : dataFilter.value.typeFilter === "number" || dataFilter.value.typeFilter === "date" ? selectComparisonTypeNumber: []);
     /**
      * Dữ liệu select
      */
     const valueSearch = ref('');
+    onBeforeMount(()=> {
+      if(oldSearch.value){
+        valueSearch.value = oldSearch.value.valueSearch;
+        if(oldSearch.value.typeSearch === 'text'){
+          const index = selectComparisonTypeText.findIndex(item => item.comparisonType === oldSearch.value.comparisonType);
+          comparisonType.value = index;
+        }
+        else if(oldSearch.value.typeSearch === 'number' || oldSearch.value.typeSearch === 'date'){
+          const index = selectComparisonTypeNumber.findIndex(item => item.comparisonType === oldSearch.value.comparisonType);
+          comparisonType.value = index;
+        }
+      }
+    })
     /**
      * Dữ liệu select
      */
@@ -137,9 +157,13 @@ export default {
      * Hàm xử lý lưu thông tin và tìm kiếm
      */
     function handleSelectComparisonType(index){
+      /// 0 và 1 là vị trí mảng của trống và không trống khi chọn cái này thì ô input sẽ bị disable
       if(index === 0 || index === 1){
         valueSearch.value = '';
         isDisableInput.value = true;
+      }
+      else{
+        isDisableInput.value = false;
       }
       comparisonType.value = index;
     }
@@ -149,7 +173,7 @@ export default {
      */
     function handleSearchData(){
       if(dataFilter.value.typeFilter !== 'combobox'){
-        const dataSearch = { typeSearch: dataFilter.value.typeSearch, columnSearch: dataFilter.value.columnSearch, valueSearch: valueSearch.value, headerSearch: valueSearch.value, labelSearch: dataFilter.value.headerSearch + selectComparison.value[comparisonType.value].header, comparisonType: selectComparison.value[comparisonType.value].comparisonType};
+        const dataSearch = { typeSearch: dataFilter.value.typeSearch, columnSearch: dataFilter.value.columnSearch, valueSearch: valueSearch.value, headerSearch: valueSearch.value, labelSearch: dataFilter.value.headerSearch + ' ' + selectComparison.value[comparisonType.value].header, comparisonType: selectComparison.value[comparisonType.value].comparisonType};
         context.emit("handle-filter-data", { resetPage:true, [dataFilter.value.columnSearch]:{...dataSearch} });
       }
       else{
